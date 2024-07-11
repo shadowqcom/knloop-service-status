@@ -2,6 +2,14 @@ name: Scheduled Health Check
 
 # Controls when the action will run.
 on:
+# 添加手动触发事件
+  workflow_dispatch:
+    inputs:
+      manualReason:
+        description: 'Input description'
+        required: false
+        default: 'default_value'
+
   schedule:
     - cron: "30 * * * *"
 
