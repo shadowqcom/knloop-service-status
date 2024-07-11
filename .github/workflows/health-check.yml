@@ -10,7 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Check all sites
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Make shell script executable
+        run: chmod +x ./health-check.sh
+
       - name: Run Shell Script
         id: shell_script_run
         run: bash ./health-check.sh
