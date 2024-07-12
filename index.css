@@ -189,10 +189,9 @@ footer a {
 
 .statusHeadline {
   color: #eee;
-  padding: 4px 8px;
+  padding: 0px 8px;
   border-radius: 15px;
   font-size: 12px;
-  font-weight: 700;
   margin-left: 12px;
 }
 
@@ -218,22 +217,22 @@ footer a {
 }
 
 .success {
-  background-color: #4cae50;
+  background-color: #00dfa2;
   color: #fff;
 }
 
 .failure {
-  background-color: #f44336;
+  background-color: #ff0060;
   color: #fff;
 }
 
 .nodata {
-  background-color: #f8f8f8;
+  background-color: #dadada;
   color: #ccc;
 }
 
 .partial {
-  background-color: #ff9800;
+  background-color: #ffb84c;
   color: #fff;
 }
 
