@@ -108,13 +108,13 @@ function templatizeString(text, parameters) {
 
 function getStatusText(color) {
   return color == "nodata"
-    ? "无数据"
+    ? "暂无数据"
     : color == "success"
     ? "全部正常"
     : color == "failure"
-    ? "重大故障"
+    ? "严重故障"
     : color == "partial"
-    ? "局部故障"
+    ? "部分故障"
     : "未知状态";
 }
 
@@ -122,11 +122,11 @@ function getStatusDescriptiveText(color) {
   return color == "nodata"
     ? "无数据可用：未执行健康检查。"
     : color == "success"
-    ? "今日未记录停机时间。"
+    ? "今日没有记录到停机状况。"
     : color == "failure"
-    ? "今日记录有重大故障。"
+    ? "今日记录到严重故障。"
     : color == "partial"
-    ? "今日记录有部分故障。"
+    ? "今日记录到部分故障。"
     : "未知状态";
 }
 
