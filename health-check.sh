@@ -26,6 +26,9 @@ echo "Starting health checks with ${#KEYSARRAY[@]} configs:"
 
 mkdir -p logs
 
+# 设置时区
+export TZ=Asia/Shanghai
+
 for (( index=0; index < ${#KEYSARRAY[@]}; index++))
 do
   key="${KEYSARRAY[index]}"
