@@ -45,10 +45,10 @@ function getColor(uptimeVal) {
   return uptimeVal == null
     ? "nodata"
     : uptimeVal == 1
-    ? "success"
-    : uptimeVal < 0.3
-    ? "failure"
-    : "partial";
+      ? "success"
+      : uptimeVal < 0.3
+        ? "failure"
+        : "partial";
 }
 
 function constructStatusSquare(key, date, uptimeVal) {
@@ -110,24 +110,24 @@ function getStatusText(color) {
   return color == "nodata"
     ? "暂无数据"
     : color == "success"
-    ? "全部正常"
-    : color == "failure"
-    ? "严重故障"
-    : color == "partial"
-    ? "部分故障"
-    : "未知状态";
+      ? "全部正常"
+      : color == "failure"
+        ? "严重故障"
+        : color == "partial"
+          ? "部分故障"
+          : "未知状态";
 }
 
 function getStatusDescriptiveText(color) {
   return color == "nodata"
     ? "无数据可用：未执行健康检查。"
     : color == "success"
-    ? "今日没有记录到停机状况。"
-    : color == "failure"
-    ? "今日记录到严重故障。"
-    : color == "partial"
-    ? "今日记录到部分故障。"
-    : "未知状态";
+      ? "今日没有记录到停机状况。"
+      : color == "failure"
+        ? "今日记录到严重故障。"
+        : color == "partial"
+          ? "今日记录到部分故障。"
+          : "未知状态";
 }
 
 function getTooltip(key, date, quartile, color) {

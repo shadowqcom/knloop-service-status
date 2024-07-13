@@ -7,6 +7,7 @@ html {
   display: flex;
   flex-direction: column;
 }
+
 body {
   background-color: #f5f6f8;
   color: #3b3b3b;
@@ -21,6 +22,7 @@ body {
   text-align: center;
   transition: opacity 0.3s;
 }
+
 h1,
 h2,
 h3,
@@ -44,18 +46,21 @@ h1 {
   font-weight: bold;
   margin: 0px;
 }
+
 h2 {
   color: #3b3b3b;
   font-size: 28px;
   font-weight: bold;
   margin: 16px 0 8px 0;
 }
+
 h3 {
   color: #3b3b3b;
   font-size: 24px;
   font-weight: 700;
   margin: 8px 0 4px 0;
 }
+
 h4 {
   color: #3b3b3b;
   font-size: 18px;
@@ -63,6 +68,7 @@ h4 {
   margin-top: 5px;
   margin-bottom: 4px;
 }
+
 h5 {
   color: #3b3b3b;
   font-size: 16px;
@@ -70,6 +76,7 @@ h5 {
   margin-top: 5px;
   margin-bottom: 4px;
 }
+
 h6 {
   color: #3b3b3b;
   font-size: 16px;
@@ -77,6 +84,7 @@ h6 {
   margin-top: 5px;
   margin-bottom: 4px;
 }
+
 a {
   color: #194b7d;
   text-decoration: none;
@@ -137,15 +145,15 @@ footer a {
 }
 
 .statusContainer {
-  border: 1px solid #ededed;
+  border: 1px solid #898989;
   border-radius: 5px;
   padding-top: 20px;
   text-align: left;
   padding: 24px;
 }
 
-.statusContainer + .statusContainer {
-  border-top: 1px solid #eee;
+.statusContainer+.statusContainer {
+  /* border-top: 1px solid #eee; */
   margin-top: 30px;
 }
 
@@ -161,7 +169,7 @@ footer a {
   width: 100%;
 }
 
-.statusSquare + .statusSquare {
+.statusSquare+.statusSquare {
   margin-left: 6px;
 }
 
@@ -320,7 +328,7 @@ footer a {
     display: inline-block;
   }
 
-  .statusSquare + .statusSquare {
+  .statusSquare+.statusSquare {
     margin-left: 1px;
   }
 
