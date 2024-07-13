@@ -250,3 +250,32 @@ async function genAllReports() {
     await genReportLog(document.getElementById("reports"), key, url);
   }
 }
+
+
+document.addEventListener('DOMContentLoaded', async function () {
+  try {
+    const response = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+    const data = await response.text();
+
+    const lines = data.split('\n');
+    const traceData = {};
+    lines.forEach(line => {
+      const [key, value] = line.split('=');
+      if (key && value) {
+        traceData[key] = value.trim();
+      }
+    });
+
+    const ip = traceData['ip'];
+    const userAgent = traceData['uag'];
+    const loc = traceData['loc'];
+    const ts = traceData['ts'];
+
+    document.getElementById('loc').textContent = loc;
+    document.getElementById('clientIp').textContent = ip;
+    document.getElementById('ts').textContent = ts;
+    document.getElementById('clientUa').textContent = userAgent;
+  } catch (error) {
+    console.error('Error fetching trace data:', error);
+  }
+});

@@ -2,8 +2,8 @@ name: Scheduled Health Check
 
 on:
   schedule:
-  - cron: '15 * * * *'
-
+  - cron: "*/5 * * * *"
+  
 # 添加手动触发事件
   workflow_dispatch:
     inputs:

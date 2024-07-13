@@ -14,7 +14,9 @@
       <img src="logo.svg" alt="Logo" width="50px" />
       <span> service Status </span>
     </div>
+
     <div id="reports" class="reportContainer"></div>
+
     <div id="tooltip" class="tooltip" style="opacity: 0">
       <div id="tooltipArrow" class="tooltipArrow"></div>
       <div id="tooltipDateTime" class="tooltipDateTime"></div>
@@ -22,6 +24,7 @@
       <hr />
       <div id="tooltipDescription" class="tooltipDescription"></div>
     </div>
+
     <div id="templates" style="display: none">
       <div id="statusSquareTemplate" class="statusSquare $color" data-status="$color"></div>
       <div id="statusLineTemplate" class="statusLine"></div>
@@ -37,6 +40,36 @@
         </div>
       </div>
     </div>
+    <!-- 分割线 -->
+    <div id="incidents" class="incidentsContainer">
+      <div class="statusContainer">
+        <h4>客户端信息</h4>
+        <div id="activeIncidentReports">
+          <p>Loc: <span id="loc"></span></p>
+          <p>IP Address: <span id="clientIp"></span></p>
+          <p>Unix timestamp: <span id="ts"></span></p>
+          <p>User-Agent: <span id="clientUa"></span></p>
+        </div>
+        <!-- <hr> -->
+        <!-- <h4>最新动态</h4>
+        <div id="activeIncidentReports">
+          <p>No incidents</p>
+        </div>
+        <hr>
+        <h4>事件报告</h4>
+        <div id="pastIncidentReports">
+          <h4>2024/07/13 06:23:00 : 测试环境重启</h4>
+          <p>6:23am PT: Investigating.</p>
+          <ul>
+            <li>10:45am PT: Investigating</li>
+            <li>10:53am PT: Mitigated</li>
+          </ul>
+          <h4>2024/07/11 17:00:00 : 测试环境重启</h4>
+          <p>Impact: Starting at 5:00 PM PDT </p>
+        </div> -->
+      </div>
+    </div>
+    <!-- 分割线 -->
   </div>
   <footer>
     <a href="https://knloop.com">knloop </a> service status .
