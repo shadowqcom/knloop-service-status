@@ -2,7 +2,7 @@ name: Scheduled Health Check
 
 on:
   schedule:
-  - cron: "*/15 * * * *"
+  - cron: "*/10 * * * *"
   
 # 添加手动触发事件
   workflow_dispatch:
@@ -14,15 +14,15 @@ on:
 
 jobs:
   health_check_job:
-    runs-on: centos-latest
+    runs-on: ubuntu-latest
     name: Check all sites
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Make shell script executable
         run: chmod +x ./health-check.sh
 
       - name: Run Shell Script
         id: shell_script_run
-        run: sh ./health-check.sh
+        run: bash ./health-check.sh
