@@ -8,16 +8,17 @@ fi
 
 # 创建两个数组的模拟，使用索引变量来跟踪
 i=0
-declare -A keysarray
-declare -A urlsarray
+keysarray=()
+urlsarray=()
 
 urlsconfig="./urls.cfg"
 echo "Reading $urlsconfig"
 while read -r line; do
   echo "  $line"
-  IFS='=' read -ra tokens <<< "$line"
-  keysarray[$i]=${tokens[0]}
-  urlsarray[$i]=${tokens[1]}
+  key=$(echo $line | cut -d'=' -f1)
+  url=$(echo $line | cut -d'=' -f2)
+  keysarray[$i]=$key
+  urlsarray[$i]=$url
   ((i++))
 done < "$urlsconfig"
 
@@ -49,17 +50,17 @@ for ((j=0; j<i; j++)); do
   dateTime=$(date +'%Y-%m-%d %H:%M')
   if [ "$commit" = true ]; then
     echo $dateTime, $result >> "logs/${key}_report.log"
-    # By default we keep 2000 last log entries. Feel free to modify this to meet your needs.
-    echo "$(tail -2000 logs/${key}_report.log)" > "logs/${key}_report.log"
+    # 保持最近2000条记录
+    awk 'NR>2000 {print $0}' "logs/${key}_report.log" > "logs/${key}_report.log.tmp" && mv "logs/${key}_report.log.tmp" "logs/${key}_report.log"
   else
     echo "    $dateTime, $result"
   fi
 done
 
 if [ "$commit" = true ]; then
-  git config --global user.name 'unclejee'
-  git config --global user.email 'swatxhim@outlook.com'
-  git add. --force logs/
+  git config --global user.name unclejee
+  git config --global user.email swatxhim@outlook.com
+  git add logs/
   git commit -m '[Automated] Update Health Check Logs'
   git push
 fi
