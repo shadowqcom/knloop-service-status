@@ -8,8 +8,9 @@ fi
 KEYSARRAY=()
 URLSARRAY=()
 
+echo "**********************************************"
 urlsConfig="./urls.cfg"
-echo "Reading $urlsConfig"
+echo "读取urls配置文件 $urlsConfig"
 while read -r line
 do
   echo "$line"
@@ -18,9 +19,8 @@ do
   URLSARRAY+=(${TOKENS[1]})
 done < "$urlsConfig"
 
-echo ""
 echo "**********************************************"
-echo "Starting health checks with ${#KEYSARRAY[@]} configs:"
+echo "开始执行 ${#KEYSARRAY[@]} 个检测任务:"
 
 mkdir -p logs
 
@@ -28,7 +28,7 @@ for (( index=0; index < ${#KEYSARRAY[@]}; index++))
 do
   key="${KEYSARRAY[index]}"
   url="${URLSARRAY[index]}"
-  echo "[$key] Starting check"
+  echo "[$key] 正在检测中······"
 
   for i in 1 2 3 4; 
   do
