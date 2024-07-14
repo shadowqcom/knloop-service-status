@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 commit=true
 origin=$(git remote get-url origin)
 if [[ $origin == *statsig-io/statuspage* ]]
@@ -20,13 +18,11 @@ do
   URLSARRAY+=(${TOKENS[1]})
 done < "$urlsConfig"
 
-echo "***********************"
+echo ""
+echo "**********************************************"
 echo "Starting health checks with ${#KEYSARRAY[@]} configs:"
 
 mkdir -p logs
-
-# 设置时区
-export TZ=Asia/Shanghai
 
 for (( index=0; index < ${#KEYSARRAY[@]}; index++))
 do
@@ -51,7 +47,7 @@ do
   if [[ $commit == true ]]
   then
     echo $dateTime, $result >> "logs/${key}_report.log"
-    # 保留2000条日志
+    # 保留2000条数据
     echo "$(tail -2000 logs/${key}_report.log)" > "logs/${key}_report.log"
   else
     echo "$dateTime, $result"
