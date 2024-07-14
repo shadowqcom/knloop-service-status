@@ -8,8 +8,8 @@ fi
 
 # 创建两个数组的模拟，使用索引变量来跟踪
 i=0
-keysarray=()
-urlsarray=()
+# keysarray=
+# urlsarray=
 
 urlsconfig="./urls.cfg"
 echo "Reading $urlsconfig"
