@@ -14,7 +14,7 @@ urlsConfig="./urls.cfg"
 echo "Reading $urlsConfig"
 while read -r line
 do
-  echo "  $line"
+  echo "$line"
   IFS='=' read -ra TOKENS <<< "$line"
   KEYSARRAY+=(${TOKENS[0]})
   URLSARRAY+=(${TOKENS[1]})
@@ -34,7 +34,7 @@ do
   url="${URLSARRAY[index]}"
   echo "$key=$url"
 
-  for i in 1 2 3 4 5; 
+  for i in 1 2 3 4; 
   do
     response=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
     if [ "$response" -eq 200 ] || [ "$response" -eq 202 ] || [ "$response" -eq 301 ] || [ "$response" -eq 302 ] || [ "$response" -eq 307 ]; then
