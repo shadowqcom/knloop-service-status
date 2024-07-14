@@ -1,41 +1,41 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 commit=true
 origin=$(git remote get-url origin)
-if [ "$origin" = *statsig-io/statuspage* ]; then
+if [[ $origin == *statsig-io/statuspage* ]]
+then
   commit=false
 fi
 
-# 创建两个数组的模拟，使用索引变量来跟踪
-i=0
-keysarray[0]=''
-urlsarray[0]=''
+KEYSARRAY=()
+URLSARRAY=()
 
-urlsconfig="./urls.cfg"
-echo "Reading $urlsconfig"
-while read -r line; do
+urlsConfig="./urls.cfg"
+echo "Reading $urlsConfig"
+while read -r line
+do
   echo "  $line"
-  key=$(echo $line | cut -d'=' -f1)
-  url=$(echo $line | cut -d'=' -f2)
-  keysarray[$i]=$key
-  urlsarray[$i]=$url
-  ((i++))
-done < "$urlsconfig"
+  IFS='=' read -ra TOKENS <<< "$line"
+  KEYSARRAY+=(${TOKENS[0]})
+  URLSARRAY+=(${TOKENS[1]})
+done < "$urlsConfig"
 
 echo "***********************"
-echo "Starting health checks with $i configs:"
+echo "Starting health checks with ${#KEYSARRAY[@]} configs:"
 
 mkdir -p logs
 
 # 设置时区
 export TZ=Asia/Shanghai
 
-for ((j=0; j<i; j++)); do
-  key=${keysarray[$j]}
-  url=${urlsarray[$j]}
+for (( index=0; index < ${#KEYSARRAY[@]}; index++))
+do
+  key="${KEYSARRAY[index]}"
+  url="${URLSARRAY[index]}"
   echo "  $key=$url"
 
-  for ((k=1; k<=4; k++)); do
+  for i in 1 2 3 4 5; 
+  do
     response=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
     if [ "$response" -eq 200 ] || [ "$response" -eq 202 ] || [ "$response" -eq 301 ] || [ "$response" -eq 302 ] || [ "$response" -eq 307 ]; then
       result="success"
@@ -48,19 +48,22 @@ for ((j=0; j<i; j++)); do
     sleep 5
   done
   dateTime=$(date +'%Y-%m-%d %H:%M')
-  if [ "$commit" = true ]; then
+  if [[ $commit == true ]]
+  then
     echo $dateTime, $result >> "logs/${key}_report.log"
-    # 保持最近2000条记录
-    awk 'NR>2000 {print $0}' "logs/${key}_report.log" > "logs/${key}_report.log.tmp" && mv "logs/${key}_report.log.tmp" "logs/${key}_report.log"
+    # 保留2000条日志
+    echo "$(tail -2000 logs/${key}_report.log)" > "logs/${key}_report.log"
   else
     echo "    $dateTime, $result"
   fi
 done
 
-if [ "$commit" = true ]; then
-  git config --global user.name unclejee
-  git config --global user.email swatxhim@outlook.com
-  git add logs/
-  git commit -m '[Automated] Update Health Check Logs'
+if [[ $commit == true ]]
+then
+  # 提交到仓库
+  git config --global user.name 'unclejee'
+  git config --global user.email 'swatxhim@outlook.com'
+  git add -A --force logs/
+  git commit -am '[Automated] Update Health Check Logs'
   git push
 fi

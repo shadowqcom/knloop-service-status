@@ -25,4 +25,4 @@ jobs:
 
       - name: Run Shell Script
         id: shell_script_run
-        run: sh ./health-check.sh
+        run: bash ./health-check.sh
