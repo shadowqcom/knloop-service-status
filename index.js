@@ -1,5 +1,6 @@
-const maxDays = 30;
+const maxDays = 45;
 
+// 生成报告日志
 async function genReportLog(container, key, url) {
   const response = await fetch("logs/" + key + "_report.log");
   let statusLines = "";
@@ -12,6 +13,7 @@ async function genReportLog(container, key, url) {
   container.appendChild(statusStream);
 }
 
+// 构建状态流
 function constructStatusStream(key, url, uptimeData) {
   let streamContainer = templatize("statusStreamContainerTemplate");
   for (var ii = maxDays - 1; ii >= 0; ii--) {
@@ -34,6 +36,7 @@ function constructStatusStream(key, url, uptimeData) {
   return container;
 }
 
+// 构建状态行
 function constructStatusLine(key, relDay, upTimeArray) {
   let date = new Date();
   date.setDate(date.getDate() - relDay);
@@ -41,6 +44,7 @@ function constructStatusLine(key, relDay, upTimeArray) {
   return constructStatusSquare(key, date, upTimeArray);
 }
 
+// 获取颜色
 function getColor(uptimeVal) {
   return uptimeVal == null
     ? "nodata"
@@ -51,6 +55,7 @@ function getColor(uptimeVal) {
         : "partial";
 }
 
+// 构建状态方块
 function constructStatusSquare(key, date, uptimeVal) {
   const color = getColor(uptimeVal);
   let square = templatize("statusSquareTemplate", {
@@ -59,15 +64,16 @@ function constructStatusSquare(key, date, uptimeVal) {
   });
 
   const show = () => {
-    showTooltip(square, key, date, color);
+    showTooltip(square, date, color);
   };
   square.addEventListener("mouseover", show);
   square.addEventListener("mousedown", show);
-  square.addEventListener("mouseout", hideTooltip);
   return square;
 }
 
+
 let cloneId = 0;
+// 模板化
 function templatize(templateId, parameters) {
   let clone = document.getElementById(templateId).cloneNode(true);
   clone.id = "template_clone_" + cloneId++;
@@ -79,6 +85,7 @@ function templatize(templateId, parameters) {
   return clone;
 }
 
+// 应用模板替换
 function applyTemplateSubstitutions(node, parameters) {
   const attributes = node.getAttributeNames();
   for (var ii = 0; ii < attributes.length; ii++) {
@@ -97,6 +104,7 @@ function applyTemplateSubstitutions(node, parameters) {
   }
 }
 
+// 模板字符串化
 function templatizeString(text, parameters) {
   if (parameters) {
     for (const [key, val] of Object.entries(parameters)) {
@@ -106,6 +114,7 @@ function templatizeString(text, parameters) {
   return text;
 }
 
+// 获取状态文本
 function getStatusText(color) {
   return color == "nodata"
     ? "暂无数据"
@@ -118,11 +127,12 @@ function getStatusText(color) {
           : "未知状态";
 }
 
+// 获取状态描述文本
 function getStatusDescriptiveText(color) {
   return color == "nodata"
-    ? "无数据可用：未执行健康检查。"
+    ? "当前暂无数据。"
     : color == "success"
-      ? "今日没有记录到停机状况。"
+      ? "今日一切正常。"
       : color == "failure"
         ? "今日记录到严重故障。"
         : color == "partial"
@@ -130,6 +140,7 @@ function getStatusDescriptiveText(color) {
           : "未知状态";
 }
 
+// 获取提示工具文本
 function getTooltip(key, date, quartile, color) {
   let statusText = getStatusText(color);
   return `${key} | ${date.toDateString()} : ${quartile} : ${statusText}`;
@@ -141,6 +152,7 @@ function create(tag, className) {
   return element;
 }
 
+// 规范化数据
 function normalizeData(statusLines) {
   const rows = statusLines.split("\n");
   const dateNormalized = splitRowsByDate(rows);
@@ -160,6 +172,7 @@ function normalizeData(statusLines) {
   return relativeDateMap;
 }
 
+// 获取日均数据
 function getDayAverage(val) {
   if (!val || val.length == 0) {
     return null;
@@ -168,10 +181,12 @@ function getDayAverage(val) {
   }
 }
 
+// 获取相对天数
 function getRelativeDays(date1, date2) {
   return Math.floor(Math.abs((date1 - date2) / (24 * 3600 * 1000)));
 }
 
+// 按日期分割行
 function splitRowsByDate(rows) {
   let dateValues = {};
   let sum = 0,
@@ -211,31 +226,14 @@ function splitRowsByDate(rows) {
 }
 
 let tooltipTimeout = null;
-function showTooltip(element, key, date, color) {
-  clearTimeout(tooltipTimeout);
-  const toolTipDiv = document.getElementById("tooltip");
-
-  document.getElementById("tooltipDateTime").innerText = date.toDateString();
-  document.getElementById("tooltipDescription").innerText =
-    getStatusDescriptiveText(color);
-
-  const statusDiv = document.getElementById("tooltipStatus");
-  statusDiv.innerText = getStatusText(color);
-  statusDiv.className = color;
-
-  toolTipDiv.style.top = element.offsetTop + element.offsetHeight + 10;
-  toolTipDiv.style.left =
-    element.offsetLeft + element.offsetWidth / 2 - toolTipDiv.offsetWidth / 2;
-  toolTipDiv.style.opacity = "1";
+// 显示提示
+function showTooltip(element, date, color) {
+  const statusContainer = element.closest('.statusContainer'); // 找到对应的 statusContainer
+  const tooltipContent = statusContainer.querySelector('.tooltipContent'); // 获取 tooltipContent 元素
+  tooltipContent.querySelector('.tooltipStatus').innerText = date.toDateString() + ' ' + getStatusText(color);
 }
 
-function hideTooltip() {
-  tooltipTimeout = setTimeout(() => {
-    const toolTipDiv = document.getElementById("tooltip");
-    toolTipDiv.style.opacity = "0";
-  }, 1000);
-}
-
+// 生成所有报告
 async function genAllReports() {
   const response = await fetch("urls.cfg");
   const configText = await response.text();
@@ -276,6 +274,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('ts').textContent = ts;
     document.getElementById('clientUa').textContent = userAgent;
   } catch (error) {
-    console.error('Error fetching trace data:', error);
+    console.error('获取客户端信息失败:', error);
   }
 });

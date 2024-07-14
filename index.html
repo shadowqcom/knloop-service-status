@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <title>knloop service status</title>
   <meta charset="UTF-8">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="index.css" />
   <script src="index.js"></script>
 </head>
+
 <body>
   <div class="pageContainer">
     <div class="headline">
@@ -16,14 +18,6 @@
     </div>
 
     <div id="reports" class="reportContainer"></div>
-
-    <div id="tooltip" class="tooltip" style="opacity: 0">
-      <div id="tooltipArrow" class="tooltipArrow"></div>
-      <div id="tooltipDateTime" class="tooltipDateTime"></div>
-      <div id="tooltipStatus" class="tooltipStatus"></div>
-      <hr />
-      <div id="tooltipDescription" class="tooltipDescription"></div>
-    </div>
 
     <div id="templates" style="display: none">
       <div id="statusSquareTemplate" class="statusSquare $color" data-status="$color"></div>
@@ -36,39 +30,24 @@
         </div>
         <div class="statusSubtitle">
           <div class="sectionUrl"><a href="$url">$url</a></div>
-          <div class="statusUptime">$upTime 在30天内</div>
+          <div class="statusUptime">$upTime 在45天内</div>
         </div>
+        <div id="tooltip" class="tooltipContent">
+          <div class="tooltipStatus"></div>
+        </div>
+
       </div>
     </div>
-    <!-- 分割线 -->
+    <!-- clieninfo -->
     <div id="incidents" class="incidentsContainer">
       <div class="statusContainer">
         <div id="activeIncidentReports">
-          <p>Location: <span id="loc"></span></p>
-          <p>IP Address: <span id="clientIp"></span></p>
-          <p>Unix time: <span id="ts"></span></p>
+          <p>IP Address: <span id="clientIp"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;IP Location: <span id="loc"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Unix Time: <span id="ts"></span></p>
           <p>User-Agent: <span id="clientUa"></span></p>
         </div>
-        <!-- <hr> -->
-        <!-- <h4>最新动态</h4>
-        <div id="activeIncidentReports">
-          <p>No incidents</p>
-        </div>
-        <hr>
-        <h4>事件报告</h4>
-        <div id="pastIncidentReports">
-          <h4>2024/07/13 06:23:00 : 测试环境重启</h4>
-          <p>6:23am PT: Investigating.</p>
-          <ul>
-            <li>10:45am PT: Investigating</li>
-            <li>10:53am PT: Mitigated</li>
-          </ul>
-          <h4>2024/07/11 17:00:00 : 测试环境重启</h4>
-          <p>Impact: Starting at 5:00 PM PDT </p>
-        </div> -->
       </div>
     </div>
-    <!-- 分割线 -->
+    <!-- clieninfo -->
   </div>
   <footer>
     <a href="https://knloop.com">knloop</a> service status .

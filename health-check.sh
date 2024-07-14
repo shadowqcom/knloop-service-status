@@ -32,6 +32,7 @@ for (( index=0; index < ${#KEYSARRAY[@]}; index++))
 do
   key="${KEYSARRAY[index]}"
   url="${URLSARRAY[index]}"
+  
   # 在子shell中执行检测
   (
     echo "[$key] 正在检测中······"
