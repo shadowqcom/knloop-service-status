@@ -32,7 +32,7 @@ for (( index=0; index < ${#KEYSARRAY[@]}; index++))
 do
   key="${KEYSARRAY[index]}"
   url="${URLSARRAY[index]}"
-  echo "  $key=$url"
+  echo "$key=$url"
 
   for i in 1 2 3 4 5; 
   do
@@ -54,7 +54,7 @@ do
     # 保留2000条日志
     echo "$(tail -2000 logs/${key}_report.log)" > "logs/${key}_report.log"
   else
-    echo "    $dateTime, $result"
+    echo "$dateTime, $result"
   fi
 done
 
