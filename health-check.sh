@@ -67,6 +67,9 @@ do
   wait $pid
 done
 
+echo "**********************************************"
+echo "检测完成，开始提交log文件"
+
 if [[ $commit == true ]]
 then
   # 提交到仓库
