@@ -1,4 +1,4 @@
-name: servicecheck
+name: service-check
 
 on:
   schedule:
