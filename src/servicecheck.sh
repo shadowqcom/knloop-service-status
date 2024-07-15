@@ -55,8 +55,8 @@ do
     if [[ $commit == true ]]
     then
       echo $dateTime, $result >> "./logs/${key}_report.log"
-      # 保留2000条数据
-      echo "$(tail -2000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
+      # 保留5000条数据
+      echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
     else
       echo "$dateTime, $result"
     fi

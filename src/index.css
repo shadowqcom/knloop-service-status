@@ -169,7 +169,7 @@ footer a {
 }
 
 .statusSquare+.statusSquare {
-  margin-left: 6px;
+  margin-left: 3px;
 }
 
 .sectionUrl {
@@ -241,7 +241,7 @@ footer a {
 }
 
 .nodata {
-  background-color: #dadada;
+  background-color: #dddddd;
   color: #ccc;
 }
 

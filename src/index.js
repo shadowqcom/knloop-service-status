@@ -1,4 +1,4 @@
-const maxDays = 45;
+const maxDays = 60;
 
 // 生成报告日志
 async function genReportLog(container, key, url) {
