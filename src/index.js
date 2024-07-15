@@ -125,11 +125,11 @@ function getStatusText(color) {
   return color == "nodata"
     ? "No Data"
     : color == "success"
-      ? "Run all"
+      ? "UP"
       : color == "failure"
-        ? "Major"
+        ? "Down"
         : color == "partial"
-          ? "Partial"
+          ? "Degraded"
           : "Unknown";
 }
 
@@ -138,11 +138,11 @@ function getStatusDescriptiveText(color) {
   return color == "nodata"
     ? "当前暂无数据。"
     : color == "success"
-      ? "今日一切正常。"
+      ? "状态正常。"
       : color == "failure"
-        ? "今日记录到严重故障。"
+        ? "严重故障。"
         : color == "partial"
-          ? "今日记录到部分故障。"
+          ? "部分异常。"
           : "未知状态";
 }
 
