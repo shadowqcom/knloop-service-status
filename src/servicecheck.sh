@@ -9,7 +9,7 @@ KEYSARRAY=()
 URLSARRAY=()
 
 echo "**********************************************"
-urlsConfig="urls.cfg"
+urlsConfig="./src/urls.cfg"
 echo "读取urls配置文件 $urlsConfig"
 while read -r line
 do
@@ -54,9 +54,9 @@ do
     dateTime=$(date +'%Y-%m-%d %H:%M')
     if [[ $commit == true ]]
     then
-      echo $dateTime, $result >> "logs/${key}_report.log"
+      echo $dateTime, $result >> "./logs/${key}_report.log"
       # 保留2000条数据
-      echo "$(tail -2000 logs/${key}_report.log)" > "logs/${key}_report.log"
+      echo "$(tail -2000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
     else
       echo "$dateTime, $result"
     fi
