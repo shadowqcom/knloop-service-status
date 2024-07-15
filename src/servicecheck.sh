@@ -9,7 +9,7 @@ KEYSARRAY=()
 URLSARRAY=()
 
 echo "**********************************************"
-urlsConfig="./urls.cfg"
+urlsConfig="./src/urls.cfg"
 echo "读取urls配置文件 $urlsConfig"
 while read -r line
 do
