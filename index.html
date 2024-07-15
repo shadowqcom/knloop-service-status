@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <head>
   <title>knloop service status</title>
@@ -30,10 +30,12 @@
         </div>
         <div class="statusSubtitle">
           <div class="sectionUrl"><a href="$url">$url</a></div>
-          <div class="statusUptime">$upTime 在45天内</div>
-        </div>
-        <div id="tooltip" class="tooltipContent">
-          <div class="tooltipStatus"></div>
+
+          <div id="tooltip" class="tooltipContent">
+            <div class="tooltipStatus"></div>
+          </div>
+
+          <div class="statusUptime">$upTime in the last 45 days</div>
         </div>
 
       </div>
@@ -42,7 +44,8 @@
     <div id="incidents" class="incidentsContainer">
       <div class="statusContainer">
         <div id="activeIncidentReports">
-          <p>IP Address: <span id="clientIp"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;IP Location: <span id="loc"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Unix Time: <span id="ts"></span></p>
+          <p>IP Address: <span id="clientIp"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;IP Location: <span
+              id="loc"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Unix Time: <span id="ts"></span></p>
           <p>User-Agent: <span id="clientUa"></span></p>
         </div>
       </div>

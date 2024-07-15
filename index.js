@@ -66,8 +66,14 @@ function constructStatusSquare(key, date, uptimeVal) {
   const show = () => {
     showTooltip(square, date, color);
   };
+  const hide = () => {
+    hideTooltip(square);
+  };
+
   square.addEventListener("mouseover", show);
   square.addEventListener("mousedown", show);
+  square.addEventListener("mouseout", hide);
+
   return square;
 }
 
@@ -117,14 +123,14 @@ function templatizeString(text, parameters) {
 // 获取状态文本
 function getStatusText(color) {
   return color == "nodata"
-    ? "暂无数据"
+    ? "No Data"
     : color == "success"
-      ? "全部正常"
+      ? "Run all"
       : color == "failure"
-        ? "严重故障"
+        ? "Major"
         : color == "partial"
-          ? "部分故障"
-          : "未知状态";
+          ? "Partial"
+          : "Unknown";
 }
 
 // 获取状态描述文本
@@ -231,6 +237,14 @@ function showTooltip(element, date, color) {
   const statusContainer = element.closest('.statusContainer'); // 找到对应的 statusContainer
   const tooltipContent = statusContainer.querySelector('.tooltipContent'); // 获取 tooltipContent 元素
   tooltipContent.querySelector('.tooltipStatus').innerText = date.toDateString() + ' ' + getStatusText(color);
+  tooltipContent.style.display = 'block'; // 显示提示内容
+}
+
+// 隐藏提示
+function hideTooltip(element) {
+  const statusContainer = element.closest('.statusContainer'); // 找到对应的 statusContainer
+  const tooltipContent = statusContainer.querySelector('.tooltipContent'); // 获取 tooltipContent 元素
+  tooltipContent.style.display = 'none'; // 隐藏提示内容
 }
 
 // 生成所有报告

@@ -200,7 +200,7 @@ footer a {
   border-radius: 15px;
   font-size: 12px;
   margin-left: 12px;
-  margin-top: 5px;
+  margin-top: 3px;
 }
 
 .statusUptime {
@@ -208,6 +208,12 @@ footer a {
   text-align: right;
   color: #7c7c7c;
   font-size: 12px;
+}
+
+.tooltipContent {
+  color: #7c7c7c;
+  font-size: 13px;
+  padding-left: 20px;
 }
 
 .uptimeContainer {
