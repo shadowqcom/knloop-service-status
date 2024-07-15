@@ -249,7 +249,7 @@ function hideTooltip(element) {
 
 // 生成所有报告
 async function genAllReports() {
-  const response = await fetch("urls.cfg");
+  const response = await fetch("./src/urls.cfg");
   const configText = await response.text();
   const configLines = configText.split("\n");
   for (let ii = 0; ii < configLines.length; ii++) {
