@@ -71,7 +71,7 @@ do
 done
 
 echo "**********************************************"
-echo "检测完成，开始提交log文件"
+echo "检测完成，开始提交.log文件"
 
 if [[ $commit == true ]]
 then
@@ -79,6 +79,6 @@ then
   git config --global user.name 'unclejee'
   git config --global user.email 'swatxhim@outlook.com'
   git add -A --force ./logs/
-  git commit -am '[Automated] Update Health Check Logs'
+  git commit -am '[Automated] Update Service Check Logs'
   git push
 fi
