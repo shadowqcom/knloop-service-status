@@ -13,8 +13,7 @@ body {
   color: #3b3b3b;
   font-size: 14px;
   font-weight: 400;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro SC", "SF Pro Display", "SF Pro Icons", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif
-    "Helvetica Neue", "Ubuntu", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
   justify-content: center;
   line-height: 20px;
   margin: 0;
@@ -35,8 +34,6 @@ input,
 textarea,
 .copyright,
 .button {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro SC", "SF Pro Display", "SF Pro Icons", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif
-    "Helvetica Neue", "Ubuntu", sans-serif;
   line-height: 125%;
 }
 
@@ -107,6 +104,7 @@ button {
 footer {
   color: #9c9c9c;
   margin: 40px;
+  text-align: center;
 }
 
 footer a {
@@ -138,6 +136,16 @@ footer a {
   text-transform: uppercase;
 }
 
+.headline img {
+  width: 50px;
+  height: auto;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.headline img:hover {
+  transform: scale(1.1);
+}
+
 .reportContainer {
   margin: 30px auto;
   width: 100%;
@@ -152,7 +160,6 @@ footer a {
 }
 
 .statusContainer+.statusContainer {
-  /* border-top: 1px solid #eee; */
   margin-top: 30px;
 }
 
@@ -168,6 +175,11 @@ footer a {
   width: 100%;
 }
 
+.statusSquare:hover {
+  transform: scaleY(1.2);
+  overflow: hidden;
+}
+
 .statusSquare+.statusSquare {
   margin-left: 3px;
 }
@@ -176,10 +188,6 @@ footer a {
   font-size: 14px;
   margin-right: 20px;
 }
-
-/* .statusTitle {
-  text-transform: uppercase;
-} */
 
 .statusHeader {
   display: flex;
@@ -250,23 +258,37 @@ footer a {
   color: #fff;
 }
 
+
+/* 响应式设计 */
 @media screen and (max-width: 800px) {
   .pageContainer {
-    padding: 30px 20px;
+    padding: 30px 10px;
     margin: 0 auto 40px auto;
   }
 
-  .statusHeader,
-  .statusSubtitle {
-    display: block;
+  .statusHeader {
+    display: flex;
   }
 
-  .statusHeadline,
-  .sectionUrl,
-  .statusUptime {
+  .statusSubtitle {
+    align-items: baseline;
+  }
+
+  .sectionUrl {
     margin-left: 0;
     margin-top: 8px;
     text-align: left;
+  }
+
+  .statusHeadline{
+    margin-left: 0;
+    margin-top: 0px;
+  }
+
+  .statusUptime {
+    margin-left: 0;
+    margin-top: 8px;
+    text-align: right;
   }
 
   .statusTitle,
@@ -282,4 +304,12 @@ footer a {
     min-width: 4px;
     width: 100%;
   }
+  .statusSquare {
+    min-width: 5px;
+    height: 30px;
+  }
+  .statusContainer{
+    padding: 10px;
+  }
+
 }
