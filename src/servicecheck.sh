@@ -22,7 +22,7 @@ done < "$urlsConfig"
 echo "**********************************************"
 echo "开始执行 ${#KEYSARRAY[@]} 个检测任务:"
 
-mkdir -p logs
+mkdir -p ./logs
 
 # 创建一个数组来保存所有子shell的PID
 pids=()
@@ -78,7 +78,7 @@ then
   # 提交到仓库
   git config --global user.name 'unclejee'
   git config --global user.email 'swatxhim@outlook.com'
-  git add -A --force logs/
+  git add -A --force ./logs/
   git commit -am '[Automated] Update Health Check Logs'
   git push
 fi
