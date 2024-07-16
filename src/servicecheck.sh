@@ -80,12 +80,14 @@ done
 
 echo "**********************************************"
 echo "检测完成，开始推送企业微信"
+echo "failedUrls数组 $failedUrls"
 
 failedUrlsMessage=()
 # 遍历failedUrls数组，将每个URL添加到消息中
 for url in "${failedUrls[@]}"; do
   failedUrlsMessage+="\n- $url"
 done
+echo "failedUrlsMessage数组 $failedUrlsMessage"
 
 # 使用curl发送消息
 if [ -n "$failedUrlsMessage" ]; then
