@@ -10,15 +10,15 @@ fi
 KEYSARRAY=()
 URLSARRAY=()
 
-startTime=$(date +'%Y-%m-%d %H:%M')
-curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
--H 'Content-Type: application/json' \
--d '{
-    "msgtype": "markdown",
-    "markdown": {
-        "content": "#### 开始监测  '"$startTime"'"
-    }
-}'
+# startTime=$(date +'%Y-%m-%d %H:%M')
+# curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
+# -H 'Content-Type: application/json' \
+# -d '{
+#     "msgtype": "markdown",
+#     "markdown": {
+#         "content": "#### 开始监测  '"$startTime"'"
+#     }
+# }'
 
 echo "**********************************************"
 urlsConfig="./src/urls.cfg"
@@ -45,9 +45,6 @@ do
   key="${KEYSARRAY[index]}"
   url="${URLSARRAY[index]}"
   
-  # 定义一个数组来存储三次都失败的URLs
-  failedUrls=()
-
   # 在子shell中执行检测
   (
     echo "[$key] 正在检测中······"
@@ -66,9 +63,14 @@ do
     sleep 5
   done
 
-    # 添加失败的URL到数组
-    if [ "$result" = "failed" ]; then
-      failedUrls+=("$url") 
+    # 失败的url写入临时文件
+    if [[ $result == "failed" ]]; then
+      exec 9>"./tmp/failed_urls.lock"
+      flock -x 9
+      if ! grep -qFx "$url" ./tmp/failed_urls.log; then
+        echo "$url" >> ./tmp/failed_urls.log
+      fi
+      exec 9>&-
     fi
     
     dateTime=$(date +'%Y-%m-%d %H:%M')
@@ -92,14 +94,15 @@ done
 
 echo "**********************************************"
 echo "检测完成，开始推送企业微信"
-echo "failedUrls数组 $failedUrls"
 
-failedUrlsMessage=()
-# 遍历failedUrls数组，将每个URL添加到消息中
-for url in "${failedUrls[@]}"; do
-  failedUrlsMessage+="\n- $url"
-done
-echo "failedUrlsMessage数组 $failedUrlsMessage"
+# 构建Markdown消息
+failedUrlsMessage=""
+while IFS= read -r line; do
+  if [ -n "$failedUrlsMessage" ]; then
+    failedUrlsMessage+="\n"
+  fi
+  failedUrlsMessage+="- $line"
+done < ./tmp/failed_urls.log
 
 # 使用curl发送消息
 if [ -n "$failedUrlsMessage" ]; then
@@ -108,7 +111,7 @@ if [ -n "$failedUrlsMessage" ]; then
    -d '{
           "msgtype": "markdown",
           "markdown": {
-            "content": "#### 服务健康检查失败通知\n > 以下URL未通过健康检查：\n  '$failedUrlsMessage'"
+            "content": "#### 服务健康检查失败通知\n > 以下URL未通过健康检查：\n  '"$failedUrlsMessage"'"
           }
       }'
 fi
