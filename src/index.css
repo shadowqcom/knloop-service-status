@@ -300,6 +300,16 @@ footer a {
     margin-left: 1px;
   }
 
+  .statusStreamContainer {
+    display: flex;
+    overflow-x: scroll; /* 允许水平滚动 */
+    scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+    -ms-overflow-style: none; /* 隐藏 IE 和 Edge 的滚动条 */
+    &::-webkit-scrollbar { /* 隐藏 WebKit 浏览器的滚动条 */
+      display: none;
+    }
+  }
+  
   .statusSquare {
     min-width: 4px;
     width: 100%;
