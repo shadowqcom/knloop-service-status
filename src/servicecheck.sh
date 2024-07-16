@@ -83,6 +83,7 @@ done
 
 echo "**********************************************"
 echo "检测完成，开始推送企业微信"
+echo "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$KEY"
 
 # 创建一个空字符串来存储失败的URLs
 local failedUrlsMessage=""
@@ -105,7 +106,7 @@ if [ -n "$failedUrlsMessage" ]; then
   curl -X POST \
        -H 'Content-Type: application/json' \
        -d "$jsonMessage" \
-       'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$KEY'
+       "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$KEY"
 fi
 
 echo "**********************************************"
