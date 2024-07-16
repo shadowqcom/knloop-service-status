@@ -1,6 +1,3 @@
-# 直接从环境变量读取
-KEY=$WEBHOOK_KEY
-
 commit=true
 origin=$(git remote get-url origin)
 if [[ $origin == *statsig-io/statuspage* ]]
@@ -83,7 +80,7 @@ done
 
 echo "**********************************************"
 echo "检测完成，开始推送企业微信"
-echo "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$KEY"
+echo "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY"
 
 # 创建一个空字符串来存储失败的URLs
 local failedUrlsMessage=""
@@ -106,7 +103,7 @@ if [ -n "$failedUrlsMessage" ]; then
   curl -X POST \
        -H 'Content-Type: application/json' \
        -d "$jsonMessage" \
-       "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$KEY"
+       "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY"
 fi
 
 echo "**********************************************"

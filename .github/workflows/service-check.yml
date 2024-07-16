@@ -14,11 +14,10 @@ on:
 
 jobs:
   service-check:
-    runs-on: ubuntu-latest
-    env: 
-      WEBHOOK_KEY: $WECHAT_WEBHOOK_KEY
-      
+    runs-on: ubuntu-latest 
     name: Check all sites
+    env:
+      WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
