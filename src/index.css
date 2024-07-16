@@ -300,25 +300,28 @@ footer a {
     margin-left: 1px;
   }
 
-  /* 允许水平滚动 并隐藏滚动条*/
   .statusStreamContainer {
     display: flex;
+    align-items: center;
     overflow-x: scroll;
-    scrollbar-width: none;
+    height: 36px;
     -ms-overflow-style: none;
-    &::-webkit-scrollbar {
-      display: none;
-    };
+    scrollbar-width: none;
+  }
+  .statusStreamContainer::-webkit-scrollbar {
+    display: none;
   }
 
   .statusSquare {
-    min-width: 4px;
+    border-radius: 3px;
+    min-width: 5px;
+    height: 30px;
     width: 100%;
   }
 
-  .statusSquare {
-    min-width: 5px;
-    height: 30px;
+  .statusSquare:hover {
+    transform: scaleY(1.2);
+    overflow: hidden;
   }
 
   .statusContainer {
