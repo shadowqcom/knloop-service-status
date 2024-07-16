@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# 设置时区为上海
+export TZ='Asia/Shanghai'
+
 commit=true
 origin=$(git remote get-url origin)
 if [[ $origin == *statsig-io/statuspage* ]]
@@ -7,6 +12,17 @@ fi
 
 KEYSARRAY=()
 URLSARRAY=()
+
+startTime=$(date +'%Y-%m-%d %H:%M')
+curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
+-H 'Content-Type: application/json' \
+-d '{
+      "msgtype": "markdown",
+      "markdown": {
+        "content": "#### 开始监测 $startTime"
+      }
+  }'
+
 
 echo "**********************************************"
 urlsConfig="./src/urls.cfg"

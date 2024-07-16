@@ -127,13 +127,10 @@ footer a {
 }
 
 .headline span {
-  background-color: #f5f6f8;
-  border-radius: 5px;
   padding: 6px;
   margin-left: 12px;
   font-size: 16px;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .headline img {
