@@ -76,8 +76,8 @@ echo "检测完成，开始提交.log文件"
 if [[ $commit == true ]]
 then
   # 提交到仓库
-  # git config --global user.name 'unclejee'
-  # git config --global user.email 'swatxhim@outlook.com'
+  git config --global user.name 'unclejee'
+  git config --global user.email 'swatxhim@outlook.com'
   git add -A --force ./logs/
   git commit -am '[Automated] Update Service Check Logs'
   git push
