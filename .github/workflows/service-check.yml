@@ -18,6 +18,12 @@ jobs:
     name: Check all sites
     env:
       WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
+
+    # 新任务挂起
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: false
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
