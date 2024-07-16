@@ -15,6 +15,9 @@ on:
 jobs:
   health_check_job:
     runs-on: ubuntu-latest
+    env: 
+      WEBHOOK_KEY: ${{ WECHAT_WEBHOOK_KEY }}
+      
     name: Check all sites
     steps:
       - name: Checkout code
