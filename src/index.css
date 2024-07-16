@@ -304,7 +304,7 @@ footer a {
     display: flex;
     align-items: center;
     overflow-x: scroll;
-    height: 36px;
+    height: 37px;
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
