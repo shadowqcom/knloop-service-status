@@ -35,6 +35,7 @@ echo "**********************************************"
 echo "开始执行 ${#KEYSARRAY[@]} 个检测任务:"
 
 mkdir -p ./logs
+mkdir -p ./tmp
 
 # 创建一个数组来保存所有子shell的PID
 pids=()
@@ -65,6 +66,8 @@ do
 
     # 失败的url写入临时文件
     if [[ $result == "failed" ]]; then
+      touch ./tmp/failed_urls.lock
+      touch ./tmp/failed_urls.log
       exec 9>"./tmp/failed_urls.lock"
       flock -x 9
       if ! grep -qFx "$url" ./tmp/failed_urls.log; then
