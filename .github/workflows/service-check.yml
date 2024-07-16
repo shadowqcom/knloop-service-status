@@ -18,7 +18,7 @@ jobs:
     name: Check all sites
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.0
+        uses: actions/checkout@v4
 
       - name: Make shell script executable
         run: chmod +x ./src/servicecheck.sh
