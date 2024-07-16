@@ -80,34 +80,23 @@ done
 
 echo "**********************************************"
 echo "检测完成，开始推送企业微信"
-echo "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY"
-if [[ "$WEBHOOK_KEY" == ee9b90a2* ]]; then
-  echo "WEBHOOK_KEY yes"
-else
-  echo "WEBHOOK_KEY no"
-fi
 
-# 创建一个空字符串来存储失败的URLs
-local failedUrlsMessage=""
-
+failedUrlsMessage=()
 # 遍历failedUrls数组，将每个URL添加到消息中
 for url in "${failedUrls[@]}"; do
   failedUrlsMessage+="\n- $url"
 done
 
-# 构建JSON消息体
-local jsonMessage='{
-  "msgtype": "markdown",
-  "markdown": {
-    "content": "#### 服务健康检查失败通知\n > 以下URL未通过健康检查：\n  '$failedUrlsMessage'"
-  }
-}'
-
 # 使用curl发送消息
 if [ -n "$failedUrlsMessage" ]; then
-  curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
+   curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
    -H 'Content-Type: application/json' \
-   -d "$jsonMessage"
+   -d '{
+          "msgtype": "markdown",
+          "markdown": {
+            "content": "#### 服务健康检查失败通知\n > 以下URL未通过健康检查：\n  '$failedUrlsMessage'"
+          }
+      }'
 fi
 
 echo "**********************************************"
