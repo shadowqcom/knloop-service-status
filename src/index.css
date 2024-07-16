@@ -280,7 +280,7 @@ footer a {
     text-align: left;
   }
 
-  .statusHeadline{
+  .statusHeadline {
     margin-left: 0;
     margin-top: 0px;
   }
@@ -308,18 +308,20 @@ footer a {
     -ms-overflow-style: none;
     &::-webkit-scrollbar {
       display: none;
-    }
+    };
   }
-  
+
   .statusSquare {
     min-width: 4px;
     width: 100%;
   }
+
   .statusSquare {
     min-width: 5px;
     height: 30px;
   }
-  .statusContainer{
+
+  .statusContainer {
     padding: 10px;
   }
 
