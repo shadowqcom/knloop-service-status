@@ -16,7 +16,7 @@ curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
 -d '{
       "msgtype": "markdown",
       "markdown": {
-        "content": "#### 开始监测" + '$startTime'
+        "content": "#### 开始监测  $startTime"
       }
   }'
 
