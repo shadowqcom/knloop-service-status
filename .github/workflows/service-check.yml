@@ -16,7 +16,7 @@ jobs:
   service-check:
     runs-on: ubuntu-latest
     env: 
-      WEBHOOK_KEY: ${{ WECHAT_WEBHOOK_KEY }}
+      WEBHOOK_KEY: $WECHAT_WEBHOOK_KEY
       
     name: Check all sites
     steps:
