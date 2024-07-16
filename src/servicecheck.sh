@@ -94,7 +94,7 @@ while IFS= read -r line; do
   if [ -n "$failedUrlsMessage" ]; then
     failedUrlsMessage+="\n"
   fi
-  failedUrlsMessage+="- $line"
+  failedUrlsMessage+="$line"
 done < ./tmp/failed_urls.log
 
 # 失败的url推送企业微信
@@ -105,7 +105,7 @@ if [ -n "$failedUrlsMessage" ]; then
    -d '{
           "msgtype": "markdown",
           "markdown": {
-            "content": "### Service Down\n > '"$MessageTime"'\n > 以下 url/api 请求失败:\n'"$failedUrlsMessage"'"
+            "content": "### Service Down\n > '"$MessageTime"'\n > 以下 url/api 请求失败:\n\n'"$failedUrlsMessage"'"
           }
       }'
 fi
