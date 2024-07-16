@@ -1,38 +1,36 @@
-# Statsig's Open-Source Status Page
+# knloop Status Page
 
-We tried various Status Pages out there, and built this as a fun little hobby project to make status pages as simple as possible.
+ 使用 Github Actions 监测knloop及周边服务的运行状态，并使用 GitHub Pages 进行页面展示。
 
-## Demo
+## 查看效果
 
-- https://status.statsig.com
+[status.knloop.com](https://status.knloop.com)
 
-## Setup instructions
+## 配置说明
 
-1. Fork the [template repository](https://github.com/statsig-io/statuspage/).
-2. Update `urls.cfg` to include your urls.
-
+1. Fork 本项目 [knloop Status Page](https://github.com/shadowqcom/service-status/).
+2. 修改 `urls.cfg` 文件中的url为你想要监测的服务。  
+  
 ```cfg
 key1=https://example.com
-key2=https://statsig.com
+key2=https://knloop.com
 ```
 
-3. Update `index.html` and change the title.
+3. 修改 `index.html` 中的title和标题.
 
 ```html
-<title>My Status Page</title>
+<title>knloop Status Page</title>
 <h1>Services Status</h1>
 ```
 
-4. Set up GitHub Pages for your repository.
+4. 配置GitHub Pages.
 
-![image](https://user-images.githubusercontent.com/74588208/121419015-5f4dc200-c920-11eb-9b14-a275ef5e2a19.png)
 
-## How does it work?
+## 工作原理
 
-This project uses GitHub actions to wake up every hour and run a shell script (`health-check.sh`). This script runs `curl` on every url in your config and appends the result of that run to a log file and commits it to the repository. This log is then pulled dynamically from `index.html` and displayed in a easily consumable fashion. You can also run that script from your own infrastructure to update the status page more often.
+该项目使用 GitHub Actions 每10分钟唤醒并运行 shell 脚本 `servicecheck.sh` ，该脚本在配置中的每个 url 上运行curl，并将运行结果写入`.log`日志文件然后将其提交到本仓库。  
+在`index.html`中动态提取该日志并以易于使用的方式显示。您还可以从自己的基础设施运行该脚本以更频繁地更新状态信息和保存日志数据。
 
-## What does it not do (yet)?
+## 感谢
 
-1. Incident management.
-2. Outage duration tracking.
-3. Updating status root-cause.
+本项目基于[statuspage](https://github.com/statsig-io/statuspage/)

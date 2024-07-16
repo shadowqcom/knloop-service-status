@@ -300,12 +300,13 @@ footer a {
     margin-left: 1px;
   }
 
+  /* 允许水平滚动 并隐藏滚动条*/
   .statusStreamContainer {
     display: flex;
-    overflow-x: scroll; /* 允许水平滚动 */
-    scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-    -ms-overflow-style: none; /* 隐藏 IE 和 Edge 的滚动条 */
-    &::-webkit-scrollbar { /* 隐藏 WebKit 浏览器的滚动条 */
+    overflow-x: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
       display: none;
     }
   }
@@ -322,4 +323,7 @@ footer a {
     padding: 10px;
   }
 
+  .statusContainer+.statusContainer {
+    margin-top: 15px;
+  }
 }
