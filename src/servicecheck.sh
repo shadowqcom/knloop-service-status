@@ -1,6 +1,3 @@
-#!/bin/bash
-
-# 设置时区为上海
 export TZ='Asia/Shanghai'
 
 commit=true
@@ -19,10 +16,9 @@ curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
 -d '{
       "msgtype": "markdown",
       "markdown": {
-        "content": "#### 开始监测 $startTime"
+        "content": "#### 开始监测" + '$startTime'
       }
   }'
-
 
 echo "**********************************************"
 urlsConfig="./src/urls.cfg"
