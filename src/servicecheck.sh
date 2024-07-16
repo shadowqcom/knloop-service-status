@@ -10,16 +10,6 @@ fi
 KEYSARRAY=()
 URLSARRAY=()
 
-# startTime=$(date +'%Y-%m-%d %H:%M')
-# curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
-# -H 'Content-Type: application/json' \
-# -d '{
-#     "msgtype": "markdown",
-#     "markdown": {
-#         "content": "#### 开始监测  '"$startTime"'"
-#     }
-# }'
-
 echo "**********************************************"
 urlsConfig="./src/urls.cfg"
 echo "读取urls配置文件 $urlsConfig"
@@ -107,14 +97,15 @@ while IFS= read -r line; do
   failedUrlsMessage+="- $line"
 done < ./tmp/failed_urls.log
 
-# 使用curl发送消息
+# 失败的url推送企业微信
+MessageTime=$(date +'%Y-%m-%d %H:%M')
 if [ -n "$failedUrlsMessage" ]; then
    curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
    -H 'Content-Type: application/json' \
    -d '{
           "msgtype": "markdown",
           "markdown": {
-            "content": "#### 服务健康检查失败通知\n > 以下URL未通过健康检查：\n  '"$failedUrlsMessage"'"
+            "content": "### Service Down\n > '"$MessageTime"'\n > 以下 url/api 请求失败:\n'"$failedUrlsMessage"'"
           }
       }'
 fi
