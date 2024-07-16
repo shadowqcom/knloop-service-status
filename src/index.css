@@ -48,14 +48,14 @@ h2 {
   color: #3b3b3b;
   font-size: 28px;
   font-weight: bold;
-  margin: 16px 0 8px 0;
+  margin: 16px 0 8px;
 }
 
 h3 {
   color: #3b3b3b;
   font-size: 24px;
   font-weight: 700;
-  margin: 8px 0 4px 0;
+  margin: 8px 0 4px;
 }
 
 h4 {
@@ -154,7 +154,6 @@ footer a {
 .statusContainer {
   border: 1px solid #bbbbbb;
   border-radius: 5px;
-  padding-top: 20px;
   text-align: left;
   padding: 24px;
 }
@@ -263,7 +262,7 @@ footer a {
 @media screen and (max-width: 800px) {
   .pageContainer {
     padding: 30px 10px;
-    margin: 0 auto 40px auto;
+    margin: 0 auto 40px;
   }
 
   .statusHeader {

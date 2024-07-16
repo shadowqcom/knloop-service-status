@@ -94,16 +94,15 @@ done
 local jsonMessage='{
   "msgtype": "markdown",
   "markdown": {
-    "content": "#### 服务健康检查失败通知\n> 以下URL未通过健康检查：\n'"$failedUrlsMessage"'
+    "content": "#### 服务健康检查失败通知\n > 以下URL未通过健康检查：\n  '$failedUrlsMessage'"
   }
 }'
 
 # 使用curl发送消息
 if [ -n "$failedUrlsMessage" ]; then
-  curl -X POST \
-       -H 'Content-Type: application/json' \
-       -d "$jsonMessage" \
-       "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY"
+  curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
+   -H 'Content-Type: application/json' \
+   -d "$jsonMessage"
 fi
 
 echo "**********************************************"
