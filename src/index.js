@@ -112,10 +112,10 @@ function applyTemplateSubstitutions(node, parameters) {
 }
 
 // 在DOM加载完成后，将滚动条的位置设置为最右侧
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
+document.addEventListener('DOMContentLoaded', function () {
+  setTimeout(function () {
     var containers = document.querySelectorAll('.statusStreamContainer');
-    containers.forEach(function(container) {
+    containers.forEach(function (container) {
       container.scrollLeft = container.scrollWidth;
     });
   }, 100); // 增加延迟
@@ -303,30 +303,25 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 });
 
-// updateTime.js
-document.addEventListener('DOMContentLoaded', function() {
+// 页面加载时间记录，超时自动刷新。
+document.addEventListener('DOMContentLoaded', function () {
   // 页面加载时记录时间戳
   const loadTimestamp = Date.now();
 
   function updateLastUpdated() {
-      // 在这里写你的代码，确保它只在DOM完全加载后执行
-      const updateTimeElement = document.getElementById('updateTime');
-      if (updateTimeElement) {
-          const now = Date.now();
-          const secondsAgo = Math.floor((now - loadTimestamp) / 1000);
-
-          updateTimeElement.textContent = `Last updated on: ${new Date(loadTimestamp).toLocaleString('default', { hour12: false })} (${secondsAgo} sec ago)`;
+    // 确保它在DOM完全加载后执行
+    const updateTimeElement = document.getElementById('updateTime');
+    if (updateTimeElement) {
+      const now = Date.now();
+      const secondsAgo = Math.floor((now - loadTimestamp) / 1000);
+      updateTimeElement.textContent = `Last updated on: ${new Date(loadTimestamp).toLocaleString('default', { hour12: false })} (${secondsAgo} sec ago)`;
+      if (secondsAgo >= 480) {
+        window.location.reload(true);
       }
+    }
   }
-
   // 首次更新
   updateLastUpdated();
-
   // 每秒更新一次
   setInterval(updateLastUpdated, 1000);
 });
-
-// 设置页面自动刷新
-setTimeout(function() {
-  location.reload();
-}, 180000); // 180秒 * 1000毫秒
