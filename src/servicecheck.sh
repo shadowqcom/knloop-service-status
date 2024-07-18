@@ -39,20 +39,19 @@ do
   # 在子shell中执行检测
   (
     echo "[$key] 正在检测中······"
-    
-  for i in 1 2 3; 
-  do
-    response=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
-    if [ "$response" -eq 200 ] || [ "$response" -eq 202 ] || [ "$response" -eq 301 ] || [ "$response" -eq 302 ] || [ "$response" -eq 307 ]; then
-      result="success"
-    else
-      result="failed"
-    fi
-    if [ "$result" = "success" ]; then
-      break
-    fi
-    sleep 5
-  done
+    for i in 1 2 3; 
+    do
+      response=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
+      if [ "$response" -eq 200 ] || [ "$response" -eq 202 ] || [ "$response" -eq 301 ] || [ "$response" -eq 302 ] || [ "$response" -eq 307 ]; then
+        result="success"
+      else
+        result="failed"
+      fi
+      if [ "$result" = "success" ]; then
+        break
+      fi
+      sleep 5
+    done
 
     # 失败的url写入临时文件,成功的url使用ping测试延迟
     if [[ $result == "failed" ]]; then
@@ -64,21 +63,18 @@ do
         echo "$url" >> ./tmp/failed_urls.log
       fi
       exec 9>&-
-    else
-      echo "**********************************************"
-      # 使用 awk 提取域名
-      domain=$(echo "$url" | awk -F'[:/]' '{print $4}')
-      # 使用 ping 命令获取延迟
-      ping_result=$(ping -c 1 $domain 2>/dev/null | tail -n1)
-      delay=$(echo "$ping_result" | awk -F '[ =]+' '{split($(NF),a,"ms"); print a[1]}')
-
-      echo "测试延迟"
-      echo $domain
-      echo $ping_result
-      echo $delay
     fi
 
-    
+    # 使用 ping 命令获取延迟
+    domain=$(echo "$url" | awk -F'[:/]' '{print $4}')
+    ping_result=$(ping -c 1 $domain 2>/dev/null | tail -n1)
+    delay=$(echo "$ping_result" | awk -F '[ =]+' '{split($(NF),a,"ms"); print a[1]}')
+
+    echo "测试延迟"
+    echo $domain
+    echo $ping_result
+    echo $delay
+      
     dateTime=$(date +'%Y-%m-%d %H:%M')
     if [[ $commit == true ]]
     then
