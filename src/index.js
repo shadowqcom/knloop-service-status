@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const now = Date.now();
       const secondsAgo = Math.floor((now - loadTimestamp) / 1000);
       updateTimeElement.textContent = `Last updated on: ${new Date(loadTimestamp).toLocaleString('default', { hour12: false })} (${secondsAgo} sec ago)`;
-      if (secondsAgo >= 480) {
+      if (secondsAgo >= 300) {
         window.location.reload(true);
       }
     }
