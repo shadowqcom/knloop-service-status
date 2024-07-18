@@ -5,13 +5,12 @@ URLSARRAY=()
 
 # 读取urls.cfg配置文件
 urlsConfig="./src/urls.cfg"
-while read -r line
-do
-  echo "$line"
-  IFS='=' read -ra TOKENS <<< "$line"
+while read -r line; do
+  echo "[$line] 正在检测中······"
+  IFS='=' read -ra TOKENS <<<"$line"
   KEYSARRAY+=(${TOKENS[0]})
   URLSARRAY+=(${TOKENS[1]})
-done < "$urlsConfig"
+done <"$urlsConfig"
 
 # 创建需要的文件夹
 mkdir -p ./logs
@@ -21,67 +20,62 @@ mkdir -p ./tmp
 pids=()
 
 # 对于每一个URL，启动一个子shell来执行检测
-for (( index=0; index < ${#KEYSARRAY[@]}; index++))
-do
+for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
   key="${KEYSARRAY[index]}"
   url="${URLSARRAY[index]}"
-  
+
   # 在子shell中执行检测
   (
-    echo "[$key] 正在检测中······"
-  for i in 1 2 3; 
-  do
-    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "$url")
-    if [[ "$response" =~ ^(200|201|202|301|302|307)$ ]]; then
-      result="success"
-      break
-    fi
-    result="failed"
-    sleep 5
-  done
+    for i in 1 2 3; do
+      response=$(curl --write-out '%{http_code}' --silent --output /dev/null "$url")
+      if [[ "$response" =~ ^(200|201|202|301|302|307)$ ]]; then
+        result="success"
+        break
+      fi
+      result="failed"
+      sleep 5
+    done
 
-  # 失败的url写入临时文件,成功的url使用ping测试延迟
-  if [[ $result == "failed" ]]; then
-    touch ./tmp/failed_urls.lock
-    touch ./tmp/failed_urls.log
-    exec 9>"./tmp/failed_urls.lock"
-    flock -x 9
-    if ! grep -qFx "$url" ./tmp/failed_urls.log; then
-      echo "$url" >> ./tmp/failed_urls.log
+    # 失败的url写入临时文件,成功的url使用ping测试延迟
+    if [[ $result == "failed" ]]; then
+      touch ./tmp/failed_urls.lock
+      touch ./tmp/failed_urls.log
+      exec 9>"./tmp/failed_urls.lock"
+      flock -x 9
+      if ! grep -qFx "$url" ./tmp/failed_urls.log; then
+        echo "$url" >>./tmp/failed_urls.log
+      fi
+      exec 9>&-
+    else
+      # 通过curl测试连接耗时
+      connect_time_seconds=$(curl -o /dev/null -s -w "%{time_connect}\n" "$url")
+      connect_time_ms=$(awk '{printf "%.0f\n", ($1 * 1000 + 0.5)}' <<<"$connect_time_seconds")
     fi
-    exec 9>&-
-  else
-    # 通过curl测试连接耗时
-    connect_time_seconds=$(curl -o /dev/null -s -w "%{time_connect}\n" "$url")
-    connect_time_ms=$(awk '{printf "%.0f\n", ($1 * 1000 + 0.5)}' <<< "$connect_time_seconds")
-  fi
 
-  # 日志数据写入log文件
-  dateTime=$(date +'%Y-%m-%d %H:%M')
-  echo "$dateTime, $result, ${connect_time_ms:-null}" >> "./logs/${key}_report.log"
-  # 保留5000条数据
-  echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
+    # 日志数据写入log文件
+    dateTime=$(date +'%Y-%m-%d %H:%M')
+    echo "$dateTime, $result, ${connect_time_ms:-null}" >>"./logs/${key}_report.log"
+    # 保留5000条数据
+    echo "$(tail -5000 ./logs/${key}_report.log)" >"./logs/${key}_report.log"
 
   ) &
   pids+=($!)
 done
 
 # 等待所有子shell完成
-for pid in "${pids[@]}"
-do
+for pid in "${pids[@]}"; do
   wait $pid
 done
 
 # 读取webhook.cfg配置，用一个数组webhookconfig存储配置项
 declare -A webhookconfig
-while IFS='=' read -r key value
-do
+while IFS='=' read -r key value; do
   # 移除键和值两侧的空白字符
   key=$(echo "$key" | xargs)
   value=$(echo "$value" | xargs)
   # 存储键值对
   webhookconfig["$key"]="$value"
-done < ./src/webhook.cfg
+done <./src/webhook.cfg
 
 # 构建Markdown消息
 failedUrlsMessage=""
@@ -90,7 +84,7 @@ while IFS= read -r line; do
     failedUrlsMessage+="\n"
   fi
   failedUrlsMessage+="$line"
-done < ./tmp/failed_urls.log
+done <./tmp/failed_urls.log
 
 # 检查是否开启推送，如果开启了推送并且有失败的url 则推送企业微信
 if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; then
@@ -98,8 +92,8 @@ if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; th
   echo "检测完成，开始推送企业微信"
   MessageTime=$(date +'%Y-%m-%d %H:%M')
   curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
-  -H 'Content-Type: application/json' \
-  -d '{
+    -H 'Content-Type: application/json' \
+    -d '{
           "msgtype": "markdown",
           "markdown": {
             "content": "### Service Down\n > '"$MessageTime"'\n > 以下 url/api 请求失败:\n\n'"$failedUrlsMessage"'"
