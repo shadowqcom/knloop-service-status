@@ -40,59 +40,59 @@ do
   # 在子shell中执行检测
   (
     echo "[$key] 正在检测中······"
-    for i in 1 2 3; 
-    do
-      response=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
-      if [ "$response" -eq 200 ] || [ "$response" -eq 202 ] || [ "$response" -eq 301 ] || [ "$response" -eq 302 ] || [ "$response" -eq 307 ]; then
-        result="success"
-      else
-        result="failed"
-      fi
-      if [ "$result" = "success" ]; then
-        break
-      fi
-      sleep 5
-    done
-
-    # 失败的url写入临时文件,成功的url使用ping测试延迟
-    if [[ $result == "failed" ]]; then
-      touch ./tmp/failed_urls.lock
-      touch ./tmp/failed_urls.log
-      exec 9>"./tmp/failed_urls.lock"
-      flock -x 9
-      if ! grep -qFx "$url" ./tmp/failed_urls.log; then
-        echo "$url" >> ./tmp/failed_urls.log
-      fi
-      exec 9>&-
-    fi
-
-    # 使用 ping 命令获取延迟
-    domain=$(echo "$url" | grep -oP '://\K[^/]+')
-    ping_result=$(ping $domain 2>/dev/null)
-
-    # 检查 ping 是否成功
-    if [[ -z "$ping_result" ]]; then
-        echo "Ping failed or no response received."
+  for i in 1 2 3; 
+  do
+    response=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
+    if [ "$response" -eq 200 ] || [ "$response" -eq 202 ] || [ "$response" -eq 301 ] || [ "$response" -eq 302 ] || [ "$response" -eq 307 ]; then
+      result="success"
     else
-        # 提取延迟时间
-        delay=$(echo "$ping_result" | awk '/Average =/ {match($0, /[0-9]+/, arr); print arr[0]}')
-        # 输出结果
-        echo "测试延迟"
-        echo "域名: $domain"
-        echo "Ping 结果: $ping_result"
-        echo "延迟: $delay ms"
+      result="failed"
     fi
-      
-    dateTime=$(date +'%Y-%m-%d %H:%M')
-    if [[ $commit == true ]]
-    then
-      # echo $dateTime, $result >> "./logs/${key}_report.log"
-      echo "$dateTime, $result, ${delay:-unknown}" >> "./logs/${key}_report.log"
-      # 保留5000条数据
-      echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
-    else
-      echo "$dateTime, $result"
+    if [ "$result" = "success" ]; then
+      break
     fi
+    sleep 5
+  done
+
+  # 失败的url写入临时文件,成功的url使用ping测试延迟
+  if [[ $result == "failed" ]]; then
+    touch ./tmp/failed_urls.lock
+    touch ./tmp/failed_urls.log
+    exec 9>"./tmp/failed_urls.lock"
+    flock -x 9
+    if ! grep -qFx "$url" ./tmp/failed_urls.log; then
+      echo "$url" >> ./tmp/failed_urls.log
+    fi
+    exec 9>&-
+  fi
+
+  # # 使用 ping 命令获取延迟
+  # domain=$(echo "$url" | grep -oP '://\K[^/]+')
+  # ping_result=$(ping $domain 2>/dev/null)
+
+  # # 检查 ping 是否成功
+  # if [[ -z "$ping_result" ]]; then
+  #     echo "Ping failed or no response received."
+  # else
+  #     # 提取延迟时间
+  #     delay=$(echo "$ping_result" | awk '/Average =/ {match($0, /[0-9]+/, arr); print arr[0]}')
+  #     # 输出结果
+  #     echo "测试延迟"
+  #     echo "域名: $domain"
+  #     echo "Ping 结果: $ping_result"
+  #     echo "延迟: $delay ms"
+  # fi
+    
+  dateTime=$(date +'%Y-%m-%d %H:%M')
+  if [[ $commit == true ]]
+  then
+    echo $dateTime, $result >> "./logs/${key}_report.log"
+    # echo "$dateTime, $result, ${delay:-unknown}" >> "./logs/${key}_report.log"
+    # 保留5000条数据
+    echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
+  else
+    echo "$dateTime, $result"
+  fi
   ) &
   pids+=($!)
 done
