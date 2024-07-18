@@ -10,7 +10,7 @@ on:
       manualReason:
         description: 'Input description'
         required: false
-        default: 'default_value'
+        default: '手动触发测试'
 
 jobs:
   service-check:

@@ -77,7 +77,7 @@ do
   if [[ $commit == true ]]
   then
     # echo $dateTime, $result >> "./logs/${key}_report.log"
-    echo "$dateTime, $result, ${connect_time_ms:-unknown}" >> "./logs/${key}_report.log"
+    echo "$dateTime, $result, ${connect_time_ms:-null}" >> "./logs/${key}_report.log"
     # 保留5000条数据
     echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
   else
