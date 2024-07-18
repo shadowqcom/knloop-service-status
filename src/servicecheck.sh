@@ -66,14 +66,22 @@ do
     fi
 
     # 使用 ping 命令获取延迟
-    domain=$(echo "$url" | awk -F'[:/]' '{print $4}')
-    ping_result=$(ping -c 1 $domain 2>/dev/null | tail -n1)
-    delay=$(echo "$ping_result" | awk -F '[ =]+' '{split($(NF),a,"ms"); print a[1]}')
+    domain=$(echo "$url" | grep -oP '://\K[^/]+')
+    ping_result=$(ping -c 1 $domain 2>/dev/null)
 
-    echo "测试延迟"
-    echo $domain
-    echo $ping_result
-    echo $delay
+    # 检查 ping 是否成功
+    if [[ -z "$ping_result" ]]; then
+        echo "Ping failed or no response received."
+    else
+        # 提取延迟时间
+        delay=$(echo "$ping_result" | awk '/time=/{split($7,a," "); print a[1]}')
+        
+        # 输出结果
+        echo "测试延迟"
+        echo "域名: $domain"
+        echo "Ping 结果: $ping_result"
+        echo "延迟: $delay ms"
+    fi
       
     dateTime=$(date +'%Y-%m-%d %H:%M')
     if [[ $commit == true ]]
