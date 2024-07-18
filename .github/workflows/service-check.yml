@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest 
     name: Check all sites
     env:
-      WEBHOOK_KEY1: ${{ secrets.WECHAT_WEBHOOK_KEY }}
+      WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
 
     # 新任务挂起
     concurrency:
