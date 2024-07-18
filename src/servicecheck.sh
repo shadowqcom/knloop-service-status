@@ -101,12 +101,8 @@ done
 
 echo "**********************************************"
 echo "检测完成，开始推送企业微信"
-
-webhookurlsConfig="./src/webhook.cfg"
-
 # 用于存储配置项的关联数组
 declare -A webhookconfig
-
 # 读取配置文件并将键值对存入关联数组
 while IFS='=' read -r key value
 do
@@ -115,7 +111,7 @@ do
   value=$(echo "$value" | xargs)
   # 存储键值对
   webhookconfig["$key"]="$value"
-done < "$webhookurlsConfig"
+done < ./src/webhook.cfg
 
 
 # 构建Markdown消息
