@@ -302,3 +302,31 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.error('获取客户端信息失败:', error);
   }
 });
+
+// updateTime.js
+document.addEventListener('DOMContentLoaded', function() {
+  // 页面加载时记录时间戳
+  const loadTimestamp = Date.now();
+
+  function updateLastUpdated() {
+      // 在这里写你的代码，确保它只在DOM完全加载后执行
+      const updateTimeElement = document.getElementById('updateTime');
+      if (updateTimeElement) {
+          const now = Date.now();
+          const secondsAgo = Math.floor((now - loadTimestamp) / 1000);
+
+          updateTimeElement.textContent = `Last updated on: ${new Date(loadTimestamp).toLocaleString('default', { hour12: false })} (${secondsAgo} sec ago)`;
+      }
+  }
+
+  // 首次更新
+  updateLastUpdated();
+
+  // 每秒更新一次
+  setInterval(updateLastUpdated, 1000);
+});
+
+// 设置页面自动刷新
+setTimeout(function() {
+  location.reload();
+}, 180000); // 180秒 * 1000毫秒

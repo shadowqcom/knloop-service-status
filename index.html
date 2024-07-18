@@ -13,16 +13,19 @@
 </head>
 
 <body>
+  <div id="SiteInfo" class="headline">
+    <img src="./src/logo.svg" alt="Logo" />
+    <span> knloop service status </span>
+    <div id="updateTime">Last updated on: Loading...</div>
+  </div>
+
   <div class="pageContainer">
-    <div class="headline">
-      <img src="./src/logo.svg" alt="Logo" />
-      <span> knloop service status </span>
-    </div>
     <div id="reports" class="reportContainer"></div>
     <div id="templates" style="display: none">
       <div id="statusSquareTemplate" class="statusSquare $color" data-status="$color"></div>
       <div id="statusLineTemplate" class="statusLine"></div>
       <div id="statusStreamContainerTemplate" class="statusStreamContainer"></div>
+      <hr>
       <div id="statusContainerTemplate" class="statusContainer">
         <div class="statusHeader">
           <h6 class="statusTitle">$title&nbsp;</h6>
@@ -39,18 +42,20 @@
 
       </div>
     </div>
-    <!-- clieninfo -->
-    <div id="incidents" class="incidentsContainer">
-      <div class="statusContainer">
-        <div id="activeIncidentReports">
-          <p>IP Address: <span id="clientIp"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;IP Location: <span
-              id="loc"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Unix Time: <span id="ts"></span></p>
-          <p>User-Agent: <span id="clientUa"></span></p>
-        </div>
+  </div>
+
+  <!-- clieninfo -->
+  <div id="incidents" class="pageContainer">
+    <div class="statusContainer">
+      <div id="activeIncidentReports">
+        <p>IP Address: <span id="clientIp"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;IP Location: <span
+            id="loc"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Unix Time: <span id="ts"></span></p>
+        <p>User-Agent: <span id="clientUa"></span></p>
       </div>
     </div>
-    <!-- clieninfo -->
   </div>
+  <!-- clieninfo -->
+
   <footer>
     <a href="https://knloop.com">knloop</a> service status .
   </footer>
