@@ -64,30 +64,20 @@ do
       echo "$url" >> ./tmp/failed_urls.log
     fi
     exec 9>&-
+  else
+    # 通过curl测试连接耗时
+    connect_time_seconds=$(curl -o /dev/null -s -w "%{time_connect}\n" "$url")
+    connect_time_ms=$(awk '{printf "%.0f\n", ($1 * 1000 + 0.5)}' <<< "$connect_time_seconds")
   fi
 
-  # # 使用 ping 命令获取延迟
-  # domain=$(echo "$url" | grep -oP '://\K[^/]+')
-  # ping_result=$(ping $domain 2>/dev/null)
+  
 
-  # # 检查 ping 是否成功
-  # if [[ -z "$ping_result" ]]; then
-  #     echo "Ping failed or no response received."
-  # else
-  #     # 提取延迟时间
-  #     delay=$(echo "$ping_result" | awk '/Average =/ {match($0, /[0-9]+/, arr); print arr[0]}')
-  #     # 输出结果
-  #     echo "测试延迟"
-  #     echo "域名: $domain"
-  #     echo "Ping 结果: $ping_result"
-  #     echo "延迟: $delay ms"
-  # fi
     
   dateTime=$(date +'%Y-%m-%d %H:%M')
   if [[ $commit == true ]]
   then
-    echo $dateTime, $result >> "./logs/${key}_report.log"
-    # echo "$dateTime, $result, ${delay:-unknown}" >> "./logs/${key}_report.log"
+    # echo $dateTime, $result >> "./logs/${key}_report.log"
+    echo "$dateTime, $result, ${connect_time_ms:-unknown}" >> "./logs/${key}_report.log"
     # 保留5000条数据
     echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
   else
