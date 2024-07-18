@@ -134,11 +134,14 @@ fi
 echo "**********************************************"
 echo "开始提交.log文件到仓库"
 
+# 开始提交.log文件到仓库
 if [[ $commit == true ]]
 then
-  # 提交到仓库
+  # 配置用户信息
   git config --global user.name 'Github Actions'
   git config --global user.email 'Actions@knloop.com'
+  # 合并远程更改，但排除logs目录
+  git merge origin/main --no-commit --strategy=recursive --strategy-option=theirs --no-ff --no-commit :!logs/
   git add -A --force ./logs/
   git commit -am '[Automated] Update Service Check Logs'
   git push
