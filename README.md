@@ -66,7 +66,7 @@ Google=https://google.com
 ## ⏱️ 功能规划(TODO)
 - [x] 悬浮展示详情
 - [x] 移动端适配
-- [x] 在Actions提交log文件
+- [x] 在workflows提交log文件
 - [x] 超时自动刷新页面
 - [x] 小屏幕可左右滑动状态条
 - [ ] SSL状态检测
