@@ -35,15 +35,12 @@ do
     echo "[$key] 正在检测中······"
   for i in 1 2 3; 
   do
-    response=$(curl --write-out '%{http_code}' --silent --output /dev/null $url)
-    if [ "$response" -eq 200 ] || [ "$response" -eq 202 ] || [ "$response" -eq 301 ] || [ "$response" -eq 302 ] || [ "$response" -eq 307 ]; then
+    response=$(curl --write-out '%{http_code}' --silent --output /dev/null "$url")
+    if [[ "$response" =~ ^(200|202|301|302|307)$ ]]; then
       result="success"
-    else
-      result="failed"
-    fi
-    if [ "$result" = "success" ]; then
       break
     fi
+    result="failed"
     sleep 5
   done
 
@@ -63,19 +60,12 @@ do
     connect_time_ms=$(awk '{printf "%.0f\n", ($1 * 1000 + 0.5)}' <<< "$connect_time_seconds")
   fi
 
-  
-
-    
+  # 日志数据写入log文件
   dateTime=$(date +'%Y-%m-%d %H:%M')
-  if [[ $commit == true ]]
-  then
-    # echo $dateTime, $result >> "./logs/${key}_report.log"
-    echo "$dateTime, $result, ${connect_time_ms:-null}" >> "./logs/${key}_report.log"
-    # 保留5000条数据
-    echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
-  else
-    echo "$dateTime, $result"
-  fi
+  echo "$dateTime, $result, ${connect_time_ms:-null}" >> "./logs/${key}_report.log"
+  # 保留5000条数据
+  echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
+
   ) &
   pids+=($!)
 done
@@ -86,9 +76,7 @@ do
   wait $pid
 done
 
-echo "**********************************************"
-echo "检测完成，开始推送企业微信"
-# 用于存储配置项的关联数组
+# 读取webhook.cfg配置，用一个数组webhookconfig存储配置项
 declare -A webhookconfig
 # 读取配置文件并将键值对存入关联数组
 while IFS='=' read -r key value
@@ -100,7 +88,6 @@ do
   webhookconfig["$key"]="$value"
 done < ./src/webhook.cfg
 
-
 # 构建Markdown消息
 failedUrlsMessage=""
 while IFS= read -r line; do
@@ -110,9 +97,10 @@ while IFS= read -r line; do
   failedUrlsMessage+="$line"
 done < ./tmp/failed_urls.log
 
-# 检查是否开启推送
+# 检查是否开启推送，如果开启了推送并且有失败的url 则推送企业微信
 if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; then
-  # 失败的url推送企业微信
+  echo "**********************************************"
+  echo "检测完成，开始推送企业微信"
   MessageTime=$(date +'%Y-%m-%d %H:%M')
   curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
   -H 'Content-Type: application/json' \

@@ -42,9 +42,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git merge origin/main --no-commit --strategy=recursive --strategy-option=theirs --no-ff --no-commit :!logs/
           git add -A --force ./logs/
           git commit -am '[Automated] Update service status logs'
-          git push origin HEAD
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
