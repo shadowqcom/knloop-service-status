@@ -4,11 +4,15 @@ knloop 相关的服务状态展示
 
 ## 查看效果
 
-[status.knloop.com](https://status.knloop.com)
+在线演示 : [status.knloop.com](https://status.knloop.com)
+
+
+截图展示 :
+![截图展示](public/20240719050534.png)
 
 ## 配置说明
 
-### 1. Fork 本项目 [knloop service status](https://github.com/shadowqcom/knloop-service-status/fork).
+### 1. [Fork](https://github.com/shadowqcom/knloop-service-status/fork) 本项目 [knloop service status](https://github.com/shadowqcom/knloop-service-status/fork).
 ### 2. 按照下面格式修改 `urls.cfg` 文件中的内容。  
   
 ```cfg
@@ -58,6 +62,19 @@ Google=https://google.com
 
 在`index.html`中动态提取该日志并以易于使用的方式显示。您还可以从自己的基础设施运行该脚本以更频繁地更新状态信息和保存日志数据。
 
-## 感谢
 
-本项目基于[statuspage](https://github.com/statsig-io/statuspage/)
+## 功能路线(TODO)
+- [x] 悬浮展示详情
+- [x] 移动端适配
+- [x] 在Actions提交log文件
+- [x] 超时自动刷新页面
+- [x] 小屏幕可左右滑动状态条
+- [ ] SSL 状态检测
+- [ ] url延迟检测
+- [ ] Incident timeline
+
+
+## 灵感来自
+- [kener](https://github.com/rajnandan1/kener)
+- [statuspage](https://github.com/statsig-io/statuspage/)
+- [UptimeFlare](https://github.com/lyc8503/UptimeFlare)
