@@ -22,8 +22,9 @@ do
 done < "$urlsConfig"
 
 echo "**********************************************"
-echo "开始执行 ${#KEYSARRAY[@]} 个检测任务:"
+echo "开始执行以下 ${#KEYSARRAY[@]} 个检测任务:"
 
+# 创建需要的文件夹
 mkdir -p ./logs
 mkdir -p ./tmp
 
@@ -75,7 +76,6 @@ do
     else
         # 提取延迟时间
         delay=$(echo "$ping_result" | awk '/Average =/ {match($0, /[0-9]+/, arr); print arr[0]}')
-        
         # 输出结果
         echo "测试延迟"
         echo "域名: $domain"
