@@ -27,7 +27,7 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
   # 在子shell中执行检测
   (
     for i in 1 2 3; do
-      response=$(curl --write-out '%{http_code}' --silent --output /dev/null "$url")
+      response=$(curl --write-out '%{http_code}' --silent --output /dev/null --max-time 5 "$url")
       if [[ "$response" =~ ^(200|201|202|301|302|307)$ ]]; then
         result="success"
         break
