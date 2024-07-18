@@ -8,7 +8,7 @@ knloop 相关的服务状态展示
 
 ## 配置说明
 
-### 1. Fork 本项目 [knloop service status](https://github.com/shadowqcom/service-status/).
+### 1. Fork 本项目 [knloop service status](/shadowqcom/knloop-service-status/fork).
 ### 2. 按照下面格式修改 `urls.cfg` 文件中的内容。  
   
 ```cfg
