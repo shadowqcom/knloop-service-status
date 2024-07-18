@@ -54,7 +54,7 @@ do
     sleep 5
   done
 
-    # 失败的url写入临时文件
+    # 失败的url写入临时文件,成功的url使用ping测试延迟
     if [[ $result == "failed" ]]; then
       touch ./tmp/failed_urls.lock
       touch ./tmp/failed_urls.log
@@ -64,12 +64,26 @@ do
         echo "$url" >> ./tmp/failed_urls.log
       fi
       exec 9>&-
+    else
+      echo "**********************************************"
+      # 使用 awk 提取域名
+      domain=$(echo "$url" | awk -F'[:/]' '{print $4}')
+      # 使用 ping 命令获取延迟
+      ping_result=$(ping -c 1 $domain 2>/dev/null | tail -n1)
+      delay=$(echo "$ping_result" | awk -F '[ =]+' '{split($(NF),a,"ms"); print a[1]}')
+
+      echo "测试延迟"
+      echo $domain
+      echo $ping_result
+      echo $delay
     fi
+
     
     dateTime=$(date +'%Y-%m-%d %H:%M')
     if [[ $commit == true ]]
     then
-      echo $dateTime, $result >> "./logs/${key}_report.log"
+      # echo $dateTime, $result >> "./logs/${key}_report.log"
+      echo "$dateTime, $result, ${delay:-unknown}" >> "./logs/${key}_report.log"
       # 保留5000条数据
       echo "$(tail -5000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
     else
@@ -88,6 +102,22 @@ done
 echo "**********************************************"
 echo "检测完成，开始推送企业微信"
 
+webhookurlsConfig="./src/webhook.cfg"
+
+# 用于存储配置项的关联数组
+declare -A webhookconfig
+
+# 读取配置文件并将键值对存入关联数组
+while IFS='=' read -r key value
+do
+  # 移除键和值两侧的空白字符
+  key=$(echo "$key" | xargs)
+  value=$(echo "$value" | xargs)
+  # 存储键值对
+  webhookconfig["$key"]="$value"
+done < "$webhookurlsConfig"
+
+
 # 构建Markdown消息
 failedUrlsMessage=""
 while IFS= read -r line; do
@@ -97,12 +127,13 @@ while IFS= read -r line; do
   failedUrlsMessage+="$line"
 done < ./tmp/failed_urls.log
 
-# 失败的url推送企业微信
-MessageTime=$(date +'%Y-%m-%d %H:%M')
-if [ -n "$failedUrlsMessage" ]; then
-   curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
-   -H 'Content-Type: application/json' \
-   -d '{
+# 检查是否开启推送
+if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; then
+  # 失败的url推送企业微信
+  MessageTime=$(date +'%Y-%m-%d %H:%M')
+  curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
           "msgtype": "markdown",
           "markdown": {
             "content": "### Service Down\n > '"$MessageTime"'\n > 以下 url/api 请求失败:\n\n'"$failedUrlsMessage"'"
