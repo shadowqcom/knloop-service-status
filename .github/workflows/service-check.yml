@@ -34,3 +34,17 @@ jobs:
       - name: Run Shell Script
         id: shell_script_run
         run: bash ./src/servicecheck.sh
+
+      - name: Setup Git
+        run: |
+          git config --global user.name 'Github Actions'
+          git config --global user.email 'Actions@knloop.com'
+
+      - name: Commit and push changes
+        run: |
+          git merge origin/main --no-commit --strategy=recursive --strategy-option=theirs --no-ff --no-commit :!logs/
+          git add -A --force ./logs/
+          git commit -am '[Automated] Update service status logs'
+          git push origin HEAD
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
