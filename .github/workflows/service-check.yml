@@ -15,9 +15,10 @@ on:
 jobs:
   service-check:
     runs-on: ubuntu-latest 
-    name: Check all sites
+    name: Check knloop service status
     env:
       WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # 新任务挂起
     concurrency:
@@ -28,22 +29,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Make shell script executable
-        run: chmod +x ./src/servicecheck.sh
-
       - name: Run Shell Script
         id: shell_script_run
-        run: bash ./src/servicecheck.sh
-
-      - name: Setup Git
         run: |
-          git config --global user.name 'Github Actions'
-          git config --global user.email 'Actions@knloop.com'
+          chmod +x ./src/servicecheck.sh
+          bash ./src/servicecheck.sh
 
       - name: Commit and push changes
         run: |
+          git config --local user.name 'Github Actions'
+          git config --local user.email 'Actions@knloop.com'
           git add -A --force ./logs/
-          git commit -am '[Automated] Update service status logs'
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git commit -m '[Automated] Update service status logs'
+          git push origin main

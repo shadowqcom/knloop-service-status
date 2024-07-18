@@ -3,9 +3,8 @@ export TZ='Asia/Shanghai'
 KEYSARRAY=()
 URLSARRAY=()
 
-echo "**********************************************"
+# 读取urls.cfg配置文件
 urlsConfig="./src/urls.cfg"
-echo "读取urls配置文件 $urlsConfig"
 while read -r line
 do
   echo "$line"
@@ -13,9 +12,6 @@ do
   KEYSARRAY+=(${TOKENS[0]})
   URLSARRAY+=(${TOKENS[1]})
 done < "$urlsConfig"
-
-echo "**********************************************"
-echo "开始执行以下 ${#KEYSARRAY[@]} 个检测任务:"
 
 # 创建需要的文件夹
 mkdir -p ./logs
@@ -36,7 +32,7 @@ do
   for i in 1 2 3; 
   do
     response=$(curl --write-out '%{http_code}' --silent --output /dev/null "$url")
-    if [[ "$response" =~ ^(200|202|301|302|307)$ ]]; then
+    if [[ "$response" =~ ^(200|201|202|301|302|307)$ ]]; then
       result="success"
       break
     fi
@@ -78,7 +74,6 @@ done
 
 # 读取webhook.cfg配置，用一个数组webhookconfig存储配置项
 declare -A webhookconfig
-# 读取配置文件并将键值对存入关联数组
 while IFS='=' read -r key value
 do
   # 移除键和值两侧的空白字符
@@ -111,26 +106,3 @@ if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; th
           }
       }'
 fi
-
-# echo "**********************************************"
-# echo "开始提交.log文件到仓库"
-
-# # 本地运行测试的时候将这段代码取消注释，避免提交。
-# commit=true
-# origin=$(git remote get-url origin)
-# if [[ $origin == *shadowqcom/service-status* ]]; then
-#   commit=false
-# fi
-
-# # 开始提交.log文件到仓库
-# if [[ $commit == true ]]
-# then
-#   # 配置用户信息
-#   git config --global user.name 'Github Actions'
-#   git config --global user.email 'Actions@knloop.com'
-#   # 合并远程更改，但排除logs目录
-#   git merge origin/main --no-commit --strategy=recursive --strategy-option=theirs --no-ff --no-commit :!logs/
-#   git add -A --force ./logs/
-#   git commit -am '[Automated] Update service status logs'
-#   git push
-# fi
