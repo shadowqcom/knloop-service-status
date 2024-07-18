@@ -1,8 +1,8 @@
-# knloop service status
+# ✔ knloop service status
 
 knloop 相关的服务状态展示
 
-## 查看效果
+## 👀 查看效果
 
 在线演示 : [status.knloop.com](https://status.knloop.com)
 
@@ -10,7 +10,7 @@ knloop 相关的服务状态展示
 截图展示 :
 ![截图展示](public/20240719050534.png)
 
-## 配置说明
+## ⚙️ 配置说明
 
 ### 1. [Fork](https://github.com/shadowqcom/knloop-service-status/fork) 本项目 [knloop service status](https://github.com/shadowqcom/knloop-service-status/fork).
 ### 2. 按照下面格式修改 `urls.cfg` 文件中的内容。  
@@ -54,7 +54,7 @@ Google=https://google.com
 - `Secret` 填写你的企业微信机器人 Webhook地址 key= 后面的值。
 
 
-## 工作原理
+## 🛠️ 工作原理
 
 该项目使用 GitHub Actions 每10分钟唤醒并运行 shell 脚本 `servicecheck.sh` ，该脚本在配置中的每个 url 上运行curl，并将运行结果写入`.log`日志文件然后将其提交到本仓库。  
 
@@ -63,7 +63,7 @@ Google=https://google.com
 在`index.html`中动态提取该日志并以易于使用的方式显示。您还可以从自己的基础设施运行该脚本以更频繁地更新状态信息和保存日志数据。
 
 
-## 功能路线(TODO)
+## ⏱️ 功能路线(TODO)
 - [x] 悬浮展示详情
 - [x] 移动端适配
 - [x] 在Actions提交log文件
@@ -74,7 +74,7 @@ Google=https://google.com
 - [ ] Incident timeline
 
 
-## 灵感来自
+## 💡 灵感来自
 - [kener](https://github.com/rajnandan1/kener)
 - [statuspage](https://github.com/statsig-io/statuspage/)
 - [UptimeFlare](https://github.com/lyc8503/UptimeFlare)
