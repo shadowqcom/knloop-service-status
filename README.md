@@ -63,18 +63,22 @@ Google=https://google.com
 在`index.html`中动态提取该日志并以易于使用的方式显示。您还可以从自己的基础设施运行该脚本以更频繁地更新状态信息和保存日志数据。
 
 
-## ⏱️ 功能路线(TODO)
+## ⏱️ 功能规划(TODO)
 - [x] 悬浮展示详情
 - [x] 移动端适配
 - [x] 在Actions提交log文件
 - [x] 超时自动刷新页面
 - [x] 小屏幕可左右滑动状态条
-- [ ] SSL 状态检测
-- [ ] url延迟检测
-- [ ] Incident timeline
+- [ ] SSL状态检测
+- [ ] SSH 检测
+- [ ] 延迟ms数检测
+- [ ] 延迟曲线图
+- [ ] 钉钉/飞书/邮箱/telegram 通知
+- [ ] 邮箱通知
 
 
 ## 💡 灵感来自
 - [kener](https://github.com/rajnandan1/kener)
 - [statuspage](https://github.com/statsig-io/statuspage/)
 - [UptimeFlare](https://github.com/lyc8503/UptimeFlare)
+- [statusfy](https://github.com/juliomrqz/statusfy)
