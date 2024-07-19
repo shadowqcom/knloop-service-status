@@ -274,7 +274,6 @@ async function genAllReports() {
   }
 }
 
-
 document.addEventListener('DOMContentLoaded', async function () {
   try {
     const response = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
@@ -303,7 +302,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 });
 
-
 // 获取最后更新时间
 async function lastUpdatedtime() {
   const configResponse = await fetch("./src/urls.cfg");
@@ -331,5 +329,5 @@ function updateLastUpdated(lastUpdateTime) {
 
 // 当 DOM 加载完成后调用 lastUpdatedtime 函数
 document.addEventListener('DOMContentLoaded', function () {
-  lastUpdatedtime(); 
+  lastUpdatedtime();
 });
