@@ -3,15 +3,12 @@
 
 <head>
   <title>knloop status</title>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
-  <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。">
-  <link rel="icon" href="./favicon.ico">
+  <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。" />
+  <link rel="icon" href="./favicon.ico" />
   <link rel="stylesheet" href="./src/index.css" />
-  <script src="./src/index.js"></script>
-  <script src="./src/chart.js"></script>
-  <script src="./src/delayedreport.js"></script>
 </head>
 
 <body>
@@ -30,21 +27,22 @@
       <div id="statusLineTemplate" class="statusLine"></div>
 
       <div id="statusStreamContainerTemplate" class="statusStreamContainer"></div>
-      <hr>
+      <hr />
       <div id="statusContainerTemplate" class="statusContainer">
         <div class="statusHeader">
           <h6 class="statusTitle">$title&nbsp;</h6>
           <div class="$color statusHeadline">$status</div>
         </div>
         <div class="statusSubtitle">
-          <div class="sectionUrl"><a href="$url" target="_blank">$domainname</a></div>
+          <div class="sectionUrl">
+            <a href="$url" target="_blank">$domainname</a>
+          </div>
           <!-- 详细信息 -->
           <div id="tooltip" class="tooltipContent">
             <div class="tooltipStatus"></div>
           </div>
           <div class="statusUptime">$upTime in 60 days</div>
         </div>
-        
       </div>
     </div>
   </div>
@@ -53,24 +51,24 @@
   <div id="incidents" class="pageContainer">
     <div class="statusContainer">
       <div id="activeIncidentReports">
-        <p>IP Address: <span id="clientIp"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;IP Location: <span
-            id="loc"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Unix Time: <span id="ts"></span></p>
+        <p>
+          IP Address:
+          <span id="clientIp"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;IP
+          Location:
+          <span id="loc"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Unix
+          Time: <span id="ts"></span>
+        </p>
         <p>User-Agent: <span id="clientUa"></span></p>
       </div>
     </div>
   </div>
   <!-- clieninfo -->
 
-  <!-- <div id="incidents" class="pageContainer">
-    <canvas id="delayChart"></canvas>
-  </div> -->
-
-  <footer>
-    <a href="https://knloop.com">knloop</a> service status .
-  </footer>
+  <footer><a href="https://knloop.com">knloop</a> service status .</footer>
 </body>
-<script>
-  genAllReports();
-</script>
+<script src="./src/chart.js"></script>
+<script src="./src/delayedreport.js"></script>
+<script src="./src/index.js"></script>
+<script>genAllReports();</script>
 
 </html>

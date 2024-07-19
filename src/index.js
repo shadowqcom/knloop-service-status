@@ -1,5 +1,7 @@
 const maxDays = 60;
 
+let cloneId = 0;
+
 // 生成报告日志
 async function genReportLog(container, key, url) {
   const response = await fetch("logs/" + key + "_report.log");
@@ -11,6 +13,18 @@ async function genReportLog(container, key, url) {
   const normalized = normalizeData(statusLines);
   const statusStream = constructStatusStream(key, url, normalized);
   container.appendChild(statusStream);
+
+  // 生成图表
+  createChart(container, key, statusLines);
+}
+
+// 生成图表
+async function createChart(container, key, uptimeData) {
+  const canvas = create("canvas", "chart");
+  canvas.id = "chart_clone_" + key++;
+  canvas.height = 180;
+  container.appendChild(canvas);
+  await updateChart(canvas, uptimeData);
 }
 
 // 构建状态流
@@ -27,7 +41,7 @@ function constructStatusStream(key, url, uptimeData) {
   const container = templatize("statusContainerTemplate", {
     title: key,
     url: url,
-    domainname: url.replace(/^(http:\/\/|https:\/\/)/, ''),
+    domainname: url.replace(/^(http:\/\/|https:\/\/)/, ""),
     color: color,
     status: getStatusText(color),
     upTime: uptimeData.upTime,
@@ -50,10 +64,10 @@ function getColor(uptimeVal) {
   return uptimeVal == null
     ? "nodata"
     : uptimeVal == 1
-      ? "success"
-      : uptimeVal < 0.3
-        ? "failure"
-        : "partial";
+    ? "success"
+    : uptimeVal < 0.3
+    ? "failure"
+    : "partial";
 }
 
 // 构建状态方块
@@ -78,8 +92,6 @@ function constructStatusSquare(key, date, uptimeVal) {
   return square;
 }
 
-
-let cloneId = 0;
 // 模板化
 function templatize(templateId, parameters) {
   let clone = document.getElementById(templateId).cloneNode(true);
@@ -112,9 +124,9 @@ function applyTemplateSubstitutions(node, parameters) {
 }
 
 // 在DOM加载完成后，将滚动条的位置设置为最右侧
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   setTimeout(function () {
-    var containers = document.querySelectorAll('.statusStreamContainer');
+    var containers = document.querySelectorAll(".statusStreamContainer");
     containers.forEach(function (container) {
       container.scrollLeft = container.scrollWidth;
     });
@@ -136,12 +148,12 @@ function getStatusText(color) {
   return color == "nodata"
     ? "No Data"
     : color == "success"
-      ? "UP"
-      : color == "failure"
-        ? "Down"
-        : color == "partial"
-          ? "Degraded"
-          : "Unknown";
+    ? "UP"
+    : color == "failure"
+    ? "Down"
+    : color == "partial"
+    ? "Degraded"
+    : "Unknown";
 }
 
 // 获取状态描述文本
@@ -149,12 +161,12 @@ function getStatusDescriptiveText(color) {
   return color == "nodata"
     ? "当前暂无数据。"
     : color == "success"
-      ? "状态正常。"
-      : color == "failure"
-        ? "严重故障。"
-        : color == "partial"
-          ? "部分异常。"
-          : "未知状态";
+    ? "状态正常。"
+    : color == "failure"
+    ? "严重故障。"
+    : color == "partial"
+    ? "部分异常。"
+    : "未知状态";
 }
 
 // 获取提示工具文本
@@ -215,7 +227,9 @@ function splitRowsByDate(rows) {
     }
 
     const [dateTimeStr, resultStr] = row.split(",", 2);
-    const dateTime = new Date(Date.parse(dateTimeStr.replace(/-/g, "/") + " GMT"));
+    const dateTime = new Date(
+      Date.parse(dateTimeStr.replace(/-/g, "/") + " GMT")
+    );
     const dateStr = dateTime.toDateString();
 
     let resultArray = dateValues[dateStr];
@@ -247,24 +261,27 @@ let tooltipTimeout = null;
 function showTooltip(element, date, color) {
   const toolTiptime = new Date(date);
   // 提取星期、年、月和日
-  const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][toolTiptime.getDay()];
+  const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
+    toolTiptime.getDay()
+  ];
   const year = toolTiptime.getFullYear();
-  const month = ('0' + (toolTiptime.getMonth() + 1)).slice(-2);
-  const day = ('0' + toolTiptime.getDate()).slice(-2);
+  const month = ("0" + (toolTiptime.getMonth() + 1)).slice(-2);
+  const day = ("0" + toolTiptime.getDate()).slice(-2);
   // 拼接成所需格式
   const formatTiptime = `${weekday} ${year}-${month}-${day}`;
 
-  const statusContainer = element.closest('.statusContainer'); // 找到对应的 statusContainer
-  const tooltipContent = statusContainer.querySelector('.tooltipContent'); // 获取 tooltipContent 元素
-  tooltipContent.querySelector('.tooltipStatus').innerText = formatTiptime + ' ' + getStatusText(color);
-  tooltipContent.style.display = 'block'; // 显示提示内容
+  const statusContainer = element.closest(".statusContainer"); // 找到对应的 statusContainer
+  const tooltipContent = statusContainer.querySelector(".tooltipContent"); // 获取 tooltipContent 元素
+  tooltipContent.querySelector(".tooltipStatus").innerText =
+    formatTiptime + " " + getStatusText(color);
+  tooltipContent.style.display = "block"; // 显示提示内容
 }
 
 // 隐藏提示
 function hideTooltip(element) {
-  const statusContainer = element.closest('.statusContainer'); // 找到对应的 statusContainer
-  const tooltipContent = statusContainer.querySelector('.tooltipContent'); // 获取 tooltipContent 元素
-  tooltipContent.style.display = 'none'; // 隐藏提示内容
+  const statusContainer = element.closest(".statusContainer"); // 找到对应的 statusContainer
+  const tooltipContent = statusContainer.querySelector(".tooltipContent"); // 获取 tooltipContent 元素
+  tooltipContent.style.display = "none"; // 隐藏提示内容
 }
 
 // 生成所有报告
@@ -278,36 +295,35 @@ async function genAllReports() {
     if (!key || !url) {
       continue;
     }
-
     await genReportLog(document.getElementById("reports"), key, url);
   }
 }
 
-document.addEventListener('DOMContentLoaded', async function () {
+document.addEventListener("DOMContentLoaded", async function () {
   try {
-    const response = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+    const response = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
     const data = await response.text();
 
-    const lines = data.split('\n');
+    const lines = data.split("\n");
     const traceData = {};
-    lines.forEach(line => {
-      const [key, value] = line.split('=');
+    lines.forEach((line) => {
+      const [key, value] = line.split("=");
       if (key && value) {
         traceData[key] = value.trim();
       }
     });
 
-    const ip = traceData['ip'];
-    const userAgent = traceData['uag'];
-    const loc = traceData['loc'];
-    const ts = traceData['ts'];
+    const ip = traceData["ip"];
+    const userAgent = traceData["uag"];
+    const loc = traceData["loc"];
+    const ts = traceData["ts"];
 
-    document.getElementById('loc').textContent = loc;
-    document.getElementById('clientIp').textContent = ip;
-    document.getElementById('ts').textContent = ts;
-    document.getElementById('clientUa').textContent = userAgent;
+    document.getElementById("loc").textContent = loc;
+    document.getElementById("clientIp").textContent = ip;
+    document.getElementById("ts").textContent = ts;
+    document.getElementById("clientUa").textContent = userAgent;
   } catch (error) {
-    console.error('获取客户端信息失败:', error);
+    console.error("获取客户端信息失败:", error);
   }
 });
 
@@ -324,20 +340,20 @@ async function lastUpdatedtime() {
   }
   const lines = statusLines.split("\n");
   const lastTime = lines[lines.length - 2].split(",")[0];
+
   // 在这里调用 updateLastUpdated 函数并传递 lastTime
   updateLastUpdated(lastTime);
 }
 
 // 将最后更新时间写到页面
 function updateLastUpdated(lastUpdateTime) {
-  const updateTimeElement = document.getElementById('updateTime');
+  const updateTimeElement = document.getElementById("updateTime");
   if (updateTimeElement) {
     updateTimeElement.textContent = `Last updated on : ${lastUpdateTime}`;
   }
 }
 
 // 当 DOM 加载完成后调用 lastUpdatedtime 函数
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   lastUpdatedtime();
 });
-
