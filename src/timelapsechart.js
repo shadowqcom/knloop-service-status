@@ -55,10 +55,11 @@ async function updateChart(el, logData) {
     console.log(data)
     console.log('1111111111111111111')
 
-    // 根据数据集中的最大值来决定是否设置y轴的最大值
+    // 过滤掉data数组中的NaN值,然后根据数据集中的最大值来决定是否设置y轴的最大值
+    const validData = data.filter(value => !isNaN(value));
     let yMaxConfig = {};
     console.log(data.length)
-    if (data.length === 0 || Math.max(...data) <= 10) {
+    if (validData.length === 0 || Math.max(...validData) <= 10) {
       yMaxConfig.max = 10;
     }
 
