@@ -69,6 +69,7 @@ Google=https://google.com
 - [x] 在workflows提交log文件
 - [x] 超时自动刷新页面
 - [x] 小屏幕可左右滑动状态条
+- [x] 展示日志最后更新时间
 - [ ] SSL状态检测
 - [ ] SSH 检测
 - [ ] 延迟ms数检测
