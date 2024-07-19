@@ -14,27 +14,10 @@ async function updateChart(el, logData) {
       startOfCurrentHour.getTime() - 24 * 60 * 60 * 1000
     );
 
-    const logEntries = logData.split("\n");
-    const hourlyData = {};
+    // 优化：提取计算每小时数据的逻辑到单独的函数中
+    const hourlyData = calculateHourlyData(logData, oneDayAgo, startOfCurrentHour);
 
-    logEntries.forEach((entry) => {
-      const parts = entry.split(", ");
-      if (parts.length >= 3) {
-        const timeStr = parts[0];
-        const delay = parseInt(parts[2], 10);
-        const date = new Date(timeStr);
-        if (date >= oneDayAgo && date <= startOfCurrentHour) {
-          const hourKey = `${date.getHours()}:00`;
-          if (!hourlyData[hourKey]) {
-            hourlyData[hourKey] = { total: 0, count: 0 };
-          }
-          hourlyData[hourKey].total += delay;
-          hourlyData[hourKey].count++;
-        }
-      }
-    });
-
-    // 创建一个完整的时间序列，从当前时间的前12小时到当前时间的整点
+    // 创建一个完整的时间序列，从当前时间的前 12 小时到当前时间的整点
     const labels = [];
     const data = [];
     let currentHour = new Date(startOfCurrentHour);
@@ -42,8 +25,8 @@ async function updateChart(el, logData) {
       const hourKey = `${currentHour.getHours()}:00`;
       const average =
         hourlyData[hourKey] && hourlyData[hourKey].count > 0
-          ? hourlyData[hourKey].total / hourlyData[hourKey].count
-          : 0;
+        ? hourlyData[hourKey].total / hourlyData[hourKey].count
+         : 0;
       labels.push(hourKey);
       data.push(average);
       currentHour.setHours(currentHour.getHours() - 1);
@@ -52,13 +35,10 @@ async function updateChart(el, logData) {
     // 反转数组以正确显示时间顺序
     labels.reverse();
     data.reverse();
-    console.log(data)
-    console.log('1111111111111111111')
 
-    // 过滤掉data数组中的NaN值,然后根据数据集中的最大值来决定是否设置y轴的最大值
-    const validData = data.filter(value => !isNaN(value));
+    // 过滤掉 data 数组中的 NaN 值, 然后根据数据集中的最大值来决定是否设置 y 轴的最大值
+    const validData = data.filter(value =>!isNaN(value));
     let yMaxConfig = {};
-    console.log(data.length)
     if (validData.length === 0 || Math.max(...validData) <= 10) {
       yMaxConfig.max = 10;
     }
@@ -80,7 +60,7 @@ async function updateChart(el, logData) {
       options: {
         plugins: {
           legend: {
-            display: false, // 设置为false以隐藏图例
+            display: false, // 设置为 false 以隐藏图例
           },
         },
         scales: {
@@ -99,7 +79,7 @@ async function updateChart(el, logData) {
               display: false,
             },
             beginAtZero: true,
-            ...yMaxConfig, // 使用yMaxConfig来有条件地设置max
+          ...yMaxConfig, // 使用 yMaxConfig 来有条件地设置 max
           },
         },
       },
@@ -109,11 +89,37 @@ async function updateChart(el, logData) {
   }
 }
 
+function calculateHourlyData(logData, oneDayAgo, startOfCurrentHour) {
+  const logEntries = logData.split("\n");
+  const hourlyData = {};
+  logEntries.forEach((entry) => {
+    const parts = entry.split(", ");
+    if (parts.length >= 3) {
+      const timeStr = parts[0];
+      const delay = parseInt(parts[2], 10);
+      const date = new Date(timeStr);
+      if (date >= oneDayAgo && date <= startOfCurrentHour) {
+        const hourKey = `${date.getHours()}:00`;
+        if (!hourlyData[hourKey]) {
+          hourlyData[hourKey] = { total: 0, count: 0 };
+        }
+        hourlyData[hourKey].total += delay;
+        hourlyData[hourKey].count++;
+      }
+    }
+  });
+  return hourlyData;
+}
+
 async function getLogData(el, name) {
-  const response = await fetch(`./logs/${name}.log`);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  try {
+    const response = await fetch(`./logs/${name}.log`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const logData = await response.text();
+    updateChart(el, logData);
+  } catch (error) {
+    console.error("Error fetching logs:", error);
   }
-  const logData = await response.text();
-  updateChart(el, logData);
 }
