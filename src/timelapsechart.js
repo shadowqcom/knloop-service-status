@@ -26,7 +26,7 @@ async function updateChart(el, logData) {
       const average =
         hourlyData[hourKey] && hourlyData[hourKey].count > 0
         ? hourlyData[hourKey].total / hourlyData[hourKey].count
-         : 0;
+         : NaN;
       labels.push(hourKey);
       data.push(average);
       currentHour.setHours(currentHour.getHours() - 1);

@@ -15,6 +15,8 @@ async function genReportLog(container, key, url) {
   // 创建一个div来包裹span标签
   const divWrapper = document.createElement('div');
   divWrapper.classList.add('span-wrapper'); // 添加一个类以便在CSS中定位这个div
+  divWrapper.id = 'status-prompt'; // 设置div的ID
+
 
   // 创建并添加两个span标签到divWrapper中
   const spanLeft = document.createElement('span');
