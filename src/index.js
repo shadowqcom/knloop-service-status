@@ -249,7 +249,7 @@ function showTooltip(element, date, color) {
   // 提取星期、年、月和日
   const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][toolTiptime.getDay()];
   const year = toolTiptime.getFullYear();
-  const month = ('0' + (toolTiptime.getMonth() + 1)).slice(-2); 
+  const month = ('0' + (toolTiptime.getMonth() + 1)).slice(-2);
   const day = ('0' + toolTiptime.getDate()).slice(-2);
   // 拼接成所需格式
   const formatTiptime = `${weekday} ${year}-${month}-${day}`;

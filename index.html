@@ -10,11 +10,15 @@
   <link rel="icon" href="./favicon.ico">
   <link rel="stylesheet" href="./src/index.css" />
   <script src="./src/index.js"></script>
+  <script src="./src/chart.js"></script>
+  <script src="./src/delayedreport.js"></script>
 </head>
 
 <body>
   <div id="SiteInfo" class="headline">
-    <img src="./src/logo.svg" alt="Logo" />
+    <a href="/">
+      <img src="./src/logo.svg" alt="Logo" />
+    </a>
     <span> knloop service status </span>
     <div id="updateTime">Last updated on: Loading...</div>
   </div>
@@ -24,6 +28,7 @@
     <div id="templates" style="display: none">
       <div id="statusSquareTemplate" class="statusSquare $color" data-status="$color"></div>
       <div id="statusLineTemplate" class="statusLine"></div>
+
       <div id="statusStreamContainerTemplate" class="statusStreamContainer"></div>
       <hr>
       <div id="statusContainerTemplate" class="statusContainer">
@@ -39,7 +44,7 @@
           </div>
           <div class="statusUptime">$upTime in 60 days</div>
         </div>
-
+        
       </div>
     </div>
   </div>
@@ -55,6 +60,10 @@
     </div>
   </div>
   <!-- clieninfo -->
+
+  <!-- <div id="incidents" class="pageContainer">
+    <canvas id="delayChart"></canvas>
+  </div> -->
 
   <footer>
     <a href="https://knloop.com">knloop</a> service status .
