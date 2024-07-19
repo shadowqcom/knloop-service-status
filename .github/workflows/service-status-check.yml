@@ -2,7 +2,7 @@ name: service-status-check
 
 on:
   schedule:
-  - cron: "*/5 * * * *"
+  - cron: "*/30 * * * *"
   
 # 添加手动触发事件
   workflow_dispatch:
@@ -15,7 +15,7 @@ on:
 jobs:
   service-check:
     runs-on: ubuntu-latest 
-    timeout-minutes: 7
+    timeout-minutes: 3
     name: Check knloop service status
     env:
       WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
