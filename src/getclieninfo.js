@@ -12,21 +12,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         });
 
-        // 选择所有包含占位符的元素
-        const elements = document.querySelectorAll('.clientInfo');
+        // 选择所有需要替换的元素
+        const elements = document.querySelectorAll('[data-trace-placeholder]');
 
         // 遍历元素并替换占位符
         elements.forEach(element => {
-            let textContent = element.textContent;
-
-            // 使用正则表达式替换占位符
-            Object.keys(traceData).forEach(key => {
-                const regex = new RegExp(`\\$${key}`, 'g');
-                textContent = textContent.replace(regex, traceData[key]);
-            });
-
-            // 更新元素的文本内容
-            element.textContent = textContent;
+            const placeholder = element.getAttribute('data-trace-placeholder');
+            const prefix = element.textContent.split('$' + placeholder)[0]; // 分离描述性文本和占位符
+            const suffix = element.textContent.split('$' + placeholder)[1]; // 分离占位符后的文本
+            if (traceData[placeholder]) {
+                element.textContent = prefix + traceData[placeholder] + suffix; // 将描述性文本、值和后续文本合并
+            }
         });
 
     } catch (error) {

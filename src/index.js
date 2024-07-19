@@ -18,7 +18,7 @@ async function genReportLog(container, key, url) {
 
   // 创建并添加两个span标签到divWrapper中
   const spanLeft = document.createElement('span');
-  spanLeft.textContent = 'Response times(ms)';
+  spanLeft.textContent = '平均响应时间(ms)';
   spanLeft.classList.add('align-left');
 
   const spanRight = document.createElement('span');

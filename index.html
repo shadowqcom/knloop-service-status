@@ -51,13 +51,13 @@
   </div>
 
   <!-- 客户端信息 -->
-  <div id="clientInfo" class="pageContainer">
+  <div id="clientInfo" class="clientInfo">
     <p>
-      <span class="clientInfo">IP Address: $ip</span>
-      <span class="clientInfo">IP Location: $loc</span>
-      <span class="clientInfo">Unix Time: $ts</span>
+      <span data-trace-placeholder="ip">IP : $ip  |  </span>
+      <span data-trace-placeholder="loc">Loc : $loc  |  </span>
+      <span data-trace-placeholder="ts">TS : $ts</span>
     </p>
-    <p><span class="clientInfo">User-Agent: $uag</span></p>
+    <p><span data-trace-placeholder="uag">UA : $uag</span></p>
   </div>
   <!-- /客户端信息 -->
 
