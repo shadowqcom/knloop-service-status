@@ -303,25 +303,33 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 });
 
-// 页面加载时间记录，超时自动刷新。
-document.addEventListener('DOMContentLoaded', function () {
-  // 页面加载时记录时间戳
-  const loadTimestamp = Date.now();
 
-  function updateLastUpdated() {
-    // 确保它在DOM完全加载后执行
-    const updateTimeElement = document.getElementById('updateTime');
-    if (updateTimeElement) {
-      const now = Date.now();
-      const secondsAgo = Math.floor((now - loadTimestamp) / 1000);
-      updateTimeElement.textContent = `Last updated on: ${new Date(loadTimestamp).toLocaleString('default', { hour12: false })} (${secondsAgo} sec ago)`;
-      if (secondsAgo >= 480) {
-        window.location.reload(true);
-      }
-    }
+// 获取最后更新时间
+async function lastUpdatedtime() {
+  const configResponse = await fetch("./src/urls.cfg");
+  const configText = await configResponse.text();
+  const key = configText.split("\n")[0].split("=")[0];
+
+  const response = await fetch("logs/" + key + "_report.log");
+  let statusLines = "";
+  if (response.ok) {
+    statusLines = await response.text();
   }
-  // 首次更新
-  updateLastUpdated();
-  // 每秒更新一次
-  setInterval(updateLastUpdated, 1000);
+  const lines = statusLines.split("\n");
+  const lastTime = lines[lines.length - 2].split(",")[0];
+  // 在这里调用 updateLastUpdated 函数并传递 lastTime
+  updateLastUpdated(lastTime);
+}
+
+// 将最后更新时间写到页面
+function updateLastUpdated(lastUpdateTime) {
+  const updateTimeElement = document.getElementById('updateTime');
+  if (updateTimeElement) {
+    updateTimeElement.textContent = `Last updated on: ${lastUpdateTime}`;
+  }
+}
+
+// 当 DOM 加载完成后调用 lastUpdatedtime 函数
+document.addEventListener('DOMContentLoaded', function () {
+  lastUpdatedtime(); 
 });
