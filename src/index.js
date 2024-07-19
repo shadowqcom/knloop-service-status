@@ -1,7 +1,5 @@
 const maxDays = 60;
 
-
-
 // 生成报告日志
 async function genReportLog(container, key, url) {
   const response = await fetch("logs/" + key + "_report.log");
@@ -24,7 +22,7 @@ async function genReportLog(container, key, url) {
   spanLeft.classList.add('align-left');
 
   const spanRight = document.createElement('span');
-  spanRight.textContent = '右侧文本';
+  spanRight.textContent = '占位文本';
   spanRight.classList.add('align-right');
 
   divWrapper.appendChild(spanLeft);
