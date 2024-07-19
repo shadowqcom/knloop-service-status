@@ -245,9 +245,18 @@ function splitRowsByDate(rows) {
 let tooltipTimeout = null;
 // 显示提示
 function showTooltip(element, date, color) {
+  const toolTiptime = new Date(date);
+  // 提取星期、年、月和日
+  const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][toolTiptime.getDay()];
+  const year = toolTiptime.getFullYear();
+  const month = ('0' + (toolTiptime.getMonth() + 1)).slice(-2); 
+  const day = ('0' + toolTiptime.getDate()).slice(-2);
+  // 拼接成所需格式
+  const formatTiptime = `${weekday} ${year}-${month}-${day}`;
+
   const statusContainer = element.closest('.statusContainer'); // 找到对应的 statusContainer
   const tooltipContent = statusContainer.querySelector('.tooltipContent'); // 获取 tooltipContent 元素
-  tooltipContent.querySelector('.tooltipStatus').innerText = date.toDateString() + ' ' + getStatusText(color);
+  tooltipContent.querySelector('.tooltipStatus').innerText = formatTiptime + ' ' + getStatusText(color);
   tooltipContent.style.display = 'block'; // 显示提示内容
 }
 
@@ -323,7 +332,7 @@ async function lastUpdatedtime() {
 function updateLastUpdated(lastUpdateTime) {
   const updateTimeElement = document.getElementById('updateTime');
   if (updateTimeElement) {
-    updateTimeElement.textContent = `Last updated on: ${lastUpdateTime}`;
+    updateTimeElement.textContent = `Last updated on : ${lastUpdateTime}`;
   }
 }
 
@@ -331,3 +340,4 @@ function updateLastUpdated(lastUpdateTime) {
 document.addEventListener('DOMContentLoaded', function () {
   lastUpdatedtime();
 });
+
