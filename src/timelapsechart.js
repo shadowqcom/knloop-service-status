@@ -72,10 +72,10 @@ async function updateChart(el, logData) {
           legend: {
             display: false, // 设置为false以隐藏图例
           },
-          title: {
-            display: true,
-            align: "start",
-          },
+          // title: {
+          //   display: true,
+          //   align: "start",
+          // },
         },
         scales: {
           x: {

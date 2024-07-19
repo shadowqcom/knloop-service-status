@@ -1,6 +1,6 @@
 const maxDays = 60;
 
-let cloneId = 0;
+
 
 // 生成报告日志
 async function genReportLog(container, key, url) {
@@ -13,6 +13,25 @@ async function genReportLog(container, key, url) {
   const normalized = normalizeData(statusLines);
   const statusStream = constructStatusStream(key, url, normalized);
   container.appendChild(statusStream);
+
+  // 创建一个div来包裹span标签
+  const divWrapper = document.createElement('div');
+  divWrapper.classList.add('span-wrapper'); // 添加一个类以便在CSS中定位这个div
+
+  // 创建并添加两个span标签到divWrapper中
+  const spanLeft = document.createElement('span');
+  spanLeft.textContent = 'Response times(ms)';
+  spanLeft.classList.add('align-left');
+
+  const spanRight = document.createElement('span');
+  spanRight.textContent = '右侧文本';
+  spanRight.classList.add('align-right');
+
+  divWrapper.appendChild(spanLeft);
+  divWrapper.appendChild(spanRight);
+
+  // 将包含两个span的div添加到container中
+  container.appendChild(divWrapper);
 
   // 生成图表
   createChart(container, key, statusLines);
@@ -64,10 +83,10 @@ function getColor(uptimeVal) {
   return uptimeVal == null
     ? "nodata"
     : uptimeVal == 1
-    ? "success"
-    : uptimeVal < 0.3
-    ? "failure"
-    : "partial";
+      ? "success"
+      : uptimeVal < 0.3
+        ? "failure"
+        : "partial";
 }
 
 // 构建状态方块
@@ -93,6 +112,7 @@ function constructStatusSquare(key, date, uptimeVal) {
 }
 
 // 模板化
+let cloneId = 0;
 function templatize(templateId, parameters) {
   let clone = document.getElementById(templateId).cloneNode(true);
   clone.id = "template_clone_" + cloneId++;
@@ -123,16 +143,6 @@ function applyTemplateSubstitutions(node, parameters) {
   }
 }
 
-// 在DOM加载完成后，将滚动条的位置设置为最右侧
-document.addEventListener("DOMContentLoaded", function () {
-  setTimeout(function () {
-    var containers = document.querySelectorAll(".statusStreamContainer");
-    containers.forEach(function (container) {
-      container.scrollLeft = container.scrollWidth;
-    });
-  }, 100); // 增加延迟
-});
-
 // 模板字符串化
 function templatizeString(text, parameters) {
   if (parameters) {
@@ -148,12 +158,12 @@ function getStatusText(color) {
   return color == "nodata"
     ? "No Data"
     : color == "success"
-    ? "UP"
-    : color == "failure"
-    ? "Down"
-    : color == "partial"
-    ? "Degraded"
-    : "Unknown";
+      ? "UP"
+      : color == "failure"
+        ? "Down"
+        : color == "partial"
+          ? "Degraded"
+          : "Unknown";
 }
 
 // 获取状态描述文本
@@ -161,12 +171,12 @@ function getStatusDescriptiveText(color) {
   return color == "nodata"
     ? "当前暂无数据。"
     : color == "success"
-    ? "状态正常。"
-    : color == "failure"
-    ? "严重故障。"
-    : color == "partial"
-    ? "部分异常。"
-    : "未知状态";
+      ? "状态正常。"
+      : color == "failure"
+        ? "严重故障。"
+        : color == "partial"
+          ? "部分异常。"
+          : "未知状态";
 }
 
 // 获取提示工具文本
@@ -272,8 +282,7 @@ function showTooltip(element, date, color) {
 
   const statusContainer = element.closest(".statusContainer"); // 找到对应的 statusContainer
   const tooltipContent = statusContainer.querySelector(".tooltipContent"); // 获取 tooltipContent 元素
-  tooltipContent.querySelector(".tooltipStatus").innerText =
-    formatTiptime + " " + getStatusText(color);
+  tooltipContent.querySelector(".tooltipStatus").innerText = formatTiptime + " " + getStatusText(color);
   tooltipContent.style.display = "block"; // 显示提示内容
 }
 
@@ -299,61 +308,4 @@ async function genAllReports() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
-  try {
-    const response = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
-    const data = await response.text();
-
-    const lines = data.split("\n");
-    const traceData = {};
-    lines.forEach((line) => {
-      const [key, value] = line.split("=");
-      if (key && value) {
-        traceData[key] = value.trim();
-      }
-    });
-
-    const ip = traceData["ip"];
-    const userAgent = traceData["uag"];
-    const loc = traceData["loc"];
-    const ts = traceData["ts"];
-
-    document.getElementById("loc").textContent = loc;
-    document.getElementById("clientIp").textContent = ip;
-    document.getElementById("ts").textContent = ts;
-    document.getElementById("clientUa").textContent = userAgent;
-  } catch (error) {
-    console.error("获取客户端信息失败:", error);
-  }
-});
-
-// 获取最后更新时间
-async function lastUpdatedtime() {
-  const configResponse = await fetch("./src/urls.cfg");
-  const configText = await configResponse.text();
-  const key = configText.split("\n")[0].split("=")[0];
-
-  const response = await fetch("logs/" + key + "_report.log");
-  let statusLines = "";
-  if (response.ok) {
-    statusLines = await response.text();
-  }
-  const lines = statusLines.split("\n");
-  const lastTime = lines[lines.length - 2].split(",")[0];
-
-  // 在这里调用 updateLastUpdated 函数并传递 lastTime
-  updateLastUpdated(lastTime);
-}
-
-// 将最后更新时间写到页面
-function updateLastUpdated(lastUpdateTime) {
-  const updateTimeElement = document.getElementById("updateTime");
-  if (updateTimeElement) {
-    updateTimeElement.textContent = `Last updated on : ${lastUpdateTime}`;
-  }
-}
-
-// 当 DOM 加载完成后调用 lastUpdatedtime 函数
-document.addEventListener("DOMContentLoaded", function () {
-  lastUpdatedtime();
-});
+genAllReports();

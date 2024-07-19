@@ -37,38 +37,38 @@
           <div class="sectionUrl">
             <a href="$url" target="_blank">$domainname</a>
           </div>
-          <!-- 详细信息 -->
+
+          <!-- 提示信息 -->
           <div id="tooltip" class="tooltipContent">
-            <div class="tooltipStatus"></div>
+            <span class="tooltipStatus">111111111111</span>
           </div>
+          <!-- /提示信息 -->
+
           <div class="statusUptime">$upTime in 60 days</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- clieninfo -->
-  <div id="incidents" class="pageContainer">
-    <div class="statusContainer">
-      <div id="activeIncidentReports">
-        <p>
-          IP Address:
-          <span id="clientIp"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;IP
-          Location:
-          <span id="loc"></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Unix
-          Time: <span id="ts"></span>
-        </p>
-        <p>User-Agent: <span id="clientUa"></span></p>
-      </div>
-    </div>
+  <!-- 客户端信息 -->
+  <div id="clientInfo" class="pageContainer">
+    <p>
+      <span class="clientInfo">IP Address: $ip</span>
+      <span class="clientInfo">IP Location: $loc</span>
+      <span class="clientInfo">Unix Time: $ts</span>
+    </p>
+    <p><span class="clientInfo">User-Agent: $uag</span></p>
   </div>
-  <!-- clieninfo -->
+  <!-- /客户端信息 -->
 
   <footer><a href="https://knloop.com">knloop</a> service status .</footer>
 </body>
-<script src="./src/chart.js"></script>
-<script src="./src/delayedreport.js"></script>
+
+<script src="./src/chart.js"></script><!-- 图表 -->
+<script src="./src/timelapsechart.js"></script><!-- 图表 -->
+<script src="./src/lastupdated.js"></script><!-- log最后更新时间 -->
+<script src="./src/getclieninfo.js"></script><!-- 客户端信息 -->
+<script src="./src/scrollbar.js"></script><!-- 滚动条 -->
 <script src="./src/index.js"></script>
-<script>genAllReports();</script>
 
 </html>

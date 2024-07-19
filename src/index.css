@@ -158,7 +158,7 @@ footer a {
 .statusContainer {
   border-radius: 5px;
   text-align: left;
-  padding: 24px;
+  padding: 24px 24px 10px 24px;
 }
 
 .statusContainer+.statusContainer {
@@ -267,6 +267,23 @@ canvas {
   padding-right: 30px;
 }
 
+.span-wrapper {
+  display: flex; /* 使用Flexbox布局 */
+  justify-content: space-between; /* 分别将span推到左右两边 */
+  padding: 0px 24px 0px 24px;
+}
+
+.align-left {
+  text-align: left;
+  color: #7c7c7c;
+  font-size: 12px;
+}
+
+.align-right {
+  text-align: right;
+  color: #7c7c7c;
+  font-size: 12px;
+}
 
 /* 响应式设计 */
 @media screen and (max-width: 800px) {
