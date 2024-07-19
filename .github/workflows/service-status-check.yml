@@ -15,6 +15,7 @@ on:
 jobs:
   service-check:
     runs-on: ubuntu-latest 
+    timeout-minutes: 7
     name: Check knloop service status
     env:
       WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
