@@ -102,7 +102,7 @@ async function updateChart(el, logData) {
   }
 }
 
-async function getLogData(el, name = "Dev_report") {
+async function getLogData(el, name) {
   const response = await fetch(`./logs/${name}.log`);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
