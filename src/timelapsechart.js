@@ -20,7 +20,7 @@ async function updateChart(el, logData) {
         const timeStr = parts[0];
         const delay = parseInt(parts[2], 10);
         const date = new Date(timeStr);
-        if (date >= twelveHoursAgo && date <= startOfCurrentHour) {
+        if (date >= twelveHoursAgo && date <= now) {
           const hourKey = `${date.getHours()}:00`;
           if (!hourlyData[hourKey]) {
             hourlyData[hourKey] = { total: 0, count: 0, values: [] };
