@@ -1,3 +1,8 @@
+/**
+ * 异步函数：更新图表，根据日志数据绘制过去12小时的平均延迟和中位数延迟。
+ * @param {HTMLElement} el - 图表容器的HTML元素。
+ * @param {string} logData - 日志数据，以换行分隔的字符串。
+ */
 async function updateChart(el, logData) {
   try {
     const now = new Date();
@@ -12,14 +17,21 @@ async function updateChart(el, logData) {
     );
     const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
 
-    const logEntries = logData.split("\n");
+    // 分割日志数据为单独的条目。
+    const logEntries = logData.split("\r\n").filter(entry => entry !== '');
+
+    // 初始化小时数据对象。
     const hourlyData = {};
+
+    // 遍历日志条目，提取并汇总每小时的数据。
     logEntries.forEach((entry) => {
       const parts = entry.split(", ");
       if (parts.length >= 3) {
         const timeStr = parts[0];
         const delay = parseInt(parts[2], 10);
         const date = new Date(timeStr);
+
+        // 如果日期在过去12小时内，累加到相应的小时数据。
         if (date >= twelveHoursAgo && date <= now) {
           const hourKey = `${date.getHours()}:00`;
           if (!hourlyData[hourKey]) {
@@ -32,10 +44,12 @@ async function updateChart(el, logData) {
       }
     });
 
-    // 创建一个完整的时间序列，从当前时间的前 12 小时到当前时间的整点
+    // 初始化图表标签、平均数据和中位数数据数组。
     const labels = [];
     const averageData = [];
     const medianData = [];
+
+    // 遍历过去12小时，计算每小时的平均值和中位数。
     let currentHour = new Date(startOfCurrentHour);
     for (let i = 0; i < 12; i++) {
       const hourKey = `${currentHour.getHours()}:00`;
@@ -53,20 +67,19 @@ async function updateChart(el, logData) {
       currentHour.setHours(currentHour.getHours() - 1);
     }
 
-    // 反转数组以正确显示时间顺序
+    // 反转数组，因为Chart.js默认从最新的小时开始绘制。
     labels.reverse();
     averageData.reverse();
     medianData.reverse();
 
-    // 过滤掉data数组中的NaN值,然后根据数据集中的最大值来决定是否设置y轴的最大值
-    const validAverageData = averageData.filter(value => !isNaN(value));
-    const validMedianData = medianData.filter(value => !isNaN(value));
-    const combinedData = validAverageData.concat(validMedianData);
+    // 合并平均数和中位数，过滤掉NaN值,然后根据最大值来决定是否设置y轴的最大值
+    const combinedData = averageData.concat(medianData).filter(value => !isNaN(value));
     let yMaxConfig = {};
-    if (validAverageData.length === 0 || Math.max(...combinedData) <= 14) {
+    if (combinedData.length === 0 || Math.max(...combinedData) <= 14) {
       yMaxConfig.max = 15;
     }
 
+    // 获取图表上下文并创建新的Chart实例。
     const ctx = el.getContext("2d");
     const chart = new Chart(ctx, {
       type: "line",
@@ -121,6 +134,11 @@ async function updateChart(el, logData) {
   }
 }
 
+/**
+ * 计算给定值数组的中位数。
+ * @param {number[]} values - 需要计算中位数的数字数组。
+ * @return {number} - 数组的中位数。
+ */
 function calculateMedian(values) {
   values.sort((a, b) => a - b);
   const middle = Math.floor(values.length / 2);
@@ -131,6 +149,11 @@ function calculateMedian(values) {
   }
 }
 
+/**
+ * 异步函数：获取日志数据并更新图表。
+ * @param {HTMLElement} el - 图表容器的HTML元素。
+ * @param {string} name - 日志文件名。
+ */
 async function getLogData(el, name) {
   const response = await fetch(`./logs/${name}.log`);
   if (!response.ok) {
