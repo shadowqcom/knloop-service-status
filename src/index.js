@@ -244,7 +244,7 @@ function splitRowsByDate(rows) {
 
     const [dateTimeStr, resultStr] = row.split(",", 2);
     const dateTime = new Date(
-      Date.parse(dateTimeStr.replace(/-/g, "/") + " GMT")
+      Date.parse(dateTimeStr.replace(/-/g, "/"))
     );
     const dateStr = dateTime.toDateString();
 
@@ -289,9 +289,7 @@ function showTooltip(element, date, color) {
   const statusContainer = element.closest(".statusContainer"); // 找到对应的 statusContainer
   if (!statusContainer) return;
   const nextElement = statusContainer.nextElementSibling;
-  console.log("statusContainer", nextElement);
   const tooltipContent = nextElement.querySelector(".span-text"); // 获取 tooltipContent 元素
-  // tooltipContent.querySelector(".tooltipStatus").innerText = formatTiptime + " " + getStatusText(color);
   tooltipContent.innerText = formatTiptime + " " + getStatusText(color);
   tooltipContent.style.display = "block"; // 显示提示内容
 }
