@@ -38,10 +38,17 @@ async function genReportLog(container, key, url) {
 
 // 生成图表
 async function createChart(container, key, uptimeData) {
+  const div = create("div", "canvaschart");
+  div.id = "canvas";
+
   const canvas = create("canvas", "chart");
   canvas.id = "chart_clone_" + key++;
-  canvas.height = 180;
-  container.appendChild(canvas);
+  canvas.height = '100%';
+  canvas.width = '100%';
+
+  div.appendChild(canvas);
+  container.appendChild(div);
+
   await updateChart(canvas, uptimeData);
 }
 

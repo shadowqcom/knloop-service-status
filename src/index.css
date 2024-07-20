@@ -263,8 +263,13 @@ footer a {
 canvas {
   max-width: 100%;
   width: 100%;
+  /* height: 180px; */
   padding-right: 30px;
   padding-left: 30px;
+}
+
+.canvaschart{
+  height: 128px;
 }
 
 .span-wrapper {
@@ -320,7 +325,7 @@ canvas {
   }
 
   .statusHeadline {
-    margin-left: 0;
+    margin-left: 12px;
     margin-top: 0px;
   }
 
@@ -369,5 +374,13 @@ canvas {
 
   .statusContainer+.statusContainer {
     margin-top: 15px;
+  }
+
+  canvas {
+    max-width: 100%;
+    width: 100%;
+    height: 100px;
+    padding-right: 30px;
+    padding-left: 30px;
   }
 }

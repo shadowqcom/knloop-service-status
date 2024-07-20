@@ -64,8 +64,8 @@ async function updateChart(el, logData) {
     const validAverageData = averageData.filter(value => !isNaN(value));
     const validMedianData = medianData.filter(value => !isNaN(value));
     let yMaxConfig = {};
-    if (validAverageData.length === 0 || Math.max(...validAverageData) <= 10) {
-      yMaxConfig.max = 10;
+    if (validAverageData.length === 0 || Math.max(...validAverageData) <= 14) {
+      yMaxConfig.max = 15;
     }
     const ctx = el.getContext("2d");
     const chart = new Chart(ctx, {
