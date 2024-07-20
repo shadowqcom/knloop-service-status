@@ -1,64 +1,81 @@
+/**
+ * 异步函数updateChart用于更新图表，显示过去12小时的延迟数据。
+ * @param {HTMLElement} el - 图表容器的HTML元素。
+ * @param {string} logData - 日志数据，包含时间戳和延迟信息。
+ */
 async function updateChart(el, logData) {
   try {
+    // 获取当前时间，用于计算过去12小时的范围。
     const now = new Date();
+    // 计算当前小时的开始时间。
     const startOfCurrentHour = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
-      now.getHours(),
-      0,
-      0,
-      0
+      now.getHours()
     );
-    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 12 * 60 * 60 * 1000);
 
-    const logEntries = logData.split("\n");
+    // 计算12小时前的时间,因为有0点所以-11
+    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
+
+    // 分割日志数据以每行作为条目。
+    const logEntries = (logData.split("\r\n")).filter(entry => entry.trim() !== '');
+    // console.log(logEntries)
+
+    // 用于存储每小时的延迟数据。
     const hourlyData = {};
+    console.log(hourlyData)
+
     logEntries.forEach((entry) => {
-      const parts = entry.split(", ");
-      if (parts.length >= 3) {
-        const timeStr = parts[0];
-        const delay = parseInt(parts[2], 10);
-        const date = new Date(timeStr);
-        if (date >= twelveHoursAgo && date <= startOfCurrentHour) {
-          const hourKey = `${date.getHours()}:00`;
-          if (!hourlyData[hourKey]) {
-            hourlyData[hourKey] = { total: 0, count: 0, values: [] };
+      try {
+        const parts = entry.split(", ");
+        if (parts.length >= 3) {
+          const timeStr = parts[0];
+          const delay = parseInt(parts[2], 10);
+          const date = new Date(timeStr);
+
+          // 确保处理跨天情况，获取最近12小时内的数据
+          if (date >= twelveHoursAgo && date <= now) {
+            const hourKey = `${date.getHours()}:00`;
+            if (!hourlyData[hourKey]) {
+              hourlyData[hourKey] = { total: 0, count: 0, values: [] };
+            }
+            hourlyData[hourKey].total += delay;
+            hourlyData[hourKey].count++;
+            hourlyData[hourKey].values.push(delay);
           }
-          hourlyData[hourKey].total += delay;
-          hourlyData[hourKey].count++;
-          hourlyData[hourKey].values.push(delay);
         }
+      } catch (error) {
+        console.error(`Error processing entry: ${entry}`, error);
       }
     });
 
-    // 创建一个完整的时间序列，从当前时间的前 12 小时到当前时间的整点
+    // 初始化用于图表的标签、平均值数据和中位数数据。
     const labels = [];
     const averageData = [];
     const medianData = [];
+    // 从当前小时向前遍历12小时，计算每小时的平均值和中位数。
     let currentHour = new Date(startOfCurrentHour);
     for (let i = 0; i < 12; i++) {
       const hourKey = `${currentHour.getHours()}:00`;
-      const average =
-        hourlyData[hourKey] && hourlyData[hourKey].count > 0
-          ? hourlyData[hourKey].total / hourlyData[hourKey].count
-          : null;
-      const median =
-        hourlyData[hourKey] && hourlyData[hourKey].values.length > 0
-          ? calculateMedian(hourlyData[hourKey].values)
-          : null;
+      const average = hourlyData[hourKey] && hourlyData[hourKey].count > 0
+        ? hourlyData[hourKey].total / hourlyData[hourKey].count
+        : null;
+      const median = hourlyData[hourKey] && hourlyData[hourKey].values.length > 0
+        ? calculateMedian(hourlyData[hourKey].values)
+        : null;
       labels.push(hourKey);
       averageData.push(average);
       medianData.push(median);
       currentHour.setHours(currentHour.getHours() - 1);
     }
 
-    // 反转数组以正确显示时间顺序
+    // 反转数组，因为Chart.js默认从最近的时间开始绘制。
     labels.reverse();
     averageData.reverse();
     medianData.reverse();
 
-    // 过滤掉data数组中的NaN值,然后根据数据集中的最大值来决定是否设置y轴的最大值
+    // 根据数据设置y轴的最大值。
     const validAverageData = averageData.filter(value => !isNaN(value));
     const validMedianData = medianData.filter(value => !isNaN(value));
     const combinedData = validAverageData.concat(validMedianData);
@@ -67,6 +84,7 @@ async function updateChart(el, logData) {
       yMaxConfig.max = 15;
     }
 
+    // 创建图表。
     const ctx = el.getContext("2d");
     const chart = new Chart(ctx, {
       type: "line",
@@ -92,7 +110,7 @@ async function updateChart(el, logData) {
       options: {
         plugins: {
           legend: {
-            display: false, // 显示图例
+            display: false,
           },
         },
         scales: {
@@ -101,9 +119,9 @@ async function updateChart(el, logData) {
               display: false,
             },
             ticks: {
-              autoSkip: true, // 确保每个点都被标记
-              maxRotation: 65, // 设置最大旋转角度
-              minRotation: 0, // 设置最小旋转角度
+              autoSkip: true,
+              maxRotation: 65,
+              minRotation: 0,
             },
           },
           y: {
@@ -111,7 +129,7 @@ async function updateChart(el, logData) {
               display: false,
             },
             beginAtZero: true,
-            ...yMaxConfig, // 使用yMaxConfig来有条件地设置max
+            ...yMaxConfig,
           },
         },
       },
@@ -121,6 +139,11 @@ async function updateChart(el, logData) {
   }
 }
 
+/**
+ * 计算给定值数组的中位数。
+ * @param {number[]} values - 需要计算中位数的数值数组。
+ * @return {number} - 数组的中位数。
+ */
 function calculateMedian(values) {
   values.sort((a, b) => a - b);
   const middle = Math.floor(values.length / 2);
@@ -131,11 +154,17 @@ function calculateMedian(values) {
   }
 }
 
+/**
+ * 异步函数getLogData用于获取日志数据并更新图表。
+ * @param {HTMLElement} el - 图表容器的HTML元素。
+ * @param {string} name - 日志文件名。
+ */
 async function getLogData(el, name) {
   const response = await fetch(`./logs/${name}.log`);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
   const logData = await response.text();
+  // 使用获取的日志数据更新图表。
   updateChart(el, logData);
 }
