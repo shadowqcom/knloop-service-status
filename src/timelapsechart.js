@@ -1,5 +1,6 @@
 async function updateChart(el, logData) {
   try {
+    // 获取当前时间
     const now = new Date();
     const startOfCurrentHour = new Date(
       now.getFullYear(),
@@ -10,32 +11,44 @@ async function updateChart(el, logData) {
       0,
       0
     );
-    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 12 * 60 * 60 * 1000);
 
-    const logEntries = logData.split("\n");
+    // 计算12小时前的时间,因为有0点所以-11
+    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
+
+    // 分割日志数据以每行作为条目。
+    const logEntries = (logData.split("\r\n")).filter(entry => entry.trim() !== '');
+
+    // 用于存储每小时的延迟数据。
     const hourlyData = {};
+
     logEntries.forEach((entry) => {
-      const parts = entry.split(", ");
-      if (parts.length >= 3) {
-        const timeStr = parts[0];
-        const delay = parseInt(parts[2], 10);
-        const date = new Date(timeStr);
-        if (date >= twelveHoursAgo && date <= startOfCurrentHour) {
-          const hourKey = `${date.getHours()}:00`;
-          if (!hourlyData[hourKey]) {
-            hourlyData[hourKey] = { total: 0, count: 0, values: [] };
+      try {
+        const parts = entry.split(", ");
+        if (parts.length >= 3) {
+          const timeStr = parts[0];
+          const delay = parseInt(parts[2], 10);
+          const date = new Date(timeStr);
+          if (date >= twelveHoursAgo && date <= startOfCurrentHour) {
+            const hourKey = `${date.getHours()}:00`;
+            if (!hourlyData[hourKey]) {
+              hourlyData[hourKey] = { total: 0, count: 0, values: [] };
+            }
+            hourlyData[hourKey].total += delay;
+            hourlyData[hourKey].count++;
+            hourlyData[hourKey].values.push(delay);
           }
-          hourlyData[hourKey].total += delay;
-          hourlyData[hourKey].count++;
-          hourlyData[hourKey].values.push(delay);
         }
+      } catch (error) {
+        console.error(`Error processing entry: ${entry}`, error);
       }
     });
 
-    // 创建一个完整的时间序列，从当前时间的前 12 小时到当前时间的整点
+    // 初始化用于图表的标签、平均值数据和中位数数据。
     const labels = [];
     const averageData = [];
     const medianData = [];
+
+    // 从开始时间小时向前遍历12小时，计算每小时的平均值和中位数。
     let currentHour = new Date(startOfCurrentHour);
     for (let i = 0; i < 12; i++) {
       const hourKey = `${currentHour.getHours()}:00`;
@@ -53,17 +66,15 @@ async function updateChart(el, logData) {
       currentHour.setHours(currentHour.getHours() - 1);
     }
 
-    // 反转数组以正确显示时间顺序
+    // 反转数组，因为Chart.js默认从最近的时间开始绘制。
     labels.reverse();
     averageData.reverse();
     medianData.reverse();
 
-    // 过滤掉data数组中的NaN值,然后根据数据集中的最大值来决定是否设置y轴的最大值
-    const validAverageData = averageData.filter(value => !isNaN(value));
-    const validMedianData = medianData.filter(value => !isNaN(value));
-    const combinedData = validAverageData.concat(validMedianData);
+    // 合并averageData与medianData并去掉NaN值,根据最大值来决定是否设置y轴的最大值
+    const combinedData = (averageData.concat(medianData)).filter(value => !isNaN(value));
     let yMaxConfig = {};
-    if (validAverageData.length === 0 || Math.max(...combinedData) <= 14) {
+    if (combinedData.length === 0 || Math.max(...combinedData) <= 14) {
       yMaxConfig.max = 15;
     }
 
@@ -121,6 +132,7 @@ async function updateChart(el, logData) {
   }
 }
 
+// 计算中位数
 function calculateMedian(values) {
   values.sort((a, b) => a - b);
   const middle = Math.floor(values.length / 2);
