@@ -10,7 +10,7 @@ async function updateChart(el, logData) {
       0,
       0
     );
-    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 12 * 60 * 60 * 1000);
+    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
 
     const logEntries = logData.split("\n");
     const hourlyData = {};
