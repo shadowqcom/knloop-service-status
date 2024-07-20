@@ -14,7 +14,7 @@ async function updateChart(el, logData) {
 
     // 分割日志数据为单独的条目。
     // const logEntries = logData.split("\r\n").filter(entry => entry !== '');
-    const logEntries = logData.split("\n");
+    const logEntries = logData.split(/\r\n|\n/).filter(entry => entry !== '');
 
     // 初始化小时数据对象。
     const hourlyData = {};
