@@ -313,8 +313,12 @@ async function genAllReports() {
   const configLines = configText.split("\n");
   for (let ii = 0; ii < configLines.length; ii++) {
     const configLine = configLines[ii];
+    // 排除前面带有 # 的注释行
+    if (configLine.trim().startsWith("#")) {
+      continue;
+    }
     const [key, url] = configLine.split("=");
-    if (!key || !url) {
+    if (!key ||!url) {
       continue;
     }
     await genReportLog(document.getElementById("reports"), key, url);
