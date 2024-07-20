@@ -13,8 +13,6 @@ async function updateChart(el, logData) {
     const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
 
     // 分割日志数据为单独的条目。
-    // const logEntries = logData.split("\r\n").filter(entry => entry !== '');
-    // const logEntries = logData.split("\r\n");
     const logEntries = logData.split(/\r\n|\n/).filter(entry => entry !== '');
 
     // 初始化小时数据对象。
