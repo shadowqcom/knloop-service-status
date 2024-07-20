@@ -24,8 +24,6 @@ async function updateChart(el, logData) {
 
     // 用于存储每小时的延迟数据。
     const hourlyData = {};
-    console.log(hourlyData)
-
     logEntries.forEach((entry) => {
       try {
         const parts = entry.split(", ");
