@@ -10,17 +10,19 @@ async function updateChart(el, logData) {
       0,
       0
     );
-    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 12 * 60 * 60 * 1000);
+    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
 
-    const logEntries = logData.split("\n");
+    const logEntries = logData.split("\r\n");
     const hourlyData = {};
+    console.log(hourlyData)
+
     logEntries.forEach((entry) => {
       const parts = entry.split(", ");
       if (parts.length >= 3) {
         const timeStr = parts[0];
         const delay = parseInt(parts[2], 10);
         const date = new Date(timeStr);
-        if (date >= twelveHoursAgo && date <= now) {
+        if (date >= twelveHoursAgo && date <= startOfCurrentHour) {
           const hourKey = `${date.getHours()}:00`;
           if (!hourlyData[hourKey]) {
             hourlyData[hourKey] = { total: 0, count: 0, values: [] };
