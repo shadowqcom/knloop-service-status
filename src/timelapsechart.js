@@ -10,9 +10,7 @@ async function updateChart(el, logData) {
       0,
       0
     );
-    const oneDayAgo = new Date(
-      startOfCurrentHour.getTime() - 24 * 60 * 60 * 1000
-    );
+    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 12 * 60 * 60 * 1000);
 
     const logEntries = logData.split("\n");
     const hourlyData = {};
@@ -22,7 +20,7 @@ async function updateChart(el, logData) {
         const timeStr = parts[0];
         const delay = parseInt(parts[2], 10);
         const date = new Date(timeStr);
-        if (date >= oneDayAgo && date <= startOfCurrentHour) {
+        if (date >= twelveHoursAgo && date <= startOfCurrentHour) {
           const hourKey = `${date.getHours()}:00`;
           if (!hourlyData[hourKey]) {
             hourlyData[hourKey] = { total: 0, count: 0, values: [] };
@@ -63,10 +61,12 @@ async function updateChart(el, logData) {
     // 过滤掉data数组中的NaN值,然后根据数据集中的最大值来决定是否设置y轴的最大值
     const validAverageData = averageData.filter(value => !isNaN(value));
     const validMedianData = medianData.filter(value => !isNaN(value));
+    const combinedData = validAverageData.concat(validMedianData);
     let yMaxConfig = {};
-    if (validAverageData.length === 0 || Math.max(...validAverageData) <= 14) {
+    if (validAverageData.length === 0 || Math.max(...combinedData) <= 14) {
       yMaxConfig.max = 15;
     }
+
     const ctx = el.getContext("2d");
     const chart = new Chart(ctx, {
       type: "line",

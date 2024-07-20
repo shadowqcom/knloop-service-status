@@ -6,10 +6,13 @@ URLSARRAY=()
 # 读取urls.cfg配置文件
 urlsConfig="./src/urls.cfg"
 while read -r line; do
-  echo "[$line] 正在检测中······"
-  IFS='=' read -ra TOKENS <<<"$line"
-  KEYSARRAY+=(${TOKENS[0]})
-  URLSARRAY+=(${TOKENS[1]})
+    if [[ ${line} =~ ^\s*# ]] ; then
+        continue
+    fi
+    echo "[$line] 正在检测中······"
+    IFS='=' read -ra TOKENS <<<"$line"
+    KEYSARRAY+=(${TOKENS[0]})
+    URLSARRAY+=(${TOKENS[1]})
 done <"$urlsConfig"
 
 # 创建需要的文件夹
