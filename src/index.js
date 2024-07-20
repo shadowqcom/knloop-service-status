@@ -38,17 +38,9 @@ async function genReportLog(container, key, url) {
 
 // 生成图表
 async function createChart(container, key, uptimeData) {
-  const div = create("div", "canvaschart");
-  div.id = "canvas";
-
   const canvas = create("canvas", "chart");
   canvas.id = "chart_clone_" + key++;
-  canvas.height = '100%';
-  canvas.width = '100%';
-
-  div.appendChild(canvas);
-  container.appendChild(div);
-
+  container.appendChild(canvas);
   await updateChart(canvas, uptimeData);
 }
 
@@ -89,10 +81,10 @@ function getColor(uptimeVal) {
   return uptimeVal == null
     ? "nodata"
     : uptimeVal == 1
-    ? "success"
-    : uptimeVal < 0.3
-    ? "failure"
-    : "partial";
+      ? "success"
+      : uptimeVal < 0.3
+        ? "failure"
+        : "partial";
 }
 
 // 构建状态方块
@@ -164,12 +156,12 @@ function getStatusText(color) {
   return color == "nodata"
     ? "No Data"
     : color == "success"
-    ? "UP"
-    : color == "failure"
-    ? "Down"
-    : color == "partial"
-    ? "Degraded"
-    : "Unknown";
+      ? "UP"
+      : color == "failure"
+        ? "Down"
+        : color == "partial"
+          ? "Degraded"
+          : "Unknown";
 }
 
 // 获取状态描述文本
@@ -177,12 +169,12 @@ function getStatusDescriptiveText(color) {
   return color == "nodata"
     ? "当前暂无数据。"
     : color == "success"
-    ? "状态正常。"
-    : color == "failure"
-    ? "严重故障。"
-    : color == "partial"
-    ? "部分异常。"
-    : "未知状态";
+      ? "状态正常。"
+      : color == "failure"
+        ? "严重故障。"
+        : color == "partial"
+          ? "部分异常。"
+          : "未知状态";
 }
 
 // 获取提示工具文本
@@ -316,7 +308,7 @@ async function genAllReports() {
       continue;
     }
     const [key, url] = configLine.split("=");
-    if (!key ||!url) {
+    if (!key || !url) {
       continue;
     }
     await genReportLog(document.getElementById("reports"), key, url);

@@ -10,6 +10,7 @@ async function updateChart(el, logData) {
       0,
       0
     );
+
     const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
 
     // 分割日志数据为单独的条目。
@@ -26,7 +27,7 @@ async function updateChart(el, logData) {
         const delay = parseInt(parts[2], 10);
         const date = new Date(timeStr);
 
-        // 如果日期在过去12小时内，累加到相应的小时数据。
+        // 如果日期在过去12小时内，累加从现在到过去12小时的数据。
         if (date >= twelveHoursAgo && date <= now) {
           const hourKey = `${date.getHours()}:00`;
           if (!hourlyData[hourKey]) {
@@ -76,7 +77,7 @@ async function updateChart(el, logData) {
 
     // 获取图表上下文并创建新的Chart实例。
     const ctx = el.getContext("2d");
-    const chart = new Chart(ctx, {
+    new Chart(ctx, {
       type: "line",
       data: {
         labels,
