@@ -13,19 +13,18 @@ async function genReportLog(container, key, url) {
   container.appendChild(statusStream);
 
   // 创建一个div来包裹span标签
-  const divWrapper = document.createElement('div');
-  divWrapper.classList.add('span-wrapper'); // 添加一个类以便在CSS中定位这个div
-  divWrapper.id = 'status-prompt'; // 设置div的ID
-
+  const divWrapper = create("div");
+  divWrapper.classList.add("span-wrapper"); // 添加一个类以便在CSS中定位这个div
+  divWrapper.id = "status-prompt"; // 设置div的ID
 
   // 创建并添加两个span标签到divWrapper中
-  const spanLeft = document.createElement('span');
-  spanLeft.textContent = '响应时间(ms)';
-  spanLeft.classList.add('align-left');
+  const spanLeft = create("span", "span-title");
+  spanLeft.textContent = "响应时间(ms)";
+  spanLeft.classList.add("align-left");
 
-  const spanRight = document.createElement('span');
-  spanRight.textContent = '占位文本';
-  spanRight.classList.add('align-right');
+  const spanRight = create("span", "span-text");
+  // spanRight.textContent = '占位文本';
+  spanRight.classList.add("align-right");
 
   divWrapper.appendChild(spanLeft);
   divWrapper.appendChild(spanRight);
@@ -83,10 +82,10 @@ function getColor(uptimeVal) {
   return uptimeVal == null
     ? "nodata"
     : uptimeVal == 1
-      ? "success"
-      : uptimeVal < 0.3
-        ? "failure"
-        : "partial";
+    ? "success"
+    : uptimeVal < 0.3
+    ? "failure"
+    : "partial";
 }
 
 // 构建状态方块
@@ -158,12 +157,12 @@ function getStatusText(color) {
   return color == "nodata"
     ? "No Data"
     : color == "success"
-      ? "UP"
-      : color == "failure"
-        ? "Down"
-        : color == "partial"
-          ? "Degraded"
-          : "Unknown";
+    ? "UP"
+    : color == "failure"
+    ? "Down"
+    : color == "partial"
+    ? "Degraded"
+    : "Unknown";
 }
 
 // 获取状态描述文本
@@ -171,12 +170,12 @@ function getStatusDescriptiveText(color) {
   return color == "nodata"
     ? "当前暂无数据。"
     : color == "success"
-      ? "状态正常。"
-      : color == "failure"
-        ? "严重故障。"
-        : color == "partial"
-          ? "部分异常。"
-          : "未知状态";
+    ? "状态正常。"
+    : color == "failure"
+    ? "严重故障。"
+    : color == "partial"
+    ? "部分异常。"
+    : "未知状态";
 }
 
 // 获取提示工具文本
@@ -185,7 +184,7 @@ function getTooltip(key, date, quartile, color) {
   return `${key} | ${date.toDateString()} : ${quartile} : ${statusText}`;
 }
 
-function create(tag, className) {
+function create(tag, className = "") {
   let element = document.createElement(tag);
   element.className = className;
   return element;
@@ -281,15 +280,22 @@ function showTooltip(element, date, color) {
   const formatTiptime = `${weekday} ${year}-${month}-${day}`;
 
   const statusContainer = element.closest(".statusContainer"); // 找到对应的 statusContainer
-  const tooltipContent = statusContainer.querySelector(".tooltipContent"); // 获取 tooltipContent 元素
-  tooltipContent.querySelector(".tooltipStatus").innerText = formatTiptime + " " + getStatusText(color);
+  if (!statusContainer) return;
+  const nextElement = statusContainer.nextElementSibling;
+  console.log("statusContainer", nextElement);
+  const tooltipContent = nextElement.querySelector(".span-text"); // 获取 tooltipContent 元素
+  // tooltipContent.querySelector(".tooltipStatus").innerText = formatTiptime + " " + getStatusText(color);
+  tooltipContent.innerText = formatTiptime + " " + getStatusText(color);
   tooltipContent.style.display = "block"; // 显示提示内容
 }
 
 // 隐藏提示
 function hideTooltip(element) {
   const statusContainer = element.closest(".statusContainer"); // 找到对应的 statusContainer
-  const tooltipContent = statusContainer.querySelector(".tooltipContent"); // 获取 tooltipContent 元素
+  if (!statusContainer) return;
+  const nextElement = statusContainer.nextElementSibling;
+  // const tooltipContent = statusContainer.querySelector(".tooltipContent"); // 获取 tooltipContent 元素
+  const tooltipContent = nextElement.querySelector(".span-text"); // 获取 tooltipContent 元素
   tooltipContent.style.display = "none"; // 隐藏提示内容
 }
 
