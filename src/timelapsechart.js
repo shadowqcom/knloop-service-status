@@ -1,8 +1,4 @@
-/**
- * 异步函数：更新图表，根据日志数据绘制过去12小时的平均延迟和中位数延迟。
- * @param {HTMLElement} el - 图表容器的HTML元素。
- * @param {string} logData - 日志数据，以换行分隔的字符串。
- */
+
 async function updateChart(el, logData) {
   try {
     const now = new Date();
@@ -18,7 +14,8 @@ async function updateChart(el, logData) {
     const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
 
     // 分割日志数据为单独的条目。
-    const logEntries = logData.split("\r\n").filter(entry => entry !== '');
+    // const logEntries = logData.split("\r\n").filter(entry => entry !== '');
+    const logEntries = logData.split("\r\n");
 
     // 初始化小时数据对象。
     const hourlyData = {};
