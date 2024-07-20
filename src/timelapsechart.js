@@ -20,7 +20,6 @@ async function updateChart(el, logData) {
 
     // 用于存储每小时的延迟数据。
     const hourlyData = {};
-    console.log(hourlyData)
 
     logEntries.forEach((entry) => {
       try {
@@ -133,7 +132,7 @@ async function updateChart(el, logData) {
   }
 }
 
-// 计算中位数
+// 计算中位数字
 function calculateMedian(values) {
   values.sort((a, b) => a - b);
   const middle = Math.floor(values.length / 2);
