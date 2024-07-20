@@ -20,15 +20,33 @@ Web=https://knloop.com
 Google=https://google.com
 ```
 
-### 3. 修改 `index.html` 中的title和名称.
+### 3. 修改个性化信息
 
+3.1、 `index.html` 中的title和名称 :
 ```html
 <title>knloop status</title>
 <span> knloop service status </span>
-```
-### 4. 替换loge
+```  
+3.2、 替换Logo
 ```html
 <img src="./src/logo.svg" alt="Logo" />
+```
+
+### 4. 修改显示数据时间范围
+4.1、 状态天数范围:  
+`./src/index.js` 中的maxDays 默认60天内 :
+```js
+const maxDays = 60;
+```
+4.2、 延迟数据报表时间范围:  
+`./src/timelapsechart.js` 修改相关逻辑，默认12小时内 :  
+```js
+const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
+```
+```js
+for (let i = 0; i < 12; i++) {
+    ···
+}
 ```
 
 ### 5. 配置 GitHub Pages.
