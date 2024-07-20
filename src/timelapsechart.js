@@ -1,4 +1,3 @@
-
 async function updateChart(el, logData) {
   try {
     const now = new Date();
@@ -131,11 +130,6 @@ async function updateChart(el, logData) {
   }
 }
 
-/**
- * 计算给定值数组的中位数。
- * @param {number[]} values - 需要计算中位数的数字数组。
- * @return {number} - 数组的中位数。
- */
 function calculateMedian(values) {
   values.sort((a, b) => a - b);
   const middle = Math.floor(values.length / 2);
@@ -146,11 +140,6 @@ function calculateMedian(values) {
   }
 }
 
-/**
- * 异步函数：获取日志数据并更新图表。
- * @param {HTMLElement} el - 图表容器的HTML元素。
- * @param {string} name - 日志文件名。
- */
 async function getLogData(el, name) {
   const response = await fetch(`./logs/${name}.log`);
   if (!response.ok) {
