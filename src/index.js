@@ -5,7 +5,7 @@
 // ***********************************
 const maxDays = 60;
 const urlspath = "./src/urls.cfg";
-const logspath = "//raw.githubusercontent.com/shadowqcom/knloop-service-status/main/logs/";
+const logspath = "//raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs/";
 // ***********************************
 
 /**
