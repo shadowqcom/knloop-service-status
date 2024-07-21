@@ -64,13 +64,6 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
     echo "$dateTime, $result, ${connect_time_ms:-null}" >>"./logs/${key}_report.log"
     # 保留5000条数据
     echo "$(tail -5000 ./logs/${key}_report.log)" >"./logs/${key}_report.log"
-    
-    # 测试：每次写入数据后都直接提交
-    # git config --local user.name 'Github Actions'
-    # git config --local user.email 'Actions@knloop.com'
-    # git add -A --force ./logs/
-    # git commit -m '🆙 [Automated] Update service status logs'
-    # git push origin main
   ) &
   pids+=($!)
 done
@@ -113,3 +106,12 @@ if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; th
           }
       }'
 fi
+# 清理临时目录
+rm -rf ./tmp/
+
+# 提交
+git config --local user.name 'Github Actions'
+git config --local user.email 'Actions@knloop.com'
+git add -A --force ./logs/
+git commit -m '🆙 [Automated] Update service status logs'
+git push origin main
