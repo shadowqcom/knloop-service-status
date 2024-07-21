@@ -66,11 +66,11 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
     echo "$(tail -5000 ./logs/${key}_report.log)" >"./logs/${key}_report.log"
     
     # 测试：每次写入数据后都直接提交
-    git config --local user.name 'Github Actions'
-    git config --local user.email 'Actions@knloop.com'
-    git add -A --force ./logs/
-    git commit -m '🆙 [Automated] Update service status logs'
-    git push origin main
+    # git config --local user.name 'Github Actions'
+    # git config --local user.email 'Actions@knloop.com'
+    # git add -A --force ./logs/
+    # git commit -m '🆙 [Automated] Update service status logs'
+    # git push origin main
   ) &
   pids+=($!)
 done
