@@ -28,7 +28,6 @@ async function updateChart(el, logData) {
 
     // 初始化小时数据对象。
     const hourlyData = {};
-    // console.log(hourlyData)
 
     // 遍历日志条目，提取并汇总每小时的数据。
     logEntries.forEach((entry) => {

@@ -5,6 +5,7 @@
 // ***********************************
 const maxDays = 60;
 const urlspath = "./src/urls.cfg";
+const logspath = "//raw.githubusercontent.com/shadowqcom/knloop-service-status/main/logs/"
 // ***********************************
 
 /**
@@ -13,8 +14,9 @@ const urlspath = "./src/urls.cfg";
  * @param {string} key - 报告日志的唯一标识键。
  * @param {string} url - 相关URL，用于报告中显示。
  */
-async function genReportLog(container, key, url) {
-  const response = await fetch("logs/" + key + "_report.log");
+async function genReportLog(container, key, url, logspath) {
+  // const response = await fetch("logs/" + key + "_report.log");
+  const response = await fetch(logspath + key + "_report.log");
   let statusLines = "";
   if (response.ok) {
     statusLines = await response.text();
@@ -323,7 +325,7 @@ async function genAllReports(urlspath) {
     if (!key || !url) {
       continue;
     }
-    await genReportLog(document.getElementById("reports"), key, url);
+    await genReportLog(document.getElementById("reports"), key, url, logspath);
   }
 }
 
