@@ -28,14 +28,16 @@ async function updateChart(el, logData) {
 
     // 初始化小时数据对象。
     const hourlyData = {};
+    // console.log(hourlyData)
 
     // 遍历日志条目，提取并汇总每小时的数据。
     logEntries.forEach((entry) => {
-      const parts = entry.split(", ");
+      const parts = entry.split(", ").filter(entry => entry !== 'null');
       if (parts.length >= 3) {
         const timeStr = parts[0];
         const delay = parseInt(parts[2], 10);
         const date = new Date(timeStr);
+        
 
         // 如果日期在过去12小时内，累加从现在到过去12小时的数据。
         if (date >= twelveHoursAgo && date <= now) {
