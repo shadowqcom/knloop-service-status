@@ -55,12 +55,21 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       connect_time_ms=$(awk '{printf "%.0f\n", ($1 * 1000 + 0.5)}' <<<"$connect_time_seconds")
     fi
 
+    # 测试：写入前先pull
+    git pull origin main
+
     # 日志数据写入log文件
     dateTime=$(date +'%Y-%m-%d %H:%M')
     echo "$dateTime, $result, ${connect_time_ms:-null}" >>"./logs/${key}_report.log"
     # 保留5000条数据
     echo "$(tail -5000 ./logs/${key}_report.log)" >"./logs/${key}_report.log"
-
+    
+    # 测试：每次写入数据后都直接提交
+    git config --local user.name 'Github Actions'
+    git config --local user.email 'Actions@knloop.com'
+    git add -A --force ./logs/
+    git commit -m '🆙 [Automated] Update service status logs'
+    git push origin main
   ) &
   pids+=($!)
 done
