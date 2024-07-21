@@ -56,6 +56,7 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
     fi
 
     # 测试：写入前先pull
+    git checkout main
     git pull origin main
 
     # 日志数据写入log文件
