@@ -2,28 +2,25 @@ name: Deploy Static Site to GitHub Pages
 
 on:
   schedule:
-    - cron: '0 0 * * *' 
-  workflow_dispatch:
+    - cron: '0 0 * * *'
 
 permissions:
-  pages: write
-  id-token: write
+  pages: write     # 必须有写权限来更新 GitHub Pages 分支
+  id-token: write  # 必须有写权限来使用 OIDC 身份验证
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
-
-    concurrency:
-      group: deploy-pages
-      cancel-in-progress: true
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v3
+    - name: Upload entire repository root as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: github-pages
+        path: ./
 
     - name: Deploy to GitHub Pages
-      id: deployment
       uses: actions/deploy-pages@v4
