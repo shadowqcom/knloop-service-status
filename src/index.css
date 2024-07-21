@@ -200,7 +200,7 @@ footer a {
 
 .statusSubtitle {
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
@@ -215,7 +215,6 @@ footer a {
 }
 
 .statusUptime {
-  flex: 1;
   text-align: right;
   color: #7c7c7c;
   font-size: 12px;
