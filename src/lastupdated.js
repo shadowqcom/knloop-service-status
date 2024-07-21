@@ -1,4 +1,9 @@
-// 获取最后更新时间
+/**
+ * 异步函数：获取最新更新时间
+ * 该函数通过读取配置文件中的URL列表，来确定哪些资源是最新的。
+ * 它首先从配置文件中读取URL列表，然后过滤掉空白行和注释行。
+ * 最后，它准备一个列表，包含每个URL及其对应的最新更新时间。
+ */
 async function lastUpdatedtime() {
   const configResponse = await fetch("./src/urls.cfg");
   const configText = await configResponse.text();
@@ -21,8 +26,6 @@ async function lastUpdatedtime() {
     const lastTime = lines[lines.length - 1].split(",")[0];
     lastlinetime.push(lastTime);
   }
-
-  console.log(lastlinetime);
 
   // 计算出lastlinetime中最新的时间
   const lastTime = lastlinetime.reduce((a, b) => {

@@ -1,6 +1,12 @@
+// 状态信息展示的最大天数
 const maxDays = 60;
 
-// 生成报告日志
+/**
+ * 异步生成报告日志。
+ * @param {HTMLElement} container - 用于装载报告日志的容器元素。
+ * @param {string} key - 报告日志的唯一标识键。
+ * @param {string} url - 相关URL，用于报告中显示。
+ */
 async function genReportLog(container, key, url) {
   const response = await fetch("logs/" + key + "_report.log");
   let statusLines = "";
@@ -315,4 +321,17 @@ async function genAllReports() {
   }
 }
 
-genAllReports();
+// 将每个类名为statusStreamContainer的容器滚动到最右端。
+function scrollToRightEnd() {
+  var containers = document.querySelectorAll(".statusStreamContainer");
+  containers.forEach(function (container) {
+      container.scrollLeft = container.scrollWidth;
+  });
+}
+// 确保所有报告生成完成后再滚动
+async function runReportsAndScroll() {
+  await genAllReports(); // 等待 genAllReports 完成
+  scrollToRightEnd();   // 然后执行 scrollToRightEnd
+}
+
+runReportsAndScroll(); 

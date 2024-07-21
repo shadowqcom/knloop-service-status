@@ -4,7 +4,7 @@
 <head>
   <title>knloop status</title>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
   <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
   <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。" />
   <link rel="icon" href="./favicon.ico" />
@@ -43,25 +43,28 @@
     </div>
   </div>
 
-  <!-- 客户端信息 -->
   <div id="clientInfo" class="clientInfo">
     <p>
-      <span data-trace-placeholder="ip">IP : $ip  |  </span>
-      <span data-trace-placeholder="loc">Loc : $loc  |  </span>
+      <span data-trace-placeholder="ip">IP : $ip | </span>
+      <span data-trace-placeholder="loc">Loc : $loc | </span>
       <span data-trace-placeholder="ts">TS : $ts</span>
     </p>
     <p><span data-trace-placeholder="uag">UA : $uag</span></p>
   </div>
-  <!-- /客户端信息 -->
 
-  <footer><a href="https://knloop.com">knloop</a> service status .</footer>
+  <footer>
+    <a href="https://knloop.com">knloop</a> service status. <a
+      href="https://github.com/shadowqcom/knloop-service-status">Code on Github</a>
+    <p class="copy-right">Copyright ©
+      <script>document.write(new Date().getFullYear())</script> knloop. All Rights Reserved. knloop 版权所有
+    </p>
+  </footer>
 </body>
 
-<script src="./src/chart.js"></script><!-- 图表 -->
-<script src="./src/timelapsechart.js"></script><!-- 图表 -->
-<script src="./src/lastupdated.js"></script><!-- log最后更新时间 -->
-<script src="./src/getclieninfo.js"></script><!-- 客户端信息 -->
-<script src="./src/scrollbar.js"></script><!-- 滚动条 -->
+<script src="./src/chart.js"></script>
+<script src="./src/timelapsechart.js"></script>
+<script src="./src/lastupdated.js"></script>
+<script src="./src/getclieninfo.js"></script>
 <script src="./src/index.js"></script>
 
 </html>

@@ -1,3 +1,13 @@
+/**
+ * 异步函数：更新图表数据
+ * 
+ * 本函数用于根据给定的日志数据更新图表。它首先确定当前小时的开始时间，
+ * 然后从日志数据中筛选出该小时内的数据点，最后更新图表以反映这些数据。
+ * 
+ * @param {HTMLElement} el - 图表元素的引用，用于更新图表的DOM元素。
+ * @param {Array} logData - 包含日志数据的数组，每个元素代表一个数据点。
+ * @returns {void}
+ */
 async function updateChart(el, logData) {
   try {
     const now = new Date();
