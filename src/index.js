@@ -9,14 +9,30 @@ const logspath = "//raw.githubusercontent.com/shadowqcom/knloop-service-status/m
 // ***********************************
 
 /**
+ * 异步函数：根据urls.cfg文件，生成所有报告
+ * 该函数通过读取配置文件中的URL列表，依次生成相应的报告。
+ * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的URL列表。
+ */
+async function genAllReports(urlspath) {
+  const response = await fetch(urlspath);
+  const configText = await response.text();
+  const configLines = configText.split(/\r\n|\n/).filter(entry => entry !== '').filter(line => !line.trim().startsWith("#"));
+  for (let ii = 0; ii < configLines.length; ii++) {
+    const configLine = configLines[ii];
+    const [key, url] = configLine.split("=");
+    await genReportLog(document.getElementById("reports"), key, url, logspath);
+  }
+}
+/**
  * 异步生成报告日志。
  * @param {HTMLElement} container - 用于装载报告日志的容器元素。
  * @param {string} key - 报告日志的唯一标识键。
  * @param {string} url - 相关URL，用于报告中显示。
+ * @param {string} logspath - 日志文件的路径。
  */
 async function genReportLog(container, key, url, logspath) {
-  // const response = await fetch("logs/" + key + "_report.log");
-  const response = await fetch(logspath + key + "_report.log");
+  const response = await reslogs(logspath, key);
+  console.log(response)
   let statusLines = "";
   if (response.ok) {
     statusLines = await response.text();
@@ -58,6 +74,12 @@ async function createChart(container, key, uptimeData) {
   await updateChart(canvas, uptimeData);
 }
 
+// 统一读取并处理所有.log文件，供其他地方使用。
+async function reslogs(logspath, key) {
+  const response = await fetch(logspath + key + "_report.log");
+  console.log(response)
+  return response;
+}
 // 构建状态流
 function constructStatusStream(key, url, uptimeData) {
   let streamContainer = templatize("statusStreamContainerTemplate");
@@ -197,6 +219,12 @@ function getTooltip(key, date, quartile, color) {
   return `${key} | ${date.toDateString()} : ${quartile} : ${statusText}`;
 }
 
+/**
+ * 该函数通过document.createElement方法创建一个指定标签的元素，
+ * @param {string} tag - 要创建的元素的标签名。
+ * @param {string} [className=""] - 元素的类名，默认为空字符串。
+ * @returns {HTMLElement} - 返回创建并初始化后的HTML元素。
+ */
 function create(tag, className = "") {
   let element = document.createElement(tag);
   element.className = className;
@@ -233,8 +261,8 @@ function getDayAverage(val) {
 }
 
 // 获取相对天数
-function getRelativeDays(date1, date2) {
-  return Math.floor(Math.abs((date1 - date2) / (24 * 3600 * 1000)));
+function getRelativeDays(dateend, datestart) {
+  return Math.floor(Math.abs((dateend - datestart) / (24 * 3600 * 1000)));
 }
 
 // 按日期分割行
@@ -278,7 +306,6 @@ function splitRowsByDate(rows) {
   return dateValues;
 }
 
-let tooltipTimeout = null;
 // 显示提示
 function showTooltip(element, date, color) {
   const toolTiptime = new Date(date);
@@ -310,33 +337,15 @@ function hideTooltip(element) {
   tooltipContent.style.display = "none"; // 隐藏提示内容
 }
 
-// 生成所有报告
-async function genAllReports(urlspath) {
-  const response = await fetch(urlspath);
-  const configText = await response.text();
-  const configLines = configText.split("\n");
-  for (let ii = 0; ii < configLines.length; ii++) {
-    const configLine = configLines[ii];
-    // 排除前面带有 # 的注释行
-    if (configLine.trim().startsWith("#")) {
-      continue;
-    }
-    const [key, url] = configLine.split("=");
-    if (!key || !url) {
-      continue;
-    }
-    await genReportLog(document.getElementById("reports"), key, url, logspath);
-  }
-}
 
-// 将每个类名为statusStreamContainer的容器滚动到最右端。
+
+// 将每个状态列表横条滚动到最右端。
 function scrollToRightEnd() {
   var containers = document.querySelectorAll(".statusStreamContainer");
   containers.forEach(function (container) {
       container.scrollLeft = container.scrollWidth;
   });
 }
-
 
 /**
  * 需要被执行的函数统一在这里被执行
