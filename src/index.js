@@ -32,7 +32,6 @@ async function genAllReports(urlspath) {
  */
 async function genReportLog(container, key, url, logspath) {
   const response = await reslogs(logspath, key);
-  console.log(response)
   let statusLines = "";
   if (response.ok) {
     statusLines = await response.text();
@@ -77,7 +76,6 @@ async function createChart(container, key, uptimeData) {
 // 统一读取并处理所有.log文件，供其他地方使用。
 async function reslogs(logspath, key) {
   const response = await fetch(logspath + key + "_report.log");
-  console.log(response)
   return response;
 }
 // 构建状态流
