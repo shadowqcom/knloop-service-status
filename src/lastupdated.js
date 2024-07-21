@@ -4,8 +4,8 @@
  * 它首先从配置文件中读取URL列表，然后过滤掉空白行和注释行。
  * 最后，它准备一个列表，包含每个URL及其对应的最新更新时间。
  */
-async function lastUpdatedtime() {
-  const configResponse = await fetch("./src/urls.cfg");
+async function lastUpdatedtime(urlspath) {
+  const configResponse = await fetch(urlspath);
   const configText = await configResponse.text();
   const configLines = configText.split(/\r\n|\n/).filter(entry => entry !== '').filter(line => !line.trim().startsWith("#"))
   const urllist = configLines.map(line => line.split("="));
@@ -43,8 +43,3 @@ function updateLastUpdated(lastUpdateTime) {
     updateTimeElement.textContent = `Last updated on : ${lastUpdateTime}`;
   }
 }
-
-// 当 DOM 加载完成后调用 lastUpdatedtime 函数
-document.addEventListener("DOMContentLoaded", function () {
-  lastUpdatedtime();
-});

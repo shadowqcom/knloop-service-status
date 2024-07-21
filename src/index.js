@@ -1,5 +1,11 @@
-// 状态信息展示的最大天数,建议设置在30到90之间，否则页面无法自适应。
+/**
+ * maxDays 建议设置在30到90之间，否则页面无法自适应。
+ * urlspath 是设置监控的URL列表。
+ */
+// ***********************************
 const maxDays = 60;
+const urlspath = "./src/urls.cfg";
+// ***********************************
 
 /**
  * 异步生成报告日志。
@@ -303,8 +309,8 @@ function hideTooltip(element) {
 }
 
 // 生成所有报告
-async function genAllReports() {
-  const response = await fetch("./src/urls.cfg");
+async function genAllReports(urlspath) {
+  const response = await fetch(urlspath);
   const configText = await response.text();
   const configLines = configText.split("\n");
   for (let ii = 0; ii < configLines.length; ii++) {
@@ -328,10 +334,17 @@ function scrollToRightEnd() {
       container.scrollLeft = container.scrollWidth;
   });
 }
-// 确保所有报告生成完成后再滚动
-async function runReportsAndScroll() {
-  await genAllReports(); // 等待 genAllReports 完成
-  scrollToRightEnd();   // 然后执行 scrollToRightEnd
+
+
+/**
+ * 需要被执行的函数统一在这里被执行
+ */
+async function main() {
+  document.addEventListener("DOMContentLoaded", function () {
+    lastUpdatedtime(urlspath); // 当 DOM 加载完成后显示最新更新时间
+  });
+  await genAllReports(urlspath); // 等待所有报告完成
+  scrollToRightEnd();   // 然后执行滚动
 }
 
-runReportsAndScroll(); 
+main(); 

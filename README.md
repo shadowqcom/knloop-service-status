@@ -71,6 +71,19 @@ for (let i = 0; i < 12; i++) {
 - `Name` 填 `WECHAT_WEBHOOK_KEY` ，
 - `Secret` 填写你的企业微信机器人 Webhook地址 key= 后面的值。
 
+### 7、在其他机器运行检查脚本
+1、需要在目标机器上安装git
+2、需要配置git密钥
+3、把 `./localCheck\checkandpush.sh`复制到你个有权限的目录下
+4、设置自动任务，定时运行`checkandpush.sh`
+
+设置定时任务：
+```sh
+crontab -e
+```
+```sh
+*/2 * * * * /bin/bash /path/to/checkandpush.sh > /dev/null 2>&1
+```
 
 ## 🛠️ 工作原理
 
