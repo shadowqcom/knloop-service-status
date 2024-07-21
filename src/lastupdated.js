@@ -4,12 +4,11 @@
  * 它首先从配置文件中读取URL列表，然后过滤掉空白行和注释行。
  * 最后，它准备一个列表，包含每个URL及其对应的最新更新时间。
  */
-async function lastUpdatedtime(urlspath) {
+async function lastUpdatedtime(urlspath, logspath) {
   const configResponse = await fetch(urlspath);
   const configText = await configResponse.text();
   const configLines = configText.split(/\r\n|\n/).filter(entry => entry !== '').filter(line => !line.trim().startsWith("#"))
   const urllist = configLines.map(line => line.split("="));
-  // console.log(urllist);
 
   // 定义一个数组存储每次循环得到的值
   const lastlinetime = [];
@@ -17,7 +16,7 @@ async function lastUpdatedtime(urlspath) {
   // 循环urllist每个值的第一个key,通过key取每个log文件的最后一个有效值。
   for (let i = 0; i < urllist.length; i++) {
     const key = urllist[i][0];
-    const response = await fetch("logs/" + key + "_report.log");
+    const response = await fetch(logspath + key + "_report.log");
     let statusLines = "";
     if (response.ok) {
       statusLines = await response.text();

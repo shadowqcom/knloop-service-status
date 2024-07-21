@@ -343,7 +343,7 @@ function scrollToRightEnd() {
  */
 async function main() {
   document.addEventListener("DOMContentLoaded", function () {
-    lastUpdatedtime(urlspath); // 当 DOM 加载完成后显示最新更新时间
+    lastUpdatedtime(urlspath, logspath); // 当 DOM 加载完成后显示最新更新时间
   });
   await genAllReports(urlspath); // 等待所有报告完成
   scrollToRightEnd();   // 然后执行滚动
