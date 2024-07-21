@@ -1,7 +1,3 @@
-* {
-  box-sizing: border-box;
-}
-
 html {
   height: 100%;
   display: flex;
@@ -22,44 +18,33 @@ body {
   transition: opacity 0.3s;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-button,
-footer,
-input,
-textarea,
-.copyright,
-.button {
+/* 文本样式 */
+h1, h2, h3, h4, h5, h6, button, footer, input, textarea, .copyright, .button {
   line-height: 125%;
 }
 
-h1 {
+h1, h2, h3, h4, h5, h6 {
   color: #3b3b3b;
-  font-size: 32px;
   font-weight: bold;
+}
+
+h1 {
+  font-size: 32px;
   margin: 0px;
 }
 
 h2 {
-  color: #3b3b3b;
   font-size: 28px;
-  font-weight: bold;
   margin: 16px 0 8px;
 }
 
 h3 {
-  color: #3b3b3b;
   font-size: 24px;
   font-weight: 700;
   margin: 8px 0 4px;
 }
 
 h4 {
-  color: #3b3b3b;
   font-size: 18px;
   font-weight: 600;
   margin-top: 5px;
@@ -67,17 +52,13 @@ h4 {
 }
 
 h5 {
-  color: #3b3b3b;
   font-size: 16px;
-  font-weight: bold;
   margin-top: 5px;
   margin-bottom: 4px;
 }
 
 h6 {
-  color: #3b3b3b;
   font-size: 16px;
-  font-weight: bold;
   margin-top: 5px;
   margin-bottom: 4px;
 }
@@ -87,9 +68,8 @@ a {
   text-decoration: none;
 }
 
-.outlineButton,
-.button,
-button {
+/* 按钮样式 */
+.outlineButton, .button, button {
   background-color: #194b7d;
   border: none;
   border-radius: 8px;
@@ -159,31 +139,28 @@ footer a {
   border-radius: 5px;
   text-align: left;
   padding: 24px 24px 10px 24px;
-}
-
-.statusContainer+.statusContainer {
   margin-top: 30px;
 }
 
 .statusStreamContainer {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  width: auto;
+  max-width: 850px;
 }
 
 .statusSquare {
   border-radius: 3px;
   height: 30px;
-  min-width: 8px;
-  width: 100%;
+  width: 10px;
+  min-width: 5px;
+  margin-right: 3px;
 }
 
 .statusSquare:hover {
   transform: scaleY(1.2);
   overflow: hidden;
-}
-
-.statusSquare+.statusSquare {
-  margin-left: 3px;
 }
 
 .sectionUrl {
@@ -263,12 +240,12 @@ canvas {
   max-height: 128px;
   min-width: 100px;
   max-width: 100%;
-  padding: 0rem 1rem 0rem 1.2rem;
+  padding: 0rem 1rem 0rem 1.4rem;
 }
 
 .span-wrapper {
   display: flex; 
-  justify-content: space-between; /* 分别将span推到左右两边 */
+  justify-content: space-between;
   padding: 0px 24px 0px 24px;
 }
 
@@ -285,12 +262,15 @@ canvas {
 }
 
 .clientInfo{
-  box-shadow: 0px 0px 2px 1px #dee2e6;
-  padding: 10px;
+  box-sizing: border-box;
   background-color: #fff;
+  box-shadow: 0px 0px 2px 1px #dee2e6;
+  border-radius:5px;
+  padding: 10px;
   max-width: 850px;
   margin: 2rem auto;
 }
+
 .clientInfo span{
   white-space: pre-wrap;
   font-size: 13px;
@@ -298,9 +278,9 @@ canvas {
 }
 
 /* 响应式设计 */
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 576px) {
   .pageContainer {
-    margin: 20px 20px 20px;
+    margin: 2rem 1rem;
     box-shadow: 0px 0px 2px 1px #dee2e6;
   }
 
@@ -334,8 +314,83 @@ canvas {
     display: inline-block;
   }
 
-  .statusSquare+.statusSquare {
-    margin-left: 1px;
+  .statusStreamContainer {
+    display: flex;
+    align-items: center;
+    overflow-x: scroll;
+    height: 37px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .statusStreamContainer::-webkit-scrollbar {
+    display: none;
+  }
+
+  .statusSquare {
+    border-radius: 3px;
+    min-width: 7px;
+    height: 30px;
+    width: 100%;
+    margin-right: 1px;
+  }
+
+  .statusSquare:hover {
+    transform: scaleY(1.2);
+    overflow: hidden;
+  }
+
+  .statusContainer {
+    padding: 10px;
+    margin-top: 15px;
+  }
+
+  canvas {
+    max-height: 128px;
+    min-width: 100px;
+    max-width: 100%;
+    padding: 0rem 0.2rem 0rem 0.5rem;
+  }
+
+  .clientInfo{
+    margin: 2rem 1rem;
+  }
+}
+
+
+@media screen and (min-width: 578px) and (max-width: 768px) {
+  .pageContainer {
+    margin: 2rem 1rem;
+    box-shadow: 0px 0px 2px 1px #dee2e6;
+  }
+
+  .statusHeader {
+    display: flex;
+  }
+
+  .statusSubtitle {
+    align-items: baseline;
+  }
+
+  .sectionUrl {
+    margin-left: 0;
+    margin-top: 8px;
+    text-align: left;
+  }
+
+  .statusHeadline {
+    margin-left: 12px;
+    margin-top: 0px;
+  }
+
+  .statusUptime {
+    margin-left: 0;
+    margin-top: 8px;
+    text-align: right;
+  }
+
+  .statusTitle,
+  .statusHeadline {
+    display: inline-block;
   }
 
   .statusStreamContainer {
@@ -352,9 +407,10 @@ canvas {
 
   .statusSquare {
     border-radius: 3px;
-    min-width: 5px;
+    min-width: 7px;
     height: 30px;
     width: 100%;
+    margin-right: 1px;
   }
 
   .statusSquare:hover {
@@ -364,9 +420,6 @@ canvas {
 
   .statusContainer {
     padding: 10px;
-  }
-
-  .statusContainer+.statusContainer {
     margin-top: 15px;
   }
 
@@ -375,5 +428,87 @@ canvas {
     min-width: 100px;
     max-width: 100%;
     padding: 0rem 0.2rem 0rem 0.5rem;
+  }
+
+  .clientInfo{
+    margin: 2rem 1rem;
+  }
+}
+
+
+@media screen and (min-width: 769px) and (max-width: 992px) {
+  .pageContainer {
+    margin: 2rem auto;
+    box-shadow: 0px 0px 2px 1px #dee2e6;
+  }
+
+  .statusHeader {
+    display: flex;
+  }
+
+  .statusSubtitle {
+    align-items: baseline;
+  }
+
+  .sectionUrl {
+    margin-left: 0;
+    margin-top: 8px;
+    text-align: left;
+  }
+
+  .statusHeadline {
+    margin-left: 12px;
+    margin-top: 0px;
+  }
+
+  .statusUptime {
+    margin-left: 0;
+    margin-top: 3px;
+    text-align: right;
+  }
+
+  .statusTitle,
+  .statusHeadline {
+    display: inline-block;
+  }
+
+  .statusStreamContainer {
+    display: flex;
+    align-items: center;
+    overflow-x: scroll;
+    height: 37px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .statusStreamContainer::-webkit-scrollbar {
+    display: none;
+  }
+
+  .statusSquare {
+    border-radius: 3px;
+    min-width: 7px;
+    height: 30px;
+    width: 100%;
+    margin-right: 2px;
+  }
+
+  .statusSquare:hover {
+    transform: scaleY(1.2);
+    overflow: hidden;
+  }
+
+  .statusContainer {
+    padding: 24px 24px 10px 24px;
+    margin-top: 15px;
+  }
+
+  canvas {
+    max-height: 128px;
+    min-width: 100px;
+    max-width: 100%;
+    padding: 0rem 0.2rem 0rem 0.5rem;
+  }
+  .clientInfo{
+    margin: 2rem auto;
   }
 }
