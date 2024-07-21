@@ -111,7 +111,7 @@ rm -rf ./tmp/
 
 # 提交
 git config --local user.name 'Github Actions'
-git config --local user.email 'Actions@knloop.com'
+git config --local user.email 'actions@knloop.com'
 git add -A --force ./logs/
 git commit -m '🆙 [Automated] Update service status logs'
 git push origin main
