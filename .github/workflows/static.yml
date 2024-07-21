@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+  workflow_dispatch:
+
 permissions:
   pages: write     # 必须有写权限来更新 GitHub Pages 分支
   id-token: write  # 必须有写权限来使用 OIDC 身份验证
