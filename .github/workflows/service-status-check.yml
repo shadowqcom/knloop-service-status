@@ -1,4 +1,4 @@
-name: service-status-check
+name: Service Status Check
 
 on:
   schedule:
