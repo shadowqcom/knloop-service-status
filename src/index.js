@@ -5,7 +5,7 @@
 // ***********************************
 const maxDays = 60;
 const urlspath = "./src/urls.cfg";
-const logspath = "//raw.githubusercontent.com/shadowqcom/knloop-service-status/main/logs/"
+const logspath = "//raw.githubusercontent.com/shadowqcom/knloop-service-status/main/logs/";
 // ***********************************
 
 /**
@@ -343,7 +343,7 @@ function hideTooltip(element) {
 function scrollToRightEnd() {
   var containers = document.querySelectorAll(".statusStreamContainer");
   containers.forEach(function (container) {
-      container.scrollLeft = container.scrollWidth;
+    container.scrollLeft = container.scrollWidth;
   });
 }
 
