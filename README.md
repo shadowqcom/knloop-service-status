@@ -72,32 +72,33 @@ for (let i = 0; i < 12; i++) {
 - `Secret` 填写你的企业微信机器人 Webhook地址 key= 后面的值。
 
 ### 7、在其他机器运行检查脚本
-1、需要在目标机器上安装git
-2、需要配置git密钥
-3、把 `./localCheck\checkandpush.sh`复制到你个有权限的目录下
-4、设置自动任务，定时运行`checkandpush.sh`
+1、需要在目标机器上安装git  
+2、需要配置git密钥  
+3、把 `checkshell/actions-local.sh`复制到你个有权限的目录下   
+4、修改`actions-local.sh`里面的uesr.name和user.email ，最好也修改一下commit的消息。  
+5、设置自动任务，定时运行`actions-local.sh`:  
 
-设置定时任务：
 ```sh
 crontab -e
 ```
 ```sh
-*/2 * * * * /bin/bash /path/to/checkandpush.sh > /dev/null 2>&1
+*/2 * * * * /bin/bash /path/to/actions-local.sh > /dev/null 2>&1
 ```
+这样可以每隔2分钟运行一次脚本，可以根据你的机器实际情况设置间隔时间，或者用其他方式触发。  
 
 ## 🛠️ 工作原理
 
-该项目使用 GitHub Actions 每10分钟唤醒并运行 shell 脚本 `servicecheck.sh` ，该脚本在配置中的每个 url 上运行curl，并将运行结果写入`.log`日志文件然后将其提交到本仓库。  
+1、默认情况下该项目使用 `GitHub Actions` 每10分钟运行 shell 脚本 `servicecheck.sh` ，该脚本读取 `urls.cfg` 配置，使用 curl 测试每个符合要求的 url ，将得到的结果（时间、状态、延迟ms）写入`.log`日志文件。
 
-展示效果使用 GitHub Pages 发布静态页面，0依赖，纯html/js实现。
+2、通过 `GitHub Actions` 执行 `git push` 提交到本仓库。 如果你是自己服务器或者本地运行监测脚本，则是在 `actions-local.sh` 中执行 `git push` 。
 
-在`index.html`中动态提取该日志并以易于使用的方式显示。您还可以从自己的基础设施运行该脚本以更频繁地更新状态信息和保存日志数据。
-
+3、使用 GitHub Pages 发布0依赖、纯html/js实现的静态页面，在 `index.html` 中使用 JavaScript 动态提取日志文件，经过处理和计算后把Uptime和延迟数据报表以易于阅读的方式展示出来。
 
 ## ⏱️ 功能规划(TODO)
-- [x] 悬浮展示详情
+- [x] 鼠标悬浮展示详情
 - [x] 移动端适配
 - [x] 在workflows提交log文件
+- [x] 企业微信推送（理论上也支持其他Webhook地址）
 - [x] 小屏幕可左右滑动状态条
 - [x] 展示日志最后更新时间
 - [x] 延迟ms数检测
