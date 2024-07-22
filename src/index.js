@@ -335,8 +335,6 @@ function hideTooltip(element) {
   tooltipContent.style.display = "none"; // 隐藏提示内容
 }
 
-
-
 // 将每个状态列表横条滚动到最右端。
 function scrollToRightEnd() {
   var containers = document.querySelectorAll(".statusStreamContainer");
@@ -352,6 +350,10 @@ async function main() {
   document.addEventListener("DOMContentLoaded", function () {
     lastUpdatedtime(urlspath, logspath); // 当 DOM 加载完成后显示最新更新时间
   });
+
+  var currentYearElement = document.getElementById("currentYear");
+  currentYearElement.textContent = new Date().getFullYear(); // 更新为当前年份
+
   await genAllReports(urlspath); // 等待所有报告完成
   scrollToRightEnd();   // 然后执行滚动
 }

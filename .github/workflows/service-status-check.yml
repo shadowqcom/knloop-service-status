@@ -6,11 +6,6 @@ on:
   
 # 添加手动触发事件
   workflow_dispatch:
-    inputs:
-      manualReason:
-        description: 'Input description'
-        required: false
-        default: '手动触发测试'
 
 jobs:
   service-check:
