@@ -55,9 +55,8 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       connect_time_ms=$(awk '{printf "%.0f\n", ($1 * 1000 + 0.5)}' <<<"$connect_time_seconds")
     fi
 
-    # 测试：写入前先pull
-    git checkout main
-    git pull origin main
+    # 写入日志前先git pull确保最新数据
+    git pull
 
     # 日志数据写入log文件
     dateTime=$(date +'%Y-%m-%d %H:%M')
@@ -108,10 +107,3 @@ if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; th
 fi
 # 清理临时目录
 rm -rf ./tmp/
-
-# 提交
-git config --local user.name 'Github Actions'
-git config --local user.email 'actions@knloop.com'
-git add -A --force ./logs/
-git commit -m '🆙 [Automated] Update service status logs'
-git push origin main
