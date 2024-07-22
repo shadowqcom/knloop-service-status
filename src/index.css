@@ -64,7 +64,7 @@ h6 {
 }
 
 a {
-  color: #194b7d;
+  color: #005CC5;
   text-decoration: none;
 }
 
@@ -85,10 +85,6 @@ footer {
   color: #9c9c9c;
   margin: 40px;
   text-align: center;
-}
-
-footer a {
-  font-weight: bold;
 }
 
 .pageContainer {
