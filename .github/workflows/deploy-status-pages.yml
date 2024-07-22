@@ -1,9 +1,17 @@
 name: Deploy Status Pages
 
 on:
+  # 推送触发
   # push:
   #   branches: ["main"]
+
+  # 定时任务触发
+  # schedule:
+  # - cron: "5 * * * *"
+
+  # 手动触发
   workflow_dispatch:
+    
 
 permissions:
   contents: read
