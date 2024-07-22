@@ -1,4 +1,8 @@
+# 排除logs目录
 logs/
 tmp/
+
+# 排除的文件
+.vscode
 *.log
 CNAME
