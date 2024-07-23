@@ -1,3 +1,9 @@
+import { lastupdated } from './lastupdated.js';
+import { reslogs } from './reslogs.js';
+import { getclieninfo} from './getclieninfo.js';
+import { scrollToRightEnd } from './scrolltoright.js';
+import { updateChart } from './timelapsechart.js';
+
 /**
  * maxDays 建议设置在30到90之间，否则页面无法自适应。
  * urlspath 是设置监控的URL列表。
@@ -5,12 +11,12 @@
 // ***********************************
 const maxDays = 60;
 const urlspath = "./src/urls.cfg";
-const logspath = "//raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs/";
+const logspath = "./logs/";
+// const logspath = "//raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs/";
 // ***********************************
 
 /**
  * 异步函数：根据urls.cfg文件，生成所有报告
- * 该函数通过读取配置文件中的URL列表，依次生成相应的报告。
  * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的URL列表。
  */
 async function genAllReports(urlspath) {
@@ -70,14 +76,9 @@ async function createChart(container, key, uptimeData) {
   const canvas = create("canvas", "chart");
   canvas.id = "chart_clone_" + key++;
   container.appendChild(canvas);
-  await updateChart(canvas, uptimeData);
+  updateChart(canvas, uptimeData);
 }
 
-// 统一读取并处理所有.log文件，供其他地方使用。
-async function reslogs(logspath, key) {
-  const response = await fetch(logspath + key + "_report.log");
-  return response;
-}
 // 构建状态流
 function constructStatusStream(key, url, uptimeData) {
   let streamContainer = templatize("statusStreamContainerTemplate");
@@ -217,12 +218,7 @@ function getTooltip(key, date, quartile, color) {
   return `${key} | ${date.toDateString()} : ${quartile} : ${statusText}`;
 }
 
-/**
- * 该函数通过document.createElement方法创建一个指定标签的元素，
- * @param {string} tag - 要创建的元素的标签名。
- * @param {string} [className=""] - 元素的类名，默认为空字符串。
- * @returns {HTMLElement} - 返回创建并初始化后的HTML元素。
- */
+// 创建一个指定标签的元素.
 function create(tag, className = "") {
   let element = document.createElement(tag);
   element.className = className;
@@ -330,32 +326,23 @@ function hideTooltip(element) {
   const statusContainer = element.closest(".statusContainer"); // 找到对应的 statusContainer
   if (!statusContainer) return;
   const nextElement = statusContainer.nextElementSibling;
-  // const tooltipContent = statusContainer.querySelector(".tooltipContent"); // 获取 tooltipContent 元素
   const tooltipContent = nextElement.querySelector(".span-text"); // 获取 tooltipContent 元素
   tooltipContent.style.display = "none"; // 隐藏提示内容
 }
-
-// 将每个状态列表横条滚动到最右端。
-function scrollToRightEnd() {
-  var containers = document.querySelectorAll(".statusStreamContainer");
-  containers.forEach(function (container) {
-    container.scrollLeft = container.scrollWidth;
-  });
-}
-
-/**
- * 需要被执行的函数统一在这里被执行
- */
-async function main() {
-  document.addEventListener("DOMContentLoaded", function () {
-    lastUpdatedtime(urlspath, logspath); // 当 DOM 加载完成后显示最新更新时间
-  });
-
+// 更新页脚年份
+function getyear() {
   var currentYearElement = document.getElementById("currentYear");
   currentYearElement.textContent = new Date().getFullYear(); // 更新为当前年份
+}
 
-  await genAllReports(urlspath); // 等待所有报告完成
+// 主函数，其他函数统一在这里被执行
+async function main() {
+  genAllReports(urlspath); // 生成所有报告完成
   scrollToRightEnd();   // 然后执行滚动
+
+  lastupdated(urlspath, logspath); // 显示最新更新时间
+  getclieninfo() // 获取客户端信息
+  getyear() // 更新页脚年份
 }
 
 main(); 

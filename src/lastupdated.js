@@ -1,3 +1,5 @@
+import { reslogs } from './reslogs.js';
+
 /**
  * 异步函数：获取最新更新时间
  * 该函数通过读取配置文件中的URL列表，来确定哪些资源是最新的。
@@ -33,7 +35,7 @@ async function lastUpdatedtime(urlspath, logspath) {
   });
 
   // 在这里调用 updateLastUpdated 函数并传递 lastTime
-  updateLastUpdated(lastTime);
+  updateLastUpdated(lastTime); 
 }
 
 // 将最后更新时间写到页面
@@ -42,4 +44,11 @@ function updateLastUpdated(lastUpdateTime) {
   if (updateTimeElement) {
     updateTimeElement.textContent = `Last updated on : ${lastUpdateTime}`;
   }
+}
+
+// DOM加载完成后再执行
+export async function lastupdated(urlspath, logspath) {
+  document.addEventListener("DOMContentLoaded", function () {
+    lastUpdatedtime(urlspath, logspath); // 显示最新更新时间
+  });
 }

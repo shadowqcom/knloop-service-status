@@ -4,7 +4,7 @@
 <head>
   <title>knloop status</title>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
   <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。" />
   <link rel="icon" href="./favicon.ico" loading="eager" />
@@ -62,10 +62,7 @@
 
 </body>
 
-<script src="./src/chart.js"></script>
-<script src="./src/timelapsechart.js"></script>
-<script src="./src/lastupdated.js"></script>
-<script src="./src/getclieninfo.js"></script>
-<script src="./src/index.js"></script>
+<script src="./src/chart.js" async></script>
+<script type="module" src="./src/index.js" defer></script>
 
 </html>

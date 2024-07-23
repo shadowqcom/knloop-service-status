@@ -8,7 +8,7 @@
  * @param {Array} logData - 包含日志数据的数组，每个元素代表一个数据点。
  * @returns {void}
  */
-async function updateChart(el, logData) {
+export async function updateChart(el, logData) {
   try {
     const now = new Date();
     const startOfCurrentHour = new Date(
@@ -36,7 +36,7 @@ async function updateChart(el, logData) {
         const timeStr = parts[0];
         const delay = parseInt(parts[2], 10);
         const date = new Date(timeStr);
-        
+
 
         // 如果日期在过去12小时内，累加从现在到过去12小时的数据。
         if (date >= twelveHoursAgo && date <= now) {
@@ -88,7 +88,8 @@ async function updateChart(el, logData) {
 
     // 获取图表上下文并创建新的Chart实例。
     const ctx = el.getContext("2d");
-    new Chart(ctx, {
+
+    const chart = new Chart(ctx, {
       type: "line",
       data: {
         labels,
@@ -151,11 +152,12 @@ function calculateMedian(values) {
   }
 }
 
-async function getLogData(el, name) {
-  const response = await fetch(`./logs/${name}.log`);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const logData = await response.text();
-  updateChart(el, logData);
-}
+
+// async function getLogData(el, name) {
+//   const response = await fetch(`./logs/${name}.log`);
+//   if (!response.ok) {
+//     throw new Error(`HTTP error! status: ${response.status}`);
+//   }
+//   const logData = await response.text();
+//   updateChart(el, logData);
+// }
