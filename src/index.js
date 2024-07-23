@@ -59,7 +59,6 @@ async function genReportLog(container, key, url, logspath) {
   spanLeft.classList.add("align-left");
 
   const spanRight = create("span", "span-text");
-  // spanRight.textContent = '占位文本';
   spanRight.classList.add("align-right");
 
   divWrapper.appendChild(spanLeft);
