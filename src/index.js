@@ -1,7 +1,7 @@
 import { lastupdated } from './lastupdated.js';
 import { reslogs } from './reslogs.js';
 import { getclieninfo} from './getclieninfo.js';
-import { scrollToRightEnd } from './scrolltoright.js';
+import { scrolltoright } from './scrolltoright.js';
 import { updateChart } from './timelapsechart.js';
 
 /**
@@ -28,6 +28,7 @@ async function genAllReports(urlspath) {
     const [key, url] = configLine.split("=");
     await genReportLog(document.getElementById("reports"), key, url, logspath);
   }
+  scrolltoright();   // 执行滚动状态条
 }
 /**
  * 异步生成报告日志。
@@ -335,11 +336,10 @@ function getyear() {
   currentYearElement.textContent = new Date().getFullYear(); // 更新为当前年份
 }
 
+
 // 主函数，其他函数统一在这里被执行
 async function main() {
   genAllReports(urlspath); // 生成所有报告完成
-  scrollToRightEnd();   // 然后执行滚动
-
   lastupdated(urlspath, logspath); // 显示最新更新时间
   getclieninfo() // 获取客户端信息
   getyear() // 更新页脚年份
