@@ -88,7 +88,7 @@ export async function updateChart(el, logData) {
 
     // 获取图表上下文并创建新的Chart实例。
     const ctx = el.getContext("2d");
-
+    const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
     const chart = new Chart(ctx, {
       type: "line",
       data: {
@@ -100,6 +100,10 @@ export async function updateChart(el, logData) {
             fill: false,
             borderColor: "#4bc0c0",
             tension: 0.4,
+            segment: {
+              borderDash: ctx => skipped(ctx, [4, 6]),
+            },
+            spanGaps: true
           },
           {
             label: "中位数",
@@ -107,6 +111,10 @@ export async function updateChart(el, logData) {
             fill: false,
             borderColor: "#ff6384",
             tension: 0.4,
+            segment: {
+              borderDash: ctx => skipped(ctx, [4, 6]),
+            },
+            spanGaps: true
           },
         ],
       },
