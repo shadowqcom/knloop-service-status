@@ -1,6 +1,6 @@
 import { reslogs } from './reslogs.js';
 
-export async function getLastDayStatus(urlspath, logspath) {
+export async function getLastDayStatus(urlspath) {
     const response = await fetch(urlspath);
     const configText = await response.text();
     const configLines = configText.split(/\r\n|\n/).filter(entry => entry!== '').filter(line =>!line.trim().startsWith("#"));
@@ -9,7 +9,7 @@ export async function getLastDayStatus(urlspath, logspath) {
       const configLine = configLines[ii];
       const [key, url] = configLine.split("=");
   
-      const response = await reslogs(logspath, key);
+      const response = await reslogs(key);
       let statusLines = "";
       if (response.ok) {
         statusLines = await response.text();

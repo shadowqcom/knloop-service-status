@@ -1,6 +1,6 @@
 import { templatize } from './domManipulation.js';
 import { showTooltip, hideTooltip } from './tooltip.js';
-
+import { maxDays } from '../index.js';
 /**
  * 获取颜色
  * @param {any} uptimeVal - 运行时间值
@@ -40,7 +40,7 @@ export function getColor(uptimeVal) {
    * @param {Object} uptimeData - 运行时间数据
    * @returns {HTMLElement} - 状态流容器元素
    */
-  export function constructStatusStream(key, url, uptimeData, maxDays) {
+  export function constructStatusStream(key, url, uptimeData) {
     let streamContainer = templatize("statusStreamContainerTemplate");
     for (var ii = maxDays - 1; ii >= 0; ii--) {
       let line = constructStatusLine(key, ii, uptimeData[ii]);

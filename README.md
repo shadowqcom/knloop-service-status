@@ -34,19 +34,16 @@ Google=https://google.com
 
 ### 4. 修改显示数据时间范围
 4.1、 状态天数范围:  
-`./src/index.js` 中的maxDays 默认60天内 :
+
+`./src/js/index.js` 
 ```js
-const maxDays = 60;
+const maxDays = 60;  // 默认60天，建议不超过90。
 ```
-4.2、 延迟数据报表时间范围:  
-`./src/timelapsechart.js` 修改相关逻辑，默认12小时内 :  
+4.2、 延迟数据报表时间范围:    
+ 
+`./src/js/index.js`  
 ```js
-const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
-```
-```js
-for (let i = 0; i < 12; i++) {
-    ···
-}
+const maxHour = 12;  // 默认12小时，建议不超过24。
 ```
 
 ### 5. 配置 GitHub Pages.

@@ -7,19 +7,20 @@ import { create } from './domManipulation.js';
 import { constructStatusStream } from './utils.js';
 import { scrolltoright } from './scrolltoright.js';
 
+import { urlspath } from '../index.js';
 
 /**
  * 异步函数：根据 urls.cfg 文件，生成所有报告
  * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的 URL 列表。
  */
-export async function genAllReports(urlspath, logspath, maxDays) {
+export async function genAllReports() {
     const response = await fetch(urlspath);
     const configText = await response.text();
     const configLines = configText.split(/\r\n|\n/).filter(entry => entry!== '').filter(line =>!line.trim().startsWith("#"));
     for (let ii = 0; ii < configLines.length; ii++) {
       const configLine = configLines[ii];
       const [key, url] = configLine.split("=");
-      await genReportLog(document.getElementById("reports"), key, url, logspath, maxDays);
+      await genReportLog(document.getElementById("reports"), key, url);
     }
     scrolltoright();
   }
@@ -31,14 +32,14 @@ export async function genAllReports(urlspath, logspath, maxDays) {
  * @param {string} url - 相关 URL，用于报告中显示。
  * @param {string} logspath - 日志文件的路径。
  */
-async function genReportLog(container, key, url, logspath, maxDays) {
-  const response = await reslogs(logspath, key);
+async function genReportLog(container, key, url) {
+  const response = await reslogs(key);
   let statusLines = "";
   if (response.ok) {
     statusLines = await response.text();
   }
-  const normalized = normalizeData(statusLines, maxDays);
-  const statusStream = constructStatusStream(key, url, normalized, maxDays);
+  const normalized = normalizeData(statusLines);
+  const statusStream = constructStatusStream(key, url, normalized);
   container.appendChild(statusStream);
   // 创建一个 div 来包裹 span 标签
   const divWrapper = create("div");
@@ -54,7 +55,6 @@ async function genReportLog(container, key, url, logspath, maxDays) {
   divWrapper.appendChild(spanRight);
   // 将包含两个 span 的 div 添加到 container 中
   container.appendChild(divWrapper);
-  // 使用 updateChart 函数代替 createChart 函数
   const canvas = create("canvas", "chart");
   canvas.id = "chart_clone_" + key++;
   container.appendChild(canvas);
@@ -62,7 +62,7 @@ async function genReportLog(container, key, url, logspath, maxDays) {
 }
 
 // 所有服务当天整体状态评估
-export async function getLastDayStatus(urlspath, logspath) { // 接收 logspath 参数
+export async function getLastDayStatus() { 
     const response = await fetch(urlspath);
     const configText = await response.text();
     const configLines = configText.split(/\r\n|\n/).filter(entry => entry!== '').filter(line =>!line.trim().startsWith("#"));
@@ -70,7 +70,7 @@ export async function getLastDayStatus(urlspath, logspath) { // 接收 logspath 
     for (let ii = 0; ii < configLines.length; ii++) {
       const configLine = configLines[ii];
       const [key, url] = configLine.split("=");
-      const response = await reslogs(logspath, key); // 使用 logspath 参数
+      const response = await reslogs(key); 
       let statusLines = "";
       if (response.ok) {
         statusLines = await response.text();

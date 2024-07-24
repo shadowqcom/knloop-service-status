@@ -1,4 +1,5 @@
 import { reslogs } from './reslogs.js';
+import { urlspath } from '../index.js';
 
 /**
  * 异步函数：获取最新更新时间
@@ -6,7 +7,7 @@ import { reslogs } from './reslogs.js';
  * 它首先从配置文件中读取URL列表，然后过滤掉空白行和注释行。
  * 最后，它准备一个列表，包含每个URL及其对应的最新更新时间。
  */
-async function lastUpdatedtime(urlspath, logspath) {
+async function lastUpdatedtime() {
 
   const configResponse = await fetch(urlspath);
   const configText = await configResponse.text();
@@ -18,7 +19,7 @@ async function lastUpdatedtime(urlspath, logspath) {
   // 循环urllist每个值的第一个key,通过key取每个log文件的最后一个有效值。
   for (let i = 0; i < urllist.length; i++) {
     const key = urllist[i][0];
-    const response = await reslogs(logspath, key);
+    const response = await reslogs(key);
     let statusLines = "";
     if (response.ok) {
       statusLines = await response.text();
@@ -46,8 +47,8 @@ function updateLastUpdated(lastUpdateTime) {
 }
 
 // DOM加载完成后再执行
-export async function lastupdated(urlspath, logspath) {
+export async function lastupdated() {
   document.addEventListener("DOMContentLoaded", function () {
-    lastUpdatedtime(urlspath, logspath); // 显示最新更新时间
+    lastUpdatedtime(); // 显示最新更新时间
   });
 }
