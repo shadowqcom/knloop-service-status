@@ -45,7 +45,11 @@ function updateLastUpdated(lastUpdateTime) {
 
 // DOM加载完成后再执行
 export async function lastupdated() {
-  document.addEventListener("DOMContentLoaded", function () {
-    lastUpdatedtime(); // 显示最新更新时间
-  });
+  try {
+    document.addEventListener("DOMContentLoaded", function () {
+      lastUpdatedtime(); // 显示最新更新时间
+    });
+  } catch (error) {
+    console.error("获取最新更新时间失败:", error);
+  }
 }

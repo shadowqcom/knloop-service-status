@@ -13,12 +13,12 @@ export const logspath = "https://raw.github.knloop.com/shadowqcom/knloop-service
 
 // 主函数入口
 async function main() {
-  genAllReports();
-  getLastDayStatus();
-  scrollheader()
-  lastupdated();
-  getclieninfo();
-  getyear();
+  await lastupdated();
+  await getclieninfo();
+  await genAllReports();
+  await getLastDayStatus();
+  await scrollheader()
+  await getyear();
 }
 
 main();
