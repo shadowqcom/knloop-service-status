@@ -29,7 +29,7 @@ Google=https://google.com
 ```  
 3.2、 替换Logo
 ```html
-<img src="./src/logo.svg" alt="Logo" />
+<img src="./public/logo.svg" alt="Logo" />
 ```
 
 ### 4. 修改显示数据时间范围
@@ -104,6 +104,7 @@ crontab -e
 - [x] 延迟ms数检测
 - [x] 延迟曲线图
 - [x] 统计图中没有数据的地方显示虚线
+- [x] 所有服务当天总体评估状态
 - [ ] SSL状态检测
 - [ ] SSH 检测
 - [ ] 钉钉/飞书/邮箱/telegram 通知

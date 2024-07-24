@@ -4,6 +4,48 @@ html {
   flex-direction: column;
 }
 
+.header {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background-color: #fff;
+  height: 4rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.headerinner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 65rem;
+  width: 55rem;
+  padding: 0 1rem 0 1rem;
+}
+
+.headerleft {
+  display: flex;
+  align-items: center; /* 新增这一行 */
+}
+
+
+.header img {
+  width: 2rem;
+  height: auto;
+  margin-right: 1rem;
+}
+
+.header a {
+  color: #000000;
+  font-size: 20px;
+}
+
 body {
   background-color: #ffffff;
   color: #3b3b3b;
@@ -20,11 +62,27 @@ body {
 }
 
 /* 文本样式 */
-h1, h2, h3, h4, h5, h6, button, footer, input, textarea, .copyright, .button {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+footer,
+input,
+textarea,
+.copyright,
+.button {
   line-height: 125%;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #3b3b3b;
   font-weight: bold;
 }
@@ -70,7 +128,9 @@ a {
 }
 
 /* 按钮样式 */
-.outlineButton, .button, button {
+.outlineButton,
+.button,
+button {
   background-color: #194b7d;
   border: none;
   border-radius: 8px;
@@ -101,7 +161,7 @@ footer {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 5rem auto 0rem;
+  margin: 10rem auto 0rem;
 }
 
 .headline span {
@@ -241,7 +301,7 @@ canvas {
 }
 
 .span-wrapper {
-  display: flex; 
+  display: flex;
   justify-content: space-between;
   padding: 0px 24px 0px 24px;
 }
@@ -258,17 +318,17 @@ canvas {
   font-size: 12px;
 }
 
-.clientInfo{
+.clientInfo {
   box-sizing: border-box;
   background-color: #fff;
   box-shadow: 0px 0px 2px 1px #dee2e6;
-  border-radius:5px;
+  border-radius: 5px;
   padding: 10px;
   max-width: 850px;
   margin: 2rem auto;
 }
 
-.clientInfo span{
+.clientInfo span {
   white-space: pre-wrap;
   font-size: 13px;
   color: #555555;
@@ -319,6 +379,7 @@ canvas {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   .statusStreamContainer::-webkit-scrollbar {
     display: none;
   }
@@ -348,7 +409,7 @@ canvas {
     padding: 0rem 0.2rem 0rem 0.5rem;
   }
 
-  .clientInfo{
+  .clientInfo {
     margin: 2rem 1rem;
   }
 }
@@ -398,6 +459,7 @@ canvas {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   .statusStreamContainer::-webkit-scrollbar {
     display: none;
   }
@@ -427,7 +489,7 @@ canvas {
     padding: 0rem 0.2rem 0rem 0.5rem;
   }
 
-  .clientInfo{
+  .clientInfo {
     margin: 2rem 1rem;
   }
 }
@@ -477,6 +539,7 @@ canvas {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   .statusStreamContainer::-webkit-scrollbar {
     display: none;
   }
@@ -505,7 +568,8 @@ canvas {
     max-width: 850px;
     padding: 0rem 0.2rem 0rem 0.5rem;
   }
-  .clientInfo{
+
+  .clientInfo {
     margin: 2rem auto;
   }
 }

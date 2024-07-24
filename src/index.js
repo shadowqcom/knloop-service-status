@@ -1,6 +1,6 @@
 import { lastupdated } from './lastupdated.js';
 import { reslogs } from './reslogs.js';
-import { getclieninfo} from './getclieninfo.js';
+import { getclieninfo } from './getclieninfo.js';
 import { scrolltoright } from './scrolltoright.js';
 import { updateChart } from './timelapsechart.js';
 
@@ -11,8 +11,8 @@ import { updateChart } from './timelapsechart.js';
 // ***********************************
 const maxDays = 60;
 const urlspath = "./src/urls.cfg";
-// const logspath = "./logs/";
-const logspath = "//raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs/";
+const logspath = "./logs/";
+// const logspath = "//raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs/";
 // ***********************************
 
 /**
@@ -127,8 +127,10 @@ function constructStatusSquare(key, date, uptimeVal) {
   const color = getColor(uptimeVal);
   let square = templatize("statusSquareTemplate", {
     color: color,
-    tooltip: getTooltip(key, date, color),
   });
+
+  // const kk = getTooltip(key, date, color)
+  // console.log(kk)
 
   const show = () => {
     showTooltip(square, date, color);
@@ -199,23 +201,10 @@ function getStatusText(color) {
           : "Unknown";
 }
 
-// 获取状态描述文本
-function getStatusDescriptiveText(color) {
-  return color == "nodata"
-    ? "当前暂无数据。"
-    : color == "success"
-      ? "状态正常。"
-      : color == "failure"
-        ? "严重故障。"
-        : color == "partial"
-          ? "部分异常。"
-          : "未知状态";
-}
-
 // 获取提示工具文本
-function getTooltip(key, date, quartile, color) {
+function getTooltip(key, date, color) {
   let statusText = getStatusText(color);
-  return `${key} | ${date.toDateString()} : ${quartile} : ${statusText}`;
+  return `${key} | ${date.toDateString()} : ${statusText}`;
 }
 
 // 创建一个指定标签的元素.
@@ -329,19 +318,72 @@ function hideTooltip(element) {
   const tooltipContent = nextElement.querySelector(".span-text"); // 获取 tooltipContent 元素
   tooltipContent.style.display = "none"; // 隐藏提示内容
 }
+
+// 所有服务当天整体状态评估
+async function getLastDayStatus(urlspath) {
+  const response = await fetch(urlspath);
+  const configText = await response.text();
+  const configLines = configText.split(/\r\n|\n/).filter(entry => entry !== '').filter(line => !line.trim().startsWith("#"));
+
+  const statusTexts = []; // 存储 statusText 的数组
+
+  for (let ii = 0; ii < configLines.length; ii++) {
+    const configLine = configLines[ii];
+    const [key, url] = configLine.split("=");
+
+    const response = await reslogs(logspath, key);
+    let statusLines = "";
+    if (response.ok) {
+      statusLines = await response.text();
+    }
+    const normalized = normalizeData(statusLines);
+
+    // 获取最后一天的状态
+    const lastDayStatus = normalized[0];
+    const color = getColor(lastDayStatus);
+    const statusText = getStatusText(color);
+
+    statusTexts.push(statusText); // 将 statusText 存入数组
+  }
+
+  const upCount = statusTexts.filter(text => text === 'UP').length;
+  const downCount = statusTexts.filter(text => text === 'Down').length;
+  const nodateCount = statusTexts.filter(text => text === 'No Data').length;
+
+  const img = document.querySelector('#statusImg');
+
+  const totalCount = statusTexts.length;
+  const downThreshold = totalCount * 0.2;
+  const nodateThreshold = totalCount * 0.5;
+
+  if (upCount === totalCount) {
+    img.src = './public/check/up.svg';
+    img.alt = 'UP';
+  } else if (nodateCount === totalCount) {
+    img.src = './public/check/nodata.svg';
+    img.alt = 'No Data';
+  } else if (downCount >= downThreshold || nodateCount >= nodateThreshold) {
+    img.src = './public/check/down.svg';
+    img.alt = 'Down';
+  } else {
+    img.src = './public/check/degraded.svg';
+    img.alt = 'Degraded';
+  }
+}
+
 // 更新页脚年份
 function getyear() {
   var currentYearElement = document.getElementById("currentYear");
   currentYearElement.textContent = new Date().getFullYear(); // 更新为当前年份
 }
 
-
-// 主函数，其他函数统一在这里被执行
-async function main() {
+// 主函数入口
+async function main(urlspath, logspath) {
   genAllReports(urlspath); // 生成所有报告完成
   lastupdated(urlspath, logspath); // 显示最新更新时间
-  getclieninfo() // 获取客户端信息
-  getyear() // 更新页脚年份
+  getclieninfo(); // 获取客户端信息
+  getyear(); // 更新页脚年份
+  getLastDayStatus(urlspath); // 当天整体状态
 }
 
-main(); 
+main(urlspath, logspath);

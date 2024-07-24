@@ -11,11 +11,26 @@
   <link rel="stylesheet" href="./src/index.css" loading="eager" />
 </head>
 
+
 <body>
+  <div class="header">
+    <div class="headerinner">
+      <div class="headerleft">
+        <a href="/">
+          <img src="./public/logo.svg" alt="Logo" loading="eager" />
+          <span>knloop status</span>
+        </a>
+      </div>
+      <div class="headerright">
+        <a href="https://github.com/shadowqcom/knloop-service-status" target="_blank">Github</a>
+      </div>
+    </div>
+  </div>
+
   <div id="SiteInfo" class="headline">
-    <a href="/">
-      <img src="./src/logo.svg" alt="Logo" loading="eager" />
-    </a>
+    <span>
+      <img id="statusImg" src="./public/check/up.svg" alt="status" loading="eager" />
+    </span>
     <span> knloop service status </span>
     <div id="updateTime">Last updated on: Loading...</div>
   </div>
@@ -63,6 +78,7 @@
 </body>
 
 <script src="./src/chart.js" async></script>
+<!-- <script type="module" src="./src/overallstatus.js" async></script> -->
 <script type="module" src="./src/index.js" defer></script>
 
 </html>
