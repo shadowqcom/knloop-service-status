@@ -7,12 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
   <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。" />
-  <link rel="icon" href="./favicon.ico" loading="eager" />
-  <link rel="stylesheet" href="./src/index.css" loading="eager" />
+  <link rel="icon" href="./favicon.ico" />
+  <link rel="stylesheet" href="./src/index.css" />
 </head>
 
 <body>
-  <div class="header">
+  <header>
     <div class="headerinner">
       <div class="headerleft">
         <a href="/">
@@ -24,7 +24,7 @@
         <a href="https://github.com/shadowqcom/knloop-service-status" target="_blank">Github</a>
       </div>
     </div>
-  </div>
+  </header>
 
   <div id="SiteInfo" class="headline">
     <span>
@@ -76,7 +76,7 @@
 
 </body>
 
-<script src="./src/chart.umd.js" loading="eager"></script>
+<script src="./src/js/chart.umd.js"></script>
 <script type="module" src="./src/index.js" defer></script>
 
 </html>

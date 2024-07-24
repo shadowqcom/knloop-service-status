@@ -4,7 +4,7 @@ html {
   flex-direction: column;
 }
 
-.header {
+header {
   position: fixed;
   display: flex;
   align-items: center;
@@ -34,13 +34,13 @@ html {
   align-items: center;
 }
 
-.header img {
+.headerinner img {
   width: 2rem;
   height: auto;
   margin-right: 1rem;
 }
 
-.header a {
+.headerinner a {
   display: flex;
   align-items: flex-end;
   color: #000000;

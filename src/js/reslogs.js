@@ -4,7 +4,7 @@
 * const response = await reslogs(logspath, key);
 */
 export async function reslogs(logspath, key) {
-    const response = await fetch(logspath + key + "_report.log");
+    const response = await fetch(logspath + "/" + key + "_report.log");
     return response;
 }
 
