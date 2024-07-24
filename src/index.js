@@ -11,8 +11,7 @@ import { updateChart } from './timelapsechart.js';
 // ***********************************
 const maxDays = 60;
 const urlspath = "./src/urls.cfg";
-// const logspath = "./logs/";
-const logspath = "//raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs/";
+const logspath = "./logs/";
 // ***********************************
 
 /**
