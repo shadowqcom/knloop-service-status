@@ -12,12 +12,12 @@ export const logspath = "./logs";  // 日志文件路径,不带后/
 
 // 主函数入口
 async function main() {
-  genAllReports();
-  getLastDayStatus();
-  scrollheader()
-  lastupdated();
-  getclieninfo();
-  getyear();
+  await lastupdated();
+  await getclieninfo();
+  await genAllReports();
+  await getLastDayStatus();
+  await scrollheader()
+  await getyear();
 }
 
 main();
