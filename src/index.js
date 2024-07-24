@@ -8,10 +8,11 @@ import { getyear } from './js/getyear.js';
 export const maxDays = 60;
 export const maxHour = 12;
 export const urlspath = "./src/urls.cfg"; // 配置文件路径,不带后/
-export const logspath = "./logs";  // 日志文件路径,不带后/
+export const logspath = "https://raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs";
+
 
 // 主函数入口
-async function main() {
+function main() {
   genAllReports();
   getLastDayStatus();
   scrollheader()
