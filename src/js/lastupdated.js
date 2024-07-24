@@ -1,5 +1,5 @@
 import { reslogs } from './reslogs.js';
-import { urlspath } from '../index.js';
+import { fetchUrlsConfig } from './fetchurlsconfig.js';
 
 /**
  * 异步函数：获取最新更新时间
@@ -8,10 +8,7 @@ import { urlspath } from '../index.js';
  * 最后，它准备一个列表，包含每个URL及其对应的最新更新时间。
  */
 async function lastUpdatedtime() {
-
-  const configResponse = await fetch(urlspath);
-  const configText = await configResponse.text();
-  const configLines = configText.split(/\r\n|\n/).filter(entry => entry !== '').filter(line => !line.trim().startsWith("#"));
+  const configLines = await fetchUrlsConfig();
   const urllist = configLines.map(line => line.split("="));
   // 定义一个数组存储每次循环得到的值
   const lastlinetime = [];

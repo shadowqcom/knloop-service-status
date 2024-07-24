@@ -1,29 +1,24 @@
 import { reslogs } from './reslogs.js';
 import { updateChart } from './timelapsechart.js';
-import { getColor } from './utils.js';
-import { getStatusText } from './utils.js';
+import { getColor, getStatusText, constructStatusStream } from './utils.js';
 import { normalizeData } from './dataProcessing.js';
 import { create } from './domManipulation.js';
-import { constructStatusStream } from './utils.js';
-import { scrolltoright } from './scrolltoright.js';
-
-import { urlspath } from '../index.js';
+import { scrolltoright } from './scroll.js';
+import { fetchUrlsConfig } from './fetchurlsconfig.js';
 
 /**
  * 异步函数：根据 urls.cfg 文件，生成所有报告
  * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的 URL 列表。
  */
 export async function genAllReports() {
-    const response = await fetch(urlspath);
-    const configText = await response.text();
-    const configLines = configText.split(/\r\n|\n/).filter(entry => entry!== '').filter(line =>!line.trim().startsWith("#"));
-    for (let ii = 0; ii < configLines.length; ii++) {
-      const configLine = configLines[ii];
-      const [key, url] = configLine.split("=");
-      await genReportLog(document.getElementById("reports"), key, url);
-    }
-    scrolltoright();
+  const configLines = await fetchUrlsConfig();
+  for (let ii = 0; ii < configLines.length; ii++) {
+    const configLine = configLines[ii];
+    const [key, url] = configLine.split("=");
+    await genReportLog(document.getElementById("reports"), key, url);
   }
+  scrolltoright();
+}
 
 /**
  * 异步生成报告日志。
@@ -62,50 +57,45 @@ async function genReportLog(container, key, url) {
 }
 
 // 所有服务当天整体状态评估
-export async function getLastDayStatus() { 
-    const response = await fetch(urlspath);
-    const configText = await response.text();
-    const configLines = configText.split(/\r\n|\n/).filter(entry => entry!== '').filter(line =>!line.trim().startsWith("#"));
-    const statusTexts = []; // 存储 statusText 的数组
-    for (let ii = 0; ii < configLines.length; ii++) {
-      const configLine = configLines[ii];
-      const [key, url] = configLine.split("=");
-      const response = await reslogs(key); 
-      let statusLines = "";
-      if (response.ok) {
-        statusLines = await response.text();
-      }
-      const normalized = normalizeData(statusLines);
-      // 获取最后一天的状态
-      const lastDayStatus = normalized[0];
-      const color = getColor(lastDayStatus);
-      const statusText = getStatusText(color);
-      statusTexts.push(statusText); // 将 statusText 存入数组
+export async function getLastDayStatus() {
+  const configLines = await fetchUrlsConfig();
+  const statusTexts = []; // 存储 statusText 的数组
+  for (let ii = 0; ii < configLines.length; ii++) {
+    const configLine = configLines[ii];
+    const [key, url] = configLine.split("=");
+    const response = await reslogs(key);
+    let statusLines = "";
+    if (response.ok) {
+      statusLines = await response.text();
     }
-    const upCount = statusTexts.filter(text => text === 'UP').length;
-    const downCount = statusTexts.filter(text => text === 'Down').length;
-    const nodateCount = statusTexts.filter(text => text === 'No Data').length;
-    const img = document.querySelector('#statusImg');
-    const totalCount = statusTexts.length;
-    const downThreshold = totalCount * 0.2;
-    const nodateThreshold = totalCount * 0.5;
-    if (upCount === totalCount) {
-      img.src = './public/check/up.svg';
-      img.alt = 'UP';
-    } else if (nodateCount === totalCount) {
-      img.src = './public/check/nodata.svg';
-      img.alt = 'No Data';
-    } else if (downCount >= downThreshold || nodateCount >= nodateThreshold) {
-      img.src = './public/check/down.svg';
-      img.alt = 'Down';
-    } else {
-      img.src = './public/check/degraded.svg';
-      img.alt = 'Degraded';
-    }
+    const normalized = normalizeData(statusLines);
+    // 获取最后一天的状态
+    const lastDayStatus = normalized[0];
+    const color = getColor(lastDayStatus);
+    const statusText = getStatusText(color);
+    statusTexts.push(statusText); // 将 statusText 存入数组
   }
+  const upCount = statusTexts.filter(text => text === 'UP').length;
+  const downCount = statusTexts.filter(text => text === 'Down').length;
+  const nodateCount = statusTexts.filter(text => text === 'No Data').length;
 
-// 更新页脚年份
-export function getyear() {
-  var currentYearElement = document.getElementById("currentYear");
-  currentYearElement.textContent = new Date().getFullYear(); // 更新为当前年份
+  const img = document.querySelector('#statusImg');
+
+  const totalCount = statusTexts.length;
+  const downThreshold = totalCount * 0.2;  // 有效服务 Down 20% 即整体报告为Down
+  const nodateThreshold = totalCount * 0.5;  // 有效服务 No Data 50% 即整体报告为No Data
+
+  if (upCount === totalCount) {
+    img.src = './public/check/up.svg';
+    img.alt = 'UP';
+  } else if (nodateCount === totalCount) {
+    img.src = './public/check/nodata.svg';
+    img.alt = 'No Data';
+  } else if (downCount >= downThreshold || nodateCount >= nodateThreshold) {
+    img.src = './public/check/down.svg';
+    img.alt = 'Down';
+  } else {
+    img.src = './public/check/degraded.svg';
+    img.alt = 'Degraded';
+  }
 }

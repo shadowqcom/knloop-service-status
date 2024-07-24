@@ -1,6 +1,8 @@
-import { genAllReports, getLastDayStatus, getyear } from './js/genReports.js';
+import { genAllReports, getLastDayStatus } from './js/genReports.js';
 import { lastupdated } from './js/lastupdated.js';
-import { getclieninfo } from './js/getclieninfo.js';;
+import { getclieninfo } from './js/getclieninfo.js';
+import { scrollheader } from './js/scroll.js';
+import { getyear } from './js/getyear.js';
 
 // 配置参数
 export const maxDays = 60;
@@ -12,6 +14,7 @@ export const logspath = "./logs";  // 日志文件路径,不带后/
 async function main() {
   genAllReports();
   getLastDayStatus();
+  scrollheader()
   lastupdated();
   getclieninfo();
   getyear();

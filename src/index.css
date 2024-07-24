@@ -16,6 +16,12 @@ header {
   background-color: #fff;
   height: 4rem;
   border-bottom: 1px solid #dee2e6;
+  transition: transform 0.2s ease; 
+  transform: translateY(0); 
+}
+
+header.hidden {
+  transform: translateY(-4rem); 
 }
 
 .headerinner {
@@ -162,7 +168,7 @@ footer {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 8rem auto 0rem;
+  margin: 6rem auto 0rem;
 }
 
 .headline span {
