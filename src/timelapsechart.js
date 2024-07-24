@@ -8,6 +8,7 @@
  * @param {Array} logData - 包含日志数据的数组，每个元素代表一个数据点。
  * @returns {void}
  */
+
 export async function updateChart(el, logData) {
   try {
     const now = new Date();
@@ -85,6 +86,7 @@ export async function updateChart(el, logData) {
     if (combinedData.length === 0 || Math.max(...combinedData) <= 14) {
       yMaxConfig.max = 15;
     }
+
 
     // 获取图表上下文并创建新的Chart实例。
     const ctx = el.getContext("2d");
