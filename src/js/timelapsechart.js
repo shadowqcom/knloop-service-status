@@ -1,3 +1,5 @@
+import { maxHour } from '../index.js';
+
 /**
  * 异步函数：更新图表数据
  * 
@@ -22,7 +24,9 @@ export async function updateChart(el, logData) {
       0
     );
 
-    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - 11 * 60 * 60 * 1000);
+    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - maxHour * 60 * 60 * 1000);
+
+    // console.log(twelveHoursAgo)
 
     // 分割日志数据为单独的条目。
     const logEntries = logData.split(/\r\n|\n/).filter(entry => entry !== '');
@@ -37,7 +41,6 @@ export async function updateChart(el, logData) {
         const timeStr = parts[0];
         const delay = parseInt(parts[2], 10);
         const date = new Date(timeStr);
-
 
         // 如果日期在过去12小时内，累加从现在到过去12小时的数据。
         if (date >= twelveHoursAgo && date <= now) {
@@ -59,7 +62,7 @@ export async function updateChart(el, logData) {
 
     // 遍历过去12小时，计算每小时的平均值和中位数。
     let currentHour = new Date(startOfCurrentHour);
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i <= maxHour; i++) {
       const hourKey = `${currentHour.getHours()}:00`;
       const average =
         hourlyData[hourKey] && hourlyData[hourKey].count > 0

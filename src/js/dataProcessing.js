@@ -1,11 +1,12 @@
+import { maxDays } from '../index.js';
 /**
  * 规范化数据
  * @param {string} statusLines - 状态行字符串
  * @returns {Object} - 规范化后的数据
  */
-export function normalizeData(statusLines, maxDays) {
+export function normalizeData(statusLines) {
     const rows = statusLines.split("\n");
-    const dateNormalized = splitRowsByDate(rows, maxDays);
+    const dateNormalized = splitRowsByDate(rows);
     let relativeDateMap = {};
     const now = Date.now();
     for (const [key, val] of Object.entries(dateNormalized)) {
@@ -47,7 +48,7 @@ export function normalizeData(statusLines, maxDays) {
    * @param {Array} rows - 行数组
    * @returns {Object} - 按日期分割后的数据
    */
-  function splitRowsByDate(rows, maxDays) {
+  function splitRowsByDate(rows) {
     let dateValues = {};
     let sum = 0,
       count = 0;
