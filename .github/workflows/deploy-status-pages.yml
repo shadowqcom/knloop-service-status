@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: <private_config>
+          ref: private_config
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
