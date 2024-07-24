@@ -159,13 +159,3 @@ function calculateMedian(values) {
     return values[middle];
   }
 }
-
-
-// async function getLogData(el, name) {
-//   const response = await fetch(`./logs/${name}.log`);
-//   if (!response.ok) {
-//     throw new Error(`HTTP error! status: ${response.status}`);
-//   }
-//   const logData = await response.text();
-//   updateChart(el, logData);
-// }

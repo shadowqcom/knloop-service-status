@@ -7,18 +7,17 @@ import { reslogs } from './reslogs.js';
  * 最后，它准备一个列表，包含每个URL及其对应的最新更新时间。
  */
 async function lastUpdatedtime(urlspath, logspath) {
+
   const configResponse = await fetch(urlspath);
   const configText = await configResponse.text();
   const configLines = configText.split(/\r\n|\n/).filter(entry => entry !== '').filter(line => !line.trim().startsWith("#"));
   const urllist = configLines.map(line => line.split("="));
-
   // 定义一个数组存储每次循环得到的值
   const lastlinetime = [];
 
   // 循环urllist每个值的第一个key,通过key取每个log文件的最后一个有效值。
   for (let i = 0; i < urllist.length; i++) {
     const key = urllist[i][0];
-    // const response = await fetch(logspath + key + "_report.log");
     const response = await reslogs(logspath, key);
     let statusLines = "";
     if (response.ok) {
