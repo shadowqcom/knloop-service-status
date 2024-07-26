@@ -10,9 +10,10 @@ import { reslogs } from "./reslogs.js";
 export async function lastUpdatedtime(useCache = true) {
   const configLines = await fetchUrlsConfig();
   const urllist = configLines.map((line) => line.split("="));
+
   // 定义一个数组存储每次循环得到的值
-  console.log(urllist.length);
   const lastlinetime = [];
+
   // 循环urllist每个值的第一个key,通过key取每个log文件的最后一个有效值。
   for (let i = 0; i < urllist.length; i++) {
     const key = urllist[i][0];

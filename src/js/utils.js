@@ -78,8 +78,6 @@ function constructStatusSquare(key, date, uptimeVal) {
   let square = templatize("statusSquareTemplate", {
     color: color,
   });
-  // const kk = getTooltip(key, date, color)
-  // console.log(kk)
   const show = () => {
     showTooltip(square, date, color);
   };
