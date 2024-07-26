@@ -10,7 +10,8 @@ async function checkAndReloadReports() {
     // 使用setInterval来周期性地执行
     setInterval(async function () {
         try {
-            const lastuptime = await lastUpdatedtime();
+            const timestamp = Date.now();
+            const lastuptime = await lastUpdatedtime(timestamp);
             if (startTime < lastuptime) {
                 showLoadingMask();  // 显示加载遮罩
                 clearReports()  // 清理旧的报告

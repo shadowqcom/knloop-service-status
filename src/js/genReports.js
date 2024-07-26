@@ -28,11 +28,11 @@ export async function genAllReports() {
  * @param {string} logspath - 日志文件的路径。
  */
 async function genReportLog(container, key, url) {
-  const response = await reslogs(key);
-  let statusLines = "";
-  if (response.ok) {
-    statusLines = await response.text();
-  }
+  // const response = await reslogs(key);
+  let statusLines = await reslogs(key);
+  // if (response.ok) {
+  //   statusLines = await response.text();
+  // }
   const normalized = normalizeData(statusLines);
   const statusStream = constructStatusStream(key, url, normalized);
   container.appendChild(statusStream);
@@ -62,12 +62,8 @@ export async function getLastDayStatus() {
   const statusTexts = []; // 存储 statusText 的数组
   for (let ii = 0; ii < configLines.length; ii++) {
     const configLine = configLines[ii];
-    const [key, url] = configLine.split("=");
-    const response = await reslogs(key);
-    let statusLines = "";
-    if (response.ok) {
-      statusLines = await response.text();
-    }
+    const [key] = configLine.split("=");
+    let statusLines = await reslogs(key);;
     const normalized = normalizeData(statusLines);
     // 获取最后一天的状态
     const lastDayStatus = normalized[0];
