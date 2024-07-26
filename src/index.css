@@ -16,12 +16,12 @@ header {
   background-color: #fff;
   height: 4rem;
   border-bottom: 1px solid #dee2e6;
-  transition: transform 0.2s ease; 
-  transform: translateY(0); 
+  transition: transform 0.2s ease;
+  transform: translateY(0);
 }
 
 header.hidden {
-  transform: translateY(-4rem); 
+  transform: translateY(-4rem);
 }
 
 .headerinner {
@@ -160,6 +160,7 @@ footer {
   box-shadow: 0px 0px 2px 1px #dee2e6;
   border-radius: 5px;
   max-width: 850px;
+  /* min-height: 500px; */
   margin: 2rem auto;
 }
 
@@ -340,6 +341,44 @@ canvas {
   font-size: 13px;
   color: #555555;
 }
+
+  /* 日志重载时的遮罩 */
+  .reports-container {
+    position: relative;
+  }
+
+  .loading-mask {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    background-color: #fff;
+    box-shadow: 0px 0px 2px 1px #dee2e6;
+    border-radius: 5px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 850px;
+    height: 25rem;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .loading-text {
+    letter-spacing: 0.2em;
+  }
+
+  video {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  /* 日志重载时的遮罩 */
+
 
 /* 响应式设计 */
 @media screen and (max-width: 576px) {

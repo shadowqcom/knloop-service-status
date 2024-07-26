@@ -1,17 +1,18 @@
-import { genAllReports, getLastDayStatus } from './js/genReports.js';
-import { lastupdated } from './js/lastupdated.js';
-import { getclieninfo } from './js/getclieninfo.js';
-import { scrollheader } from './js/scroll.js';
-import { getyear } from './js/getyear.js';
+import { genAllReports, getLastDayStatus } from './js/genReports.js';  // 导入生成所有报告的函数和获取最后一天状态的函数
+import { lastupdated } from './js/lastupdated.js';                     // 导入记录最新更新时间的模块
+import { getclieninfo } from './js/getclieninfo.js';                   // 导入获取客户端信息的函数
+import { scrollheader } from './js/scroll.js';                         // 导入处理滚动事件以固定标题的函数
+import { getyear } from './js/getyear.js';                             // 导入获取当前年份的函数
+import { reloadReports } from './js/reloadreports.js';                 // 导入重新加载报告的函数
 
 // 配置参数
-export const maxDays = 60;
-export const maxHour = 12;
-export const urlspath = "./src/urls.cfg"; // 配置文件路径,不带后/。
-export const logspath = "https://raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs";
+export const maxDays = 60;                 // 日志最大展示天数
+export const maxHour = 12;                 // 报表最大小时数
+export const urlspath = "./src/urls.cfg";  // 配置文件路径,不带后/
+export const logspath = "./logs";          // 日志文件路径,不带后/
+export const reloadReportsdata = true;     // 是否重新加载报告
 
-
-// 主函数入口
+// 主函数，异步执行一系列操作。
 async function main() {
   await lastupdated();
   await getclieninfo();
@@ -19,6 +20,7 @@ async function main() {
   await getLastDayStatus();
   await scrollheader()
   await getyear();
+  await reloadReports();
 }
 
 main();
