@@ -28,8 +28,6 @@ export async function updateChart(el, logData) {
       startOfCurrentHour.getTime() - maxHour * 60 * 60 * 1000,
     );
 
-    // console.log(twelveHoursAgo)
-
     // 分割日志数据为单独的条目。
     const logEntries = logData.split(/\r\n|\n/).filter((entry) => entry !== "");
 
