@@ -1,6 +1,9 @@
 import { reloadReportsdata } from "../index.js";
 import { reslogs } from "./reslogs.js";
 import {fetchUrlsConfig} from "./fetchurlsconfig.js";
+import { genAllReports } from "./genReports.js";
+import { lastupdated } from "./lastupdated.js";
+import { getLastDayStatus } from "./lastdaystatus.js";
 
 
 async function checkAndReloadReports() {
@@ -21,10 +24,10 @@ async function checkAndReloadReports() {
       if (resstatus !== 304) {
         showLoadingMask(); // 显示加载遮罩
         clearReports(); // 清理旧的报告
-        await genAllReports(useCache); // 生成新的报告
+        await genAllReports(); // 生成新的报告
         hideLoadingMask(); // 隐藏加载遮罩
-        await lastupdated(useCache);
-        await getLastDayStatus(useCache);
+        await lastupdated();
+        await getLastDayStatus();
         startTime = lastuptime;
         console.log("日志数据已更新");
       }
