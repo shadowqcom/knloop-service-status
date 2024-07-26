@@ -10,12 +10,12 @@ import { fetchUrlsConfig } from "./fetchurlsconfig.js";
  * 异步函数：根据 urls.cfg 文件，生成所有报告
  * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的 URL 列表。
  */
-export async function genAllReports() {
+export async function genAllReports(useCache = true) {
   const configLines = await fetchUrlsConfig();
   for (let ii = 0; ii < configLines.length; ii++) {
     const configLine = configLines[ii];
     const [key, url] = configLine.split("=");
-    await genReportLog(document.getElementById("reports"), key, url);
+    await genReportLog(document.getElementById("reports"), key, url, useCache);
   }
   scrolltoright();
 }
@@ -27,8 +27,8 @@ export async function genAllReports() {
  * @param {string} url - 相关 URL，用于报告中显示。
  * @param {string} logspath - 日志文件的路径。
  */
-async function genReportLog(container, key, url) {
-  let statusLines = await reslogs(key);
+async function genReportLog(container, key, url, useCache = true) {
+  let statusLines = await reslogs(key, useCache);
 
   const normalized = normalizeData(statusLines);
   const statusStream = constructStatusStream(key, url, normalized);
@@ -54,7 +54,7 @@ async function genReportLog(container, key, url) {
 }
 
 // 所有服务当天整体状态评估
-export async function getLastDayStatus() {
+export async function getLastDayStatus(useCache = true) {
   const configLines = await fetchUrlsConfig();
   const statusTexts = []; // 存储 statusText 的数组
   for (let ii = 0; ii < configLines.length; ii++) {
@@ -62,7 +62,7 @@ export async function getLastDayStatus() {
     const [key] = configLine.split("=");
 
     // 根据条件确定是否使用缓存
-    let statusLines = await reslogs(key);
+    let statusLines = await reslogs(key, useCache);
 
     const normalized = normalizeData(statusLines);
     // 获取最后一天的状态
