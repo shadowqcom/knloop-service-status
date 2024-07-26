@@ -1,10 +1,10 @@
-import { reslogs } from './reslogs.js';
-import { updateChart } from './timelapsechart.js';
-import { getColor, getStatusText, constructStatusStream } from './utils.js';
-import { normalizeData } from './dataProcessing.js';
-import { create } from './domManipulation.js';
-import { scrolltoright } from './scroll.js';
-import { fetchUrlsConfig } from './fetchurlsconfig.js';
+import { reslogs } from "./reslogs.js";
+import { updateChart } from "./timelapsechart.js";
+import { getColor, getStatusText, constructStatusStream } from "./utils.js";
+import { normalizeData } from "./dataProcessing.js";
+import { create } from "./domManipulation.js";
+import { scrolltoright } from "./scroll.js";
+import { fetchUrlsConfig } from "./fetchurlsconfig.js";
 
 /**
  * 异步函数：根据 urls.cfg 文件，生成所有报告
@@ -28,11 +28,8 @@ export async function genAllReports() {
  * @param {string} logspath - 日志文件的路径。
  */
 async function genReportLog(container, key, url) {
-  // const response = await reslogs(key);
   let statusLines = await reslogs(key);
-  // if (response.ok) {
-  //   statusLines = await response.text();
-  // }
+
   const normalized = normalizeData(statusLines);
   const statusStream = constructStatusStream(key, url, normalized);
   container.appendChild(statusStream);
@@ -57,13 +54,16 @@ async function genReportLog(container, key, url) {
 }
 
 // 所有服务当天整体状态评估
-export async function getLastDayStatus() {
+export async function getLastDayStatus(useCache = true) {
   const configLines = await fetchUrlsConfig();
   const statusTexts = []; // 存储 statusText 的数组
   for (let ii = 0; ii < configLines.length; ii++) {
     const configLine = configLines[ii];
     const [key] = configLine.split("=");
-    let statusLines = await reslogs(key);;
+
+    // 根据条件确定是否使用缓存
+    let statusLines = await reslogs(key, useCache);
+
     const normalized = normalizeData(statusLines);
     // 获取最后一天的状态
     const lastDayStatus = normalized[0];
@@ -71,27 +71,27 @@ export async function getLastDayStatus() {
     const statusText = getStatusText(color);
     statusTexts.push(statusText); // 将 statusText 存入数组
   }
-  const upCount = statusTexts.filter(text => text === 'UP').length;
-  const downCount = statusTexts.filter(text => text === 'Down').length;
-  const nodateCount = statusTexts.filter(text => text === 'No Data').length;
+  const upCount = statusTexts.filter((text) => text === "UP").length;
+  const downCount = statusTexts.filter((text) => text === "Down").length;
+  const nodateCount = statusTexts.filter((text) => text === "No Data").length;
 
-  const img = document.querySelector('#statusImg');
+  const img = document.querySelector("#statusImg");
 
   const totalCount = statusTexts.length;
-  const downThreshold = totalCount * 0.2;  // 有效服务 Down 20% 即整体报告为Down
-  const nodateThreshold = totalCount * 0.5;  // 有效服务 No Data 50% 即整体报告为No Data
+  const downThreshold = totalCount * 0.2; // 有效服务 Down 20% 即整体报告为Down
+  const nodateThreshold = totalCount * 0.5; // 有效服务 No Data 50% 即整体报告为No Data
 
   if (upCount === totalCount) {
-    img.src = './public/check/up.svg';
-    img.alt = 'UP';
+    img.src = "./public/check/up.svg";
+    img.alt = "UP";
   } else if (nodateCount === totalCount) {
-    img.src = './public/check/nodata.svg';
-    img.alt = 'No Data';
+    img.src = "./public/check/nodata.svg";
+    img.alt = "No Data";
   } else if (downCount >= downThreshold || nodateCount >= nodateThreshold) {
-    img.src = './public/check/down.svg';
-    img.alt = 'Down';
+    img.src = "./public/check/down.svg";
+    img.alt = "Down";
   } else {
-    img.src = './public/check/degraded.svg';
-    img.alt = 'Degraded';
+    img.src = "./public/check/degraded.svg";
+    img.alt = "Degraded";
   }
 }
