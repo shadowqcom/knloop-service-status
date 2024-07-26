@@ -10,30 +10,29 @@ import { logspath } from "../index.js";
  * const Timestamp = Date.now();
  * const freshResponseText = await reslogs('example_key', Timestamp);
  */
+async function fetchAndParseText(url) {
+  const response = await fetch(url);
+  const responsetext = await response.text(); // 读取响应文本
+  return responsetext; // 返回响应文本
+}
 
-const cache = {}; // 创建一个缓存对象，用于存储单例 Promise 实例
 
-export async function reslogs(key, headers, uesCache = true) {
+const cache = {}; // 创建一个缓存对象
+
+export async function reslogs(key, uesCache = true) {
   const timestamp = Date.now();
+  const url = logspath + "/" + key + "_report.log" + "?ts=" + timestamp;
 
   // 如果uesCache = false，则不使用缓存
   if (!uesCache) {
-    const response = await fetch(logspath + "/" + key + "_report.log?" + "ts=" + timestamp, { headers });
-
-    const responsetext = await response.text(); // 读取响应文本
-    const ETag = response.headers.get('ETag');
-    const resstatus = response.status;
-    
-    return [responsetext, ETag, resstatus]; // 返回响应文本
+    return await fetchAndParseText(url); // 返回响应文本
   }
 
   // 检查缓存中是否存在对应 key 的结果
   if (!cache[key]) {
     // 如果缓存中没有对应 key 的结果，则创建一个新的 Promise 实例
     cache[key] = (async () => {
-      const response = await fetch(logspath + "/" + key + "_report.log?" + "ts=" + timestamp);
-      const responsetext = await response.text(); // 读取响应文本
-      return responsetext;
+      return await fetchAndParseText(url); // 返回响应文本
     })();
   }
 

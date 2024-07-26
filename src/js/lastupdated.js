@@ -7,7 +7,7 @@ import { reslogs } from "./reslogs.js";
  * 它首先从配置文件中读取URL列表，然后过滤掉空白行和注释行。
  * 最后，它准备一个列表，包含每个URL及其对应的最新更新时间。
  */
-export async function lastUpdatedtime() {
+export async function lastUpdatedtime(useCache = true) {
   const configLines = await fetchUrlsConfig();
   const urllist = configLines.map((line) => line.split("="));
 
@@ -17,7 +17,7 @@ export async function lastUpdatedtime() {
   // 循环urllist每个值的第一个key,通过key取每个log文件的最后一个有效值。
   for (let i = 0; i < urllist.length; i++) {
     const key = urllist[i][0];
-    const responseText = await reslogs(key);
+    const responseText = await reslogs(key, useCache);
     let statusLines = responseText;
     const lines = statusLines.split(/\r\n|\n/).filter((entry) => entry !== "");
     const lastTime = lines[lines.length - 1].split(",")[0];
