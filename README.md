@@ -52,7 +52,18 @@ const maxDays = 60; // 默认60天，建议不超过90。
 const maxHour = 12; // 默认12小时，建议不超过24。
 ```
 
-### 5. 配置 GitHub Pages.
+### 5. 设置自动数据刷新
+本项设置适用于调用远程logs文件的情况，如果你是使用github pages则跳过此步骤。
+`./src/js/index.js`  
+```js
+export const logspath = "./logs";          // 日志文件路径,不带后/
+export const reloadReportsdata = false;     // 是否重新加载报告
+export const reloadReportstime = 5;        // 重载报告的检测间隔时间
+```
+将`logspath`改为你的远程logs文件路径，然后把`reloadReportsdata`设置为true，修改`reloadReportstime`为合适的间隔时间。
+
+
+### 6. 配置 GitHub Pages.
 
 如果你使用其他静态页面托管服务则跳过此步骤。
 
@@ -66,7 +77,7 @@ const maxHour = 12; // 默认12小时，建议不超过24。
 
 - `Enforce HTTPS` 强制https 建议勾选上。
 
-### 6. 配置 WECHAT_WEBHOOK_KEY
+### 7. 配置 WECHAT_WEBHOOK_KEY
 
 本配置可选，用作推送失败的url到企业微信机器人。
 
@@ -75,7 +86,7 @@ const maxHour = 12; // 默认12小时，建议不超过24。
 - `Name` 填 `WECHAT_WEBHOOK_KEY` ，
 - `Secret` 填写你的企业微信机器人 Webhook地址 key= 后面的值。
 
-### 7、在其他机器运行检查脚本
+### 8、在其他机器运行检查脚本
 
 1、需要在目标机器上安装git  
 2、需要配置git密钥  
@@ -113,6 +124,7 @@ crontab -e
 - [x] 延迟曲线图
 - [x] 统计图中没有数据的地方显示虚线
 - [x] 所有服务当天总体评估状态
+- [x] 自动重载报表和日志数据
 - [ ] SSL状态检测
 - [ ] SSH 检测
 - [ ] 钉钉/飞书/邮箱/telegram 通知

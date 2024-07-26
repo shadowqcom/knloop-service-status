@@ -1,4 +1,4 @@
-import { reloadReportsdata } from "../index.js";
+import { reloadReportsdata, reloadReportstime } from "../index.js";
 import { reslogs } from "./reslogs.js";
 import { fetchUrlsConfig } from "./fetchurlsconfig.js";
 import { genAllReports, getLastDayStatus } from "./genReports.js";
@@ -10,7 +10,7 @@ async function checkAndReloadReports() {
   const lastTime = await getlastTime();
   let startTime = lastTime;
 
-  const interval = 2 * 60 * 1000; // 分钟转换为毫秒
+  const interval = reloadReportstime * 60 * 1000; // 分钟转换为毫秒
 
   // 使用setInterval来周期性地执行
   setInterval(async function () {
