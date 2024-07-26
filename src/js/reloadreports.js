@@ -1,9 +1,8 @@
 import { reloadReportsdata } from "../index.js";
 import { reslogs } from "./reslogs.js";
 import {fetchUrlsConfig} from "./fetchurlsconfig.js";
-import { genAllReports } from "./genReports.js";
+import { genAllReports, getLastDayStatus } from "./genReports.js";
 import { lastupdated } from "./lastupdated.js";
-import { getLastDayStatus } from "./lastdaystatus.js";
 
 
 async function checkAndReloadReports() {
