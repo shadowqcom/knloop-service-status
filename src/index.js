@@ -18,7 +18,7 @@ async function main() {
   await getclieninfo();
   await genAllReports();
   await getLastDayStatus();
-  await scrollheader()
+  await scrollheader();
   await getyear();
   await reloadReports();
 }
