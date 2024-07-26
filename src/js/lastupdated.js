@@ -29,13 +29,11 @@ export async function lastUpdatedtime(useCache = true) {
     return new Date(a) > new Date(b) ? a : b;
   });
 
-  // 在这里调用 updateLastUpdated 函数并传递 lastTime
-  updateLastUpdated(lastTime);
-  return lastTime;
+  refreshLastupdatedon(lastTime);
 }
 
 // 将最后更新时间写到页面
-function updateLastUpdated(lastUpdateTime) {
+export function refreshLastupdatedon(lastUpdateTime) {
   const updateTimeElement = document.getElementById("updateTime");
   if (updateTimeElement) {
     updateTimeElement.textContent = `Last updated on : ${lastUpdateTime}`;
