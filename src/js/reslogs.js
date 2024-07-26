@@ -6,8 +6,7 @@ import { logspath } from '../index.js';
 * const response = await reslogs(key);
 */
 export async function reslogs(key) {
-    const response = await fetch(logspath + "/" + key + "_report.log");
+    const timestamp = Date.now(); //  
+    const response = await fetch(logspath + "/" + key + "_report.log?" + "ts=" + timestamp);
     return response;
 }
-
-

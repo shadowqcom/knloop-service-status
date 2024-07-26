@@ -36,6 +36,9 @@
 
   <div class="pageContainer">
     <div id="reports" class="reportContainer"></div>
+
+
+
     <div id="templates" style="display: none">
       <div id="statusSquareTemplate" class="statusSquare $color" data-status="$color"></div>
       <div id="statusLineTemplate" class="statusLine"></div>
@@ -55,6 +58,13 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="loading-mask" class="loading-mask hidden">
+    <div class="loading-text">一大波数据正在路上...</div>
+    <video autoplay loop muted playsinline>
+      <source src="./public/loading.mp4" type="video/mp4">
+    </video>
   </div>
 
   <div id="clientInfo" class="clientInfo">

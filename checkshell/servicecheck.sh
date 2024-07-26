@@ -1,3 +1,6 @@
+#!/bin/bash
+
+
 export TZ='Asia/Shanghai'
 
 KEYSARRAY=()

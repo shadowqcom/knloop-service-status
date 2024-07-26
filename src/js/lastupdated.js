@@ -7,7 +7,7 @@ import { fetchUrlsConfig } from './fetchurlsconfig.js';
  * 它首先从配置文件中读取URL列表，然后过滤掉空白行和注释行。
  * 最后，它准备一个列表，包含每个URL及其对应的最新更新时间。
  */
-async function lastUpdatedtime() {
+export async function lastUpdatedtime() {
   const configLines = await fetchUrlsConfig();
   const urllist = configLines.map(line => line.split("="));
   // 定义一个数组存储每次循环得到的值
@@ -33,6 +33,7 @@ async function lastUpdatedtime() {
 
   // 在这里调用 updateLastUpdated 函数并传递 lastTime
   updateLastUpdated(lastTime); 
+  return lastTime;
 }
 
 // 将最后更新时间写到页面
