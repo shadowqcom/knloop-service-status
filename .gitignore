@@ -1,8 +1,12 @@
 # 排除logs目录
 logs/
 tmp/
+node_modules/
+dist/
 
 # 排除的文件
 .vscode
 *.log
 CNAME
+package-lock.json
+package.json
