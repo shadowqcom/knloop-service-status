@@ -4,34 +4,27 @@
  * 使用fetch API进行异步请求以避免阻塞文档加载。
  */
 export async function getclieninfo() {
-  document.addEventListener("DOMContentLoaded", async function () {
-    try {
-      const response = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
-      const data = await response.text();
+  // 创建数据对象
+  let data = {
+    ip: '0.0.0.0',
+    loc: 'shenzhen',
+    ts: new Date().toLocaleString(),
+    uag: navigator.userAgent
+  };
 
-      const lines = data.split("\n");
-      const traceData = {};
-      lines.forEach((line) => {
-        const [key, value] = line.split("=");
-        if (key && value) {
-          traceData[key] = value.trim();
-        }
-      });
+  try {
+    let clientInfoDiv = document.getElementById('clientInfo');
+    let spans = clientInfoDiv.getElementsByTagName('span');
 
-      // 选择所有需要替换的元素
-      const elements = document.querySelectorAll("[data-trace-placeholder]");
-
-      // 遍历元素并替换占位符
-      elements.forEach((element) => {
-        const placeholder = element.getAttribute("data-trace-placeholder");
-        const prefix = element.textContent.split("$" + placeholder)[0]; // 分离描述性文本和占位符
-        const suffix = element.textContent.split("$" + placeholder)[1]; // 分离占位符后的文本
-        if (traceData[placeholder]) {
-          element.textContent = prefix + traceData[placeholder] + suffix; // 将描述性文本、值和后续文本合并
-        }
-      });
-    } catch (error) {
-      console.error("获取客户端信息失败:", error);
+    for (let span of spans) {
+      let id = span.id;
+      if (data.hasOwnProperty(id)) {
+        let originalText = span.innerHTML;
+        let regex = new RegExp(`\\$${id}`, 'g');
+        span.innerHTML = originalText.replace(regex, data[id]);
+      }
     }
-  });
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }

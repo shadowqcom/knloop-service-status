@@ -1,0 +1,20 @@
+{
+    "name": "knloop status",
+    "short_name": "knloop",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000",
+    "theme_color": "#fff",
+    "icons": [
+      {
+        "src": "../public/logo.svg",
+        "sizes": "192x192",
+        "type": "image/svg+xml"
+      },
+      {
+        "src": "../public/logo.svg",
+        "sizes": "512x512",
+        "type": "image/svg+xml"
+      }
+    ]
+  }
