@@ -1,7 +1,0 @@
-node_modules/
-dist/
-logs/
-.git/
-.gitignore
-chart.umd.js
-index.js

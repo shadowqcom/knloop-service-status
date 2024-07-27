@@ -11,16 +11,16 @@ import { showLoadingMask, hideLoadingMask } from "./reloadreports.js";
  * 异步函数：根据 urls.cfg 文件，生成所有报告
  * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的 URL 列表。
  */
-export async function genAllReports(useCache = true) {
-  showLoadingMask();
+export async function genAllReports(useCache = {}) {
+  showLoadingMask(); // 显示加载动画
   const configLines = await fetchUrlsConfig();
   for (let ii = 0; ii < configLines.length; ii++) {
     const configLine = configLines[ii];
     const [key, url] = configLine.split("=");
     await genReportLog(document.getElementById("reports"), key, url, useCache);
   }
-  hideLoadingMask();
-  scrolltoright();
+  hideLoadingMask(); // 隐藏加载动画
+  scrolltoright();  // 滚动到最右侧
 }
 
 /**
@@ -30,7 +30,7 @@ export async function genAllReports(useCache = true) {
  * @param {string} url - 相关 URL，用于报告中显示。
  * @param {string} logspath - 日志文件的路径。
  */
-async function genReportLog(container, key, url, useCache = true) {
+async function genReportLog(container, key, url, useCache = {}) {
   let statusLines = await reslogs(key, useCache);
 
   const normalized = normalizeData(statusLines);
@@ -57,7 +57,7 @@ async function genReportLog(container, key, url, useCache = true) {
 }
 
 // 所有服务当天整体状态评估
-export async function getLastDayStatus(useCache = true) {
+export async function getLastDayStatus(useCache = {}) {
   const configLines = await fetchUrlsConfig();
   const statusTexts = []; // 存储 statusText 的数组
   for (let ii = 0; ii < configLines.length; ii++) {
