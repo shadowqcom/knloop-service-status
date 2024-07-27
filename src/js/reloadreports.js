@@ -4,14 +4,11 @@ import { fetchUrlsConfig } from "./fetchurlsconfig.js";
 import { genAllReports, getLastDayStatus } from "./genReports.js";
 import { refreshLastupdatedon } from "./lastupdated.js";
 
-const useCache = false;  // 是否使用缓存
+const useCache = { cache: 'reload' };  // 不使用缓存
 let startTime;
 async function checkAndReloadReports() {
   startTime = await getlastTime(); // 初始化全局变量
   const interval = reloadReportstime * 60 * 1000; // 分钟转换为毫秒
-
-  // showLoadingMask(); // 显示加载动画
-  // clearReports(); // 清理旧的报告
 
   // 使用setInterval来周期性地执行
   setInterval(async function () {
@@ -30,7 +27,6 @@ async function checkAndReloadReports() {
       hideLoadingMask(); // 隐藏加载动画
 
       startTime = lastTime;  // 重置开始时间
-      console.log("更新完成：重置开始时间", startTime);
 
     } catch (error) {
       console.error("重载日志数据失败:", error);

@@ -1,48 +1,28 @@
 import { logspath } from "../index.js";
 
-/*
- * 统一读取并处理所有.log文件，供其他地方使用。
- *
- * 使用缓存
- * const responseText = await reslogs('example_key');
- *
- * 不使用缓存，强制从服务器获取数据
- * const Timestamp = Date.now();
- * const freshResponseText = await reslogs('example_key', Timestamp);
+/**
+ * 异步函数：获取日志文件内容
+ * 
+ * 该函数通过HTTP请求从指定的URL获取日志文件的内容。如果请求成功，它将返回日志文本；
+ * 如果请求失败，它将抛出一个错误。这个函数使用了fetch API来进行网络请求，并支持使用缓存。
+ * 
+ * @param {string} key - 日志文件名的关键字，用于构造URL。
+ * @param {Object} uesCache - 控制是否使用缓存的对象，默认为使用'default'缓存策略。该参数的具体作用取决于fetch函数的实现。
+ * @returns {Promise<string>} - 返回一个承诺，该承诺解析为日志文件的文本内容。
+ * @throws {Error} - 如果请求失败，将抛出一个包含错误信息的异常。
  */
-async function fetchAndParseText(url) {
+export async function reslogs(key, useCache = { cache: 'default' }) {
+  const url = logspath + "/" + key + "_report.log";
+
   try {
-    const response = await fetch(url);
-    const responsetext = await response.text(); // 读取响应文本
-    return responsetext; // 返回响应文本
+    const response = await fetch(url, useCache);
+    if (!response.ok) {
+      throw new Error(`请求失败: ${response.status}`);
+    }
+    const responsetext = await response.text();
+    return responsetext;
   } catch (error) {
     console.error('Error fetching data:', error);
-    throw error; // 抛出错误
+    throw error;
   }
-}
-
-const cache = {}; // 创建一个缓存对象
-
-export async function reslogs(key, uesCache = true) {
-  const timestamp = Date.now();
-  const url = logspath + "/" + key + "_report.log" + "?ts=" + timestamp;
-
-  // 如果uesCache = false，则不使用缓存
-  if (!uesCache) {
-    return await fetchAndParseText(url); // 返回响应文本
-  }
-
-  // 检查缓存中是否存在对应 key 的结果
-  if (!cache[key]) {
-    // 如果缓存中没有对应 key 的结果，则创建一个新的 Promise 实例
-    cache[key] = (async () => {
-      return await fetchAndParseText(url); // 返回响应文本
-    })();
-  }
-  try {
-    return cache[key];// 返回缓存的 Promise 实例
-  } catch (error) {
-    console.error("获取缓存失败:", error);
-  }
-
 }
