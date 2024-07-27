@@ -148,21 +148,6 @@ a {
   text-decoration: none;
 }
 
-/* 按钮样式 */
-/* .outlineButton,
-.button,
-button {
-  background-color: #194b7d;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 10px 16px;
-  white-space: nowrap;
-} */
-
 footer {
   color: #9c9c9c;
   margin: 40px;
@@ -276,25 +261,6 @@ footer {
   color: #7c7c7c;
   font-size: 12px;
 }
-
-/* .tooltipContent {
-  color: #7c7c7c;
-  font-size: 13px;
-} */
-
-/* .uptimeContainer {
-  color: #999;
-  display: flex;
-  margin-top: 8px;
-  font-size: 12px;
-}
-
-.uptimeContainer hr {
-  border: none;
-  border-top: 1px dashed #eee;
-  width: 100%;
-  margin: 10px;
-} */
 
 .success {
   background-color: #00dfa2;
