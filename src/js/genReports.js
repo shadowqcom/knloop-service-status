@@ -12,15 +12,15 @@ import { showLoadingMask, hideLoadingMask } from "./reloadreports.js";
  * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的 URL 列表。
  */
 export async function genAllReports(useCache = true) {
-  showLoadingMask();
+  showLoadingMask(); // 显示加载动画
   const configLines = await fetchUrlsConfig();
   for (let ii = 0; ii < configLines.length; ii++) {
     const configLine = configLines[ii];
     const [key, url] = configLine.split("=");
     await genReportLog(document.getElementById("reports"), key, url, useCache);
   }
-  hideLoadingMask();
-  scrolltoright();
+  hideLoadingMask(); // 隐藏加载动画
+  scrolltoright();  // 滚动到最右侧
 }
 
 /**

@@ -17,9 +17,6 @@ async function checkAndReloadReports() {
   setInterval(async function () {
     try {
       const lastTime = await getlastTime();
-
-      console.log("开始时间：", startTime);
-      console.log("最新时间：", lastTime);
       if (startTime >= lastTime) {
         return; // 如果时间没有变化，则跳过此次循环
       }

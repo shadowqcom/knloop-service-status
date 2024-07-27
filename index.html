@@ -9,6 +9,7 @@
   <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。" />
   <link rel="icon" href="./favicon.ico" />
   <link rel="stylesheet" href="./src/index.css" />
+  <link rel="manifest" href="./src/manifest.json">
 </head>
 
 <body>
@@ -63,12 +64,12 @@
   </div>
 
   <div id="clientInfo" class="clientInfo">
-    <p>
-      <span data-trace-placeholder="ip">IP : $ip | </span>
-      <span data-trace-placeholder="loc">Loc : $loc | </span>
-      <span data-trace-placeholder="ts">TS : $ts</span>
-    </p>
-    <p><span data-trace-placeholder="uag">UA : $uag</span></p>
+    <!-- <p>
+      <span id="ip">IP : $ip | </span>
+      <span id="loc">Loc : $loc | </span>
+      <span id="ts">TS : $ts</span>
+    </p> -->
+    <p><span id="uag">UA : $uag</span></p>
   </div>
 
   <footer>
@@ -82,6 +83,7 @@
   </footer>
 </body>
 
+<script src="./src/js/service-worker.js"></script>
 <script src="./src/js/chart.umd.js"></script>
 <script type="module" src="./src/index.js" defer></script>
 

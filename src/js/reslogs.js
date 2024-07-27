@@ -21,7 +21,6 @@ async function fetchAndParseText(url) {
   }
 }
 
-
 const cache = {}; // 创建一个缓存对象
 
 export async function reslogs(key, uesCache = true) {
