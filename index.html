@@ -1,108 +1,88 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>knloop status</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
-    <meta
-      name="description"
-      content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。"
-    />
-    <link rel="icon" href="./favicon.ico" />
-    <link rel="stylesheet" href="./src/index.css" />
-  </head>
 
-  <body>
-    <header>
-      <div class="headerinner">
-        <div class="headerleft">
-          <a href="/">
-            <img src="./public/logo.svg" alt="Logo" loading="eager" />
-            <span>knloop status</span>
-          </a>
-        </div>
-        <div class="headerright">
-          <a
-            href="https://github.com/shadowqcom/knloop-service-status"
-            target="_blank"
-            >Github</a
-          >
-        </div>
+<head>
+  <title>knloop status</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
+  <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。" />
+  <link rel="icon" href="./favicon.ico" />
+  <link rel="stylesheet" href="./src/index.css" />
+</head>
+
+<body>
+  <header>
+    <div class="headerinner">
+      <div class="headerleft">
+        <a href="/">
+          <img src="./public/logo.svg" alt="Logo" loading="eager" />
+          <span>knloop status</span>
+        </a>
       </div>
-    </header>
-
-    <div id="SiteInfo" class="headline">
-      <span id="lastDayStatus">
-        <img
-          id="statusImg"
-          src="./public/check/nodata.svg"
-          alt="status"
-          loading="eager"
-        />
-      </span>
-      <span> knloop service status </span>
-      <div id="updateTime">Last updated on: Loading...</div>
+      <div class="headerright">
+        <a href="https://github.com/shadowqcom/knloop-service-status" target="_blank">Github</a>
+      </div>
     </div>
+  </header>
 
-    <div class="pageContainer">
-      <div id="reports" class="reportContainer"></div>
+  <div id="SiteInfo" class="headline">
+    <span id="lastDayStatus">
+      <img id="statusImg" src="./public/check/nodata.svg" alt="status" loading="eager" />
+    </span>
+    <span> knloop service status </span>
+    <div id="updateTime">Last updated on: Loading...</div>
+  </div>
 
-      <div id="templates" style="display: none">
-        <div
-          id="statusSquareTemplate"
-          class="statusSquare $color"
-          data-status="$color"
-        ></div>
-        <div id="statusLineTemplate" class="statusLine"></div>
+  <div id="pageContainer" class="pageContainer">
+    <div id="reports" class="reportContainer"></div>
 
-        <div
-          id="statusStreamContainerTemplate"
-          class="statusStreamContainer"
-        ></div>
+    <div id="templates" class="hidden">
+      <div id="statusSquareTemplate" class="statusSquare $color" data-status="$color"></div>
+      <div id="statusLineTemplate" class="statusLine"></div>
 
-        <div id="statusContainerTemplate" class="statusContainer">
-          <div class="statusHeader">
-            <h6 class="statusTitle">$title</h6>
-            <div class="$color statusHeadline">$status</div>
+      <div id="statusStreamContainerTemplate" class="statusStreamContainer"></div>
+
+      <div id="statusContainerTemplate" class="statusContainer">
+        <div class="statusHeader">
+          <h6 class="statusTitle">$title</h6>
+          <div class="$color statusHeadline">$status</div>
+        </div>
+        <div class="statusSubtitle">
+          <div class="sectionUrl">
+            <a href="$url" target="_blank">$domainname</a>
           </div>
-          <div class="statusSubtitle">
-            <div class="sectionUrl">
-              <a href="$url" target="_blank">$domainname</a>
-            </div>
-            <div class="statusUptime">$upTime Uptime 在60天内</div>
-          </div>
+          <div class="statusUptime">$upTime Uptime within 60 days</div>
         </div>
       </div>
     </div>
-
     <div id="loading-mask" class="loading-mask hidden">
-      <div class="loading-text">一大波数据正在路上...</div>
-      <video autoplay loop muted playsinline>
-        <source src="./public/loading.mp4" type="video/mp4" />
-      </video>
+      <div class="loadinger"></div>
+      <div class="loading-text">Data is Loading ...</div>
     </div>
+  </div>
 
-    <div id="clientInfo" class="clientInfo">
-      <p>
-        <span data-trace-placeholder="ip">IP : $ip | </span>
-        <span data-trace-placeholder="loc">Loc : $loc | </span>
-        <span data-trace-placeholder="ts">TS : $ts</span>
-      </p>
-      <p><span data-trace-placeholder="uag">UA : $uag</span></p>
-    </div>
+  <div id="clientInfo" class="clientInfo">
+    <p>
+      <span data-trace-placeholder="ip">IP : $ip | </span>
+      <span data-trace-placeholder="loc">Loc : $loc | </span>
+      <span data-trace-placeholder="ts">TS : $ts</span>
+    </p>
+    <p><span data-trace-placeholder="uag">UA : $uag</span></p>
+  </div>
 
-    <footer>
-      <p>
-        <a href="https://knloop.com">knloop</a> service status. code on
-        <a href="https://github.com/shadowqcom/knloop-service-status">Github</a>
-      </p>
-      <p class="copy-right">
-        Copyright ©<span id="currentYear"></span> knloop. All Rights Reserved.
-      </p>
-    </footer>
-  </body>
+  <footer>
+    <p>
+      <a href="https://knloop.com">knloop</a> service status. code on
+      <a href="https://github.com/shadowqcom/knloop-service-status">Github</a>
+    </p>
+    <p class="copy-right">
+      Copyright ©<span id="currentYear"></span> knloop. All Rights Reserved.
+    </p>
+  </footer>
+</body>
 
-  <script src="./src/js/chart.umd.js"></script>
-  <script type="module" src="./src/index.js" defer></script>
+<script src="./src/js/chart.umd.js"></script>
+<script type="module" src="./src/index.js" defer></script>
+
 </html>

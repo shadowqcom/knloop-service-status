@@ -11,9 +11,14 @@ import { logspath } from "../index.js";
  * const freshResponseText = await reslogs('example_key', Timestamp);
  */
 async function fetchAndParseText(url) {
-  const response = await fetch(url);
-  const responsetext = await response.text(); // 读取响应文本
-  return responsetext; // 返回响应文本
+  try {
+    const response = await fetch(url);
+    const responsetext = await response.text(); // 读取响应文本
+    return responsetext; // 返回响应文本
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error; // 抛出错误
+  }
 }
 
 
@@ -35,7 +40,10 @@ export async function reslogs(key, uesCache = true) {
       return await fetchAndParseText(url); // 返回响应文本
     })();
   }
+  try {
+    return cache[key];// 返回缓存的 Promise 实例
+  } catch (error) {
+    console.error("获取缓存失败:", error);
+  }
 
-  // 返回缓存的 Promise 实例
-  return cache[key];
 }

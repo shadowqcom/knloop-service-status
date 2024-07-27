@@ -75,7 +75,7 @@ body {
     "Noto Color Emoji";
   justify-content: center;
   line-height: 20px;
-  min-width: 400px;
+  min-width: 300px;
   margin: 0;
   padding: 0;
   text-align: center;
@@ -144,12 +144,12 @@ h6 {
 }
 
 a {
-  color: #005cc5;
+  color: #3eaf7c;
   text-decoration: none;
 }
 
 /* 按钮样式 */
-.outlineButton,
+/* .outlineButton,
 .button,
 button {
   background-color: #194b7d;
@@ -161,7 +161,7 @@ button {
   font-weight: 600;
   padding: 10px 16px;
   white-space: nowrap;
-}
+} */
 
 footer {
   color: #9c9c9c;
@@ -174,7 +174,6 @@ footer {
   box-shadow: 0px 0px 2px 1px #dee2e6;
   border-radius: 5px;
   max-width: 850px;
-  /* min-height: 500px; */
   margin: 2rem auto;
 }
 
@@ -278,12 +277,12 @@ footer {
   font-size: 12px;
 }
 
-.tooltipContent {
+/* .tooltipContent {
   color: #7c7c7c;
   font-size: 13px;
-}
+} */
 
-.uptimeContainer {
+/* .uptimeContainer {
   color: #999;
   display: flex;
   margin-top: 8px;
@@ -295,7 +294,7 @@ footer {
   border-top: 1px dashed #eee;
   width: 100%;
   margin: 10px;
-}
+} */
 
 .success {
   background-color: #00dfa2;
@@ -367,17 +366,9 @@ canvas {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  z-index: 1;
-  background-color: #fff;
-  box-shadow: 0px 0px 2px 1px #dee2e6;
-  border-radius: 5px;
-  padding: 2rem;
-  margin: 2rem auto;
-  max-width: 850px;
   height: 25rem;
   flex-direction: column;
   justify-content: center;
-  flex-wrap: nowrap;
 }
 
 .hidden {
@@ -393,7 +384,37 @@ video {
   max-height: 100%;
 }
 
-/* 日志重载时的遮罩 */
+/* 加载动画 */
+.loadinger {
+  width: 45px;
+  aspect-ratio: .75;
+  --c: no-repeat linear-gradient(#00dfa2 0 0);
+  background:
+    var(--c) 0% 50%,
+    var(--c) 50% 50%,
+    var(--c) 100% 50%;
+  background-size: 20% 50%;
+  animation: l6 1s infinite linear;
+}
+
+@keyframes l6 {
+  20% {
+    background-position: 0% 0%, 50% 50%, 100% 50%
+  }
+
+  40% {
+    background-position: 0% 100%, 50% 0%, 100% 50%
+  }
+
+  60% {
+    background-position: 0% 50%, 50% 100%, 100% 0%
+  }
+
+  80% {
+    background-position: 0% 50%, 50% 50%, 100% 100%
+  }
+}
+
 
 /* 响应式设计 */
 @media screen and (max-width: 576px) {
@@ -402,10 +423,6 @@ video {
     box-shadow: 0px 0px 2px 1px #dee2e6;
   }
 
-  .statusHeader {
-    display: flex;
-  }
-
   .statusSubtitle {
     align-items: baseline;
   }
@@ -417,7 +434,6 @@ video {
   }
 
   .statusHeadline {
-    margin-left: 12px;
     margin-top: 0px;
   }
 
@@ -433,30 +449,23 @@ video {
   }
 
   .statusStreamContainer {
-    display: flex;
-    align-items: center;
     overflow-x: scroll;
     height: 37px;
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 
+  /* 隐藏滚动条 */
   .statusStreamContainer::-webkit-scrollbar {
     display: none;
   }
 
   .statusSquare {
-    border-radius: 3px;
     min-width: 7px;
-    height: 30px;
     width: 100%;
     margin-right: 1px;
   }
 
-  .statusSquare:hover {
-    transform: scaleY(1.2);
-    overflow: hidden;
-  }
 
   .statusContainer {
     padding: 10px;
@@ -464,15 +473,17 @@ video {
   }
 
   canvas {
-    max-height: 128px;
-    min-width: 100px;
-    max-width: 850px;
     padding: 0rem 0.2rem 0rem 0.5rem;
   }
 
   .clientInfo {
-    margin: 2rem 1rem;
+    max-width: calc(100% - 2rem); 
   }
+
+  .loading-mask {
+    height: 14rem;
+  }
+
 }
 
 @media screen and (min-width: 578px) and (max-width: 768px) {
@@ -481,10 +492,6 @@ video {
     box-shadow: 0px 0px 2px 1px #dee2e6;
   }
 
-  .statusHeader {
-    display: flex;
-  }
-
   .statusSubtitle {
     align-items: baseline;
   }
@@ -496,7 +503,6 @@ video {
   }
 
   .statusHeadline {
-    margin-left: 12px;
     margin-top: 0px;
   }
 
@@ -512,29 +518,21 @@ video {
   }
 
   .statusStreamContainer {
-    display: flex;
-    align-items: center;
     overflow-x: scroll;
     height: 37px;
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 
+  /* 隐藏滚动条 */
   .statusStreamContainer::-webkit-scrollbar {
     display: none;
   }
 
   .statusSquare {
-    border-radius: 3px;
     min-width: 7px;
-    height: 30px;
     width: 100%;
     margin-right: 1px;
-  }
-
-  .statusSquare:hover {
-    transform: scaleY(1.2);
-    overflow: hidden;
   }
 
   .statusContainer {
@@ -543,26 +541,26 @@ video {
   }
 
   canvas {
-    max-height: 128px;
-    min-width: 100px;
-    max-width: 850px;
     padding: 0rem 0.2rem 0rem 0.5rem;
   }
 
   .clientInfo {
-    margin: 2rem 1rem;
+    max-width: calc(100% - 2rem); 
   }
+
+  .loading-mask {
+    height: 14rem;
+  }
+
 }
 
 @media screen and (min-width: 769px) and (max-width: 992px) {
   .pageContainer {
     margin: 2rem auto;
+    max-width: calc(100% - 2rem); 
     box-shadow: 0px 0px 2px 1px #dee2e6;
   }
 
-  .statusHeader {
-    display: flex;
-  }
 
   .statusSubtitle {
     align-items: baseline;
@@ -575,7 +573,6 @@ video {
   }
 
   .statusHeadline {
-    margin-left: 12px;
     margin-top: 0px;
   }
 
@@ -591,44 +588,37 @@ video {
   }
 
   .statusStreamContainer {
-    display: flex;
-    align-items: center;
     overflow-x: scroll;
     height: 37px;
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 
+  /* 隐藏滚动条 */
   .statusStreamContainer::-webkit-scrollbar {
     display: none;
   }
 
   .statusSquare {
-    border-radius: 3px;
     min-width: 7px;
-    height: 30px;
     width: 100%;
-    margin-right: 2px;
-  }
-
-  .statusSquare:hover {
-    transform: scaleY(1.2);
-    overflow: hidden;
+    margin-right: 1px;
   }
 
   .statusContainer {
-    padding: 24px 24px 10px 24px;
     margin-top: 15px;
   }
 
   canvas {
-    max-height: 128px;
-    min-width: 100px;
-    max-width: 850px;
     padding: 0rem 0.2rem 0rem 0.5rem;
   }
 
   .clientInfo {
-    margin: 2rem auto;
+    max-width: calc(100% - 2rem); 
   }
+
+  .loading-mask {
+    height: 20rem;
+  }
+
 }

@@ -20,7 +20,8 @@ export async function lastUpdatedtime(useCache = true) {
     const responseText = await reslogs(key, useCache);
     let statusLines = responseText;
     const lines = statusLines.split(/\r\n|\n/).filter((entry) => entry !== "");
-    const lastTime = lines[lines.length - 1].split(",")[0];
+    // const lastTime = lines[lines.length - 1].split(",")[0];
+    const lastTime = lines.at(-1).split(",")[0];
     lastlinetime.push(lastTime);
   }
 

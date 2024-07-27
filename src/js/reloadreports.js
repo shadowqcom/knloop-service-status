@@ -5,17 +5,21 @@ import { genAllReports, getLastDayStatus } from "./genReports.js";
 import { refreshLastupdatedon } from "./lastupdated.js";
 
 const useCache = false;  // 是否使用缓存
-
+let startTime;
 async function checkAndReloadReports() {
-  const lastTime = await getlastTime();
-  let startTime = lastTime;
-
+  startTime = await getlastTime(); // 初始化全局变量
   const interval = reloadReportstime * 60 * 1000; // 分钟转换为毫秒
+
+  // showLoadingMask(); // 显示加载动画
+  // clearReports(); // 清理旧的报告
 
   // 使用setInterval来周期性地执行
   setInterval(async function () {
     try {
       const lastTime = await getlastTime();
+
+      console.log("开始时间：", startTime);
+      console.log("最新时间：", lastTime);
       if (startTime >= lastTime) {
         return; // 如果时间没有变化，则跳过此次循环
       }
@@ -24,10 +28,12 @@ async function checkAndReloadReports() {
       showLoadingMask(); // 显示加载动画
       clearReports(); // 清理旧的报告
       await genAllReports(useCache); // 生成新的报告
-      await getLastDayStatus(useCache); 
+      await getLastDayStatus(useCache);
       refreshLastupdatedon(lastTime);  // 刷新 Last updated on
       hideLoadingMask(); // 隐藏加载动画
+
       startTime = lastTime;  // 重置开始时间
+      console.log("更新完成：重置开始时间", startTime);
 
     } catch (error) {
       console.error("重载日志数据失败:", error);
@@ -45,7 +51,7 @@ async function getlastTime() {
   const [key] = randomLine.split("=");
   const response = await reslogs(key, useCache);
   const lastlines = response.split(/\r\n|\n/).filter((entry) => entry !== "");
-  const lastTime = lastlines[lastlines.length - 1].split(",")[0];
+  const lastTime = lastlines.at(-1).split(",")[0];
   return lastTime;
 }
 
@@ -64,12 +70,12 @@ function clearReports() {
 }
 
 
-// 显示加载遮罩
-function showLoadingMask() {
+// 显示加载动画
+export function showLoadingMask() {
   document.getElementById("loading-mask").classList.remove("hidden");
 }
-// 隐藏加载遮罩
-function hideLoadingMask() {
+// 隐藏加载动画
+export function hideLoadingMask() {
   document.getElementById("loading-mask").classList.add("hidden");
 }
 

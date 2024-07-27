@@ -5,18 +5,21 @@ import { normalizeData } from "./dataProcessing.js";
 import { create } from "./domManipulation.js";
 import { scrolltoright } from "./scroll.js";
 import { fetchUrlsConfig } from "./fetchurlsconfig.js";
+import { showLoadingMask, hideLoadingMask } from "./reloadreports.js";
 
 /**
  * 异步函数：根据 urls.cfg 文件，生成所有报告
  * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的 URL 列表。
  */
 export async function genAllReports(useCache = true) {
+  showLoadingMask();
   const configLines = await fetchUrlsConfig();
   for (let ii = 0; ii < configLines.length; ii++) {
     const configLine = configLines[ii];
     const [key, url] = configLine.split("=");
     await genReportLog(document.getElementById("reports"), key, url, useCache);
   }
+  hideLoadingMask();
   scrolltoright();
 }
 
