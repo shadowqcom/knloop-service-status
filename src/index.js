@@ -11,7 +11,7 @@ export const maxHour = 12;                 // 报表最大小时数
 export const urlspath = "./src/urls.cfg";  // 配置文件路径,不带后/
 export const logspath = "https://raw.github.knloop.com/shadowqcom/knloop-service-status/main/logs";          // 日志文件路径,不带后/
 export const reloadReportsdata = true;     // 是否重新加载报告
-export const reloadReportstime = 4.5;        // 重载报告的检测间隔时间
+export const reloadReportstime = 2.5;        // 重载报告的检测间隔时间
 
 // 主函数，异步执行一系列操作。
 async function main() {

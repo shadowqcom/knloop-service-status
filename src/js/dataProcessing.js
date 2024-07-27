@@ -69,7 +69,7 @@ function splitRowsByDate(rows) {
       }
     }
     let result = 0;
-    if (resultStr.trim() == "success") {
+    if (resultStr && resultStr.trim() == "success") {
       result = 1;
     }
     sum += result;
