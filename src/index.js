@@ -4,6 +4,7 @@ import { getclieninfo } from './js/getclieninfo.js';                   // 导入
 import { scrollheader } from './js/scroll.js';                         // 导入处理滚动事件以固定标题的函数
 import { getyear } from './js/getyear.js';                             // 导入获取当前年份的函数
 import { reloadReports } from './js/reloadreports.js';                 // 导入重新加载报告的函数
+import { manualreload } from './js/manualreload.js';
 
 // 配置参数
 export const maxDays = 60;                 // 日志最大展示天数
@@ -15,13 +16,21 @@ export const reloadReportstime = 2.5;        // 重载报告的检测间隔时�
 
 // 主函数，异步执行一系列操作。
 async function main() {
-  await lastupdated();
-  await getclieninfo();
-  await genAllReports();
-  await getLastDayStatus();
-  await scrollheader();
-  await getyear();
-  await reloadReports();
+  await Promise.all([
+    getclieninfo(),
+    getyear(),
+    lastupdated(),
+    manualreload(),
+  ]);
+  await Promise.all([
+    genAllReports(),
+    lastupdated(),
+    getLastDayStatus(),
+  ]);
+  await Promise.all([
+    scrollheader(),
+    reloadReports(),
+  ]);
 }
 
 main();
