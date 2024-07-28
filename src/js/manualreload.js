@@ -1,14 +1,11 @@
-import {showLoadingMask, hideLoadingMask, clearReports, getlastTime } from "./reloadreports.js";
+import { showLoadingMask, hideLoadingMask, clearReports, getlastTime } from "./reloadreports.js";
 import { genAllReports, getLastDayStatus } from "./genReports.js";
 import { refreshLastupdatedon } from "./lastupdated.js";
 
 export function manualreload() {
-    return new Promise((resolve) => {
-        document.addEventListener('DOMContentLoaded', function () {
-            const reloadBtn = document.getElementById('statusImg');
-            reloadBtn.addEventListener('click', throttle(reloadall, 1000));
-            resolve();
-        });
+    document.addEventListener('DOMContentLoaded', () => {
+        const reloadBtn = document.getElementById('statusImg');
+        reloadBtn.addEventListener('click', throttle(reloadall, 1500));
     });
 }
 
