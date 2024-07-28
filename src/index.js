@@ -1,4 +1,4 @@
-import { genAllReports, getLastDayStatus } from './js/genreports.js';  // 导入生成所有报告的函数和获取最后一天状态的函数
+import { genAllReports, getLastDayStatus } from './js/genReports.js';  // 导入生成所有报告的函数和获取最后一天状态的函数
 import { lastupdated } from './js/lastupdated.js';                     // 导入记录最新更新时间的模块
 import { getclieninfo } from './js/getclieninfo.js';                   // 导入获取客户端信息的函数
 import { scrollheader } from './js/scroll.js';                         // 导入处理滚动事件以固定标题的函数
