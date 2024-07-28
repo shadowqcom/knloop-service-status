@@ -27,23 +27,7 @@ self.addEventListener('install', function (event) {
         '/public/check/degraded.svg',
         '/public/check/down.svg',
         '/public/check/nodata.svg',
-        '/public/check/up.svg',
-
-        // 本地日志
-        './logs/Web_report.log',
-        './logs/Dev_report.log',
-        './logs/Mojocn_report.log',
-        './logs/Mojoo_report.log',
-        './logs/ShadowQ_report.log',
-        './logs/Google_report.log',
-
-        // 网络资源
-        'https://raw.github.knloop.com/shadowqcom/knloop-service-status/page/logs/Web_report.log',
-        'https://raw.github.knloop.com/shadowqcom/knloop-service-status/page/logs/Dev_report.log',
-        'https://raw.github.knloop.com/shadowqcom/knloop-service-status/page/logs/Mojocn_report.log',
-        'https://raw.github.knloop.com/shadowqcom/knloop-service-status/page/logs/Mojoo_report.log',
-        'https://raw.github.knloop.com/shadowqcom/knloop-service-status/page/logs/ShadowQ_report.log',
-        'https://raw.github.knloop.com/shadowqcom/knloop-service-status/page/logs/Google_report.log'
+        '/public/check/up.svg'
       ]);
     })
   );
