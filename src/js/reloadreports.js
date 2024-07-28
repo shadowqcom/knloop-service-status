@@ -1,7 +1,7 @@
 import { reloadReportsdata, reloadReportstime } from "../index.js";
 import { reslogs } from "./reslogs.js";
 import { fetchUrlsConfig } from "./fetchurlsconfig.js";
-import { genAllReports, getLastDayStatus } from "./genReports.js";
+import { genAllReports, getLastDayStatus } from "./genreports.js";
 import { refreshLastupdatedon } from "./lastupdated.js";
 
 const useCache = { cache: 'reload' };  // 不使用缓存

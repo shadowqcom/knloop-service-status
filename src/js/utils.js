@@ -1,4 +1,4 @@
-import { templatize } from "./domManipulation.js";
+import { templatize } from "./dommanipulation.js";
 import { showTooltip, hideTooltip } from "./tooltip.js";
 import { maxDays } from "../index.js";
 /**

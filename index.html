@@ -7,8 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
   <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。" />
-  <link rel="icon" href="./favicon.ico" />
+  <link rel="icon" href="./public/favicon.ico" />
   <link rel="stylesheet" href="./src/index.css" />
+  <link rel="manifest" href="/src/manifest.json">
 </head>
 
 <body>
@@ -84,5 +85,15 @@
 
 <script src="./src/js/chart.umd.js"></script>
 <script type="module" src="./src/index.js" defer></script>
-
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('./src/js/serviceworker.js').then(function(registration) {
+        console.log('Service Worker registered:', registration);
+      }, function(err) {
+        console.error('Service Worker registration failed:', err);
+      });
+    });
+  }
+</script>
 </html>
