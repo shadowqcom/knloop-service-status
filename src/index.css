@@ -3,6 +3,9 @@ html {
   display: flex;
   flex-direction: column;
 }
+/* ::-webkit-scrollbar {
+  display: none; 
+} */
 
 header {
   position: fixed;
