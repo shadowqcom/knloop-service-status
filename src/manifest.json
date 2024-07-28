@@ -1,20 +1,21 @@
 {
     "name": "knloop status",
     "short_name": "knloop",
-    "start_url": "/",
+    "start_url": "/index.html",
+    "description": "零依赖的状态页",
     "display": "standalone",
     "background_color": "#000",
     "theme_color": "#fff",
     "icons": [
       {
-        "src": "../public/logo.svg",
+        "src": "/public/logo.png",
         "sizes": "192x192",
-        "type": "image/svg+xml"
+        "type": "image/png"
       },
       {
-        "src": "../public/logo.svg",
+        "src": "/public/logo.png",
         "sizes": "512x512",
-        "type": "image/svg+xml"
+        "type": "image/png"
       }
     ]
   }

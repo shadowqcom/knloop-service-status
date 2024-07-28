@@ -1,8 +1,8 @@
 import { reslogs } from "./reslogs.js";
 import { updateChart } from "./timelapsechart.js";
 import { getColor, getStatusText, constructStatusStream } from "./utils.js";
-import { normalizeData } from "./dataProcessing.js";
-import { create } from "./domManipulation.js";
+import { normalizeData } from "./dataprocessing.js";
+import { create } from "./dommanipulation.js";
 import { scrolltoright } from "./scroll.js";
 import { fetchUrlsConfig } from "./fetchurlsconfig.js";
 import { showLoadingMask, hideLoadingMask } from "./reloadreports.js";
