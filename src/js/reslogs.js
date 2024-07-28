@@ -13,12 +13,22 @@ import { logspath } from "../index.js";
  */
 export async function reslogs(key, useCache = { cache: 'default' }) {
   const url = logspath + "/" + key + "_report.log";
+  const logspathB = "./logs"; // 备选logspath
 
   try {
     const response = await fetch(url, useCache);
+    // 如果请求失败，使用备选logspath
     if (!response.ok) {
-      throw new Error(`请求失败: ${response.status}`);
+      console.warn('Fetch failed. Attempting to use the alternate logspath.');
+      url = logspathB + "/" + key + "_report.log";
+      const responseB = await fetch(url, { cache: useCache });
+      if (!responseB.ok) {
+        throw new Error(`Failed to fetch from both paths: ${url}`);
+      }
+      const responsetext = await responseB.text();
+      return responsetext;
     }
+    // 请求成功，返回文本
     const responsetext = await response.text();
     return responsetext;
   } catch (error) {
