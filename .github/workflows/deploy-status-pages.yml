@@ -3,7 +3,7 @@ name: Deploy Status Pages
 on:
   # 推送触发
   push:
-    branches: ["main"]
+    branches: ["page"]
 
   # 定时任务触发
   # schedule:
