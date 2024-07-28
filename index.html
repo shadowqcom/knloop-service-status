@@ -87,13 +87,10 @@
 <script type="module" src="./src/index.js" defer></script>
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./src/js/serviceworker.js').then(function(registration) {
-        console.log('Service Worker registered:', registration);
-      }, function(err) {
-        console.error('Service Worker registration failed:', err);
-      });
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./src/js/serviceworker.js')
     });
   }
 </script>
+
 </html>
