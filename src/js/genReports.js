@@ -8,8 +8,8 @@ import { fetchUrlsConfig } from "./fetchurlsconfig.js";
 import { showLoadingMask, hideLoadingMask } from "./reloadreports.js";
 
 /**
- * 异步函数：根据 urls.cfg 文件，生成所有报告
- * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的 URL 列表。
+ * 异步函数：根据 urls.cfg 文件，生成所有报告。
+ * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的URL列表。
  */
 export async function genAllReports(useCache = {}) {
   showLoadingMask(); // 显示加载动画
