@@ -3,7 +3,7 @@ name: Deploy Status Pages
 on:
   # 推送触发
   push:
-    branches: ["private_config"]
+    branches: ["page"]
 
   # 定时任务触发
   # schedule:
@@ -31,7 +31,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: private_config
+          ref: main
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

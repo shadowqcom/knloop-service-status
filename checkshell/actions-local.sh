@@ -27,12 +27,14 @@ elif [ "$name" -gt 0 ] && [ "$completed" -gt 0 ]; then
     rm -rf ./knloop-service-status/
     git clone git@github.com:shadowqcom/knloop-service-status.git
     cd ./knloop-service-status/
+    git checkout -b page origin/page
+    git pull origin page
     bash ./checkshell/servicecheck.sh
     git config --local user.name 'Github Actions'
     git config --local user.email 'actions@knloop.com'
     git add -A --force ./logs/
     git commit -m '🆙 [Automated] Update service status logs'
-    git push origin main
+    git push origin page
     cd ..
     rm -rf ./knloop-service-status/
 else
