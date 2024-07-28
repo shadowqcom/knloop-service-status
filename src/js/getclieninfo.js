@@ -3,6 +3,7 @@
  * 该函数主要从一个特定的URL获取客户端信息，并使用这些信息替换文档中特定数据占位符的值。
  * 使用fetch API进行异步请求以避免阻塞文档加载。
  */
+
 export async function getclieninfo() {
   // 创建数据对象
   let data = {
