@@ -1,6 +1,6 @@
 import { reslogs } from "./reslogs.js";
 import { updateChart } from "./timelapsechart.js";
-import { getColor, getStatusText, constructStatusStream } from "./utils.js";
+import { getColor, constructStatusStream } from "./utils.js";
 import { normalizeData } from "./dataProcessing.js";
 import { create } from "./domManipulation.js";
 import { scrolltoright } from "./scroll.js";
@@ -70,31 +70,41 @@ export async function getLastDayStatus(useCache = {}) {
     const normalized = normalizeData(statusLines);
     // 获取最后一天的状态
     const lastDayStatus = normalized[0];
-    const color = getColor(lastDayStatus);
-    const statusText = getStatusText(color);
+    const statusText = getColor(lastDayStatus); // nodata success failure
     statusTexts.push(statusText); // 将 statusText 存入数组
   }
-  const upCount = statusTexts.filter((text) => text === "UP").length;
-  const downCount = statusTexts.filter((text) => text === "Down").length;
-  const nodateCount = statusTexts.filter((text) => text === "No Data").length;
+
+  let successCount = 0, failureCount = 0, nodataCount = 0;
+
+  for (const item of statusTexts) {
+    if (item === 'success') {
+      successCount++;
+    } else if (item === 'failure') {
+      failureCount++;
+    } else if (item === 'nodata') {
+      nodataCount++;
+    }
+  }
+
+  const totalCount = statusTexts.length; // 总服务数
+  const failureThreshold = totalCount * 0.2; // 有效服务 Down 20% 即整体报告为Down
+  const nodateThreshold = totalCount * 0.5; // 有效服务 No Data 50% 即整体报告为No Data
+
+  const conditions = [
+    { condition: successCount === totalCount, src: './public/check/up.svg', alt: 'UP' },
+    { condition: nodataCount === totalCount, src: './public/check/nodata.svg', alt: 'No Data' },
+    { condition: failureCount >= failureThreshold || nodataCount >= nodateThreshold, src: './public/check/down.svg', alt: 'Down' },
+    { condition: true, src: './public/check/degraded.svg', alt: 'Degraded' }
+  ];
 
   const img = document.querySelector("#statusImg");
 
-  const totalCount = statusTexts.length;
-  const downThreshold = totalCount * 0.2; // 有效服务 Down 20% 即整体报告为Down
-  const nodateThreshold = totalCount * 0.5; // 有效服务 No Data 50% 即整体报告为No Data
-
-  if (upCount === totalCount) {
-    img.src = "./public/check/up.svg";
-    img.alt = "UP";
-  } else if (nodateCount === totalCount) {
-    img.src = "./public/check/nodata.svg";
-    img.alt = "No Data";
-  } else if (downCount >= downThreshold || nodateCount >= nodateThreshold) {
-    img.src = "./public/check/down.svg";
-    img.alt = "Down";
-  } else {
-    img.src = "./public/check/degraded.svg";
-    img.alt = "Degraded";
+  for (const { condition, src, alt } of conditions) {
+    if (condition) {
+      img.src = src;
+      img.alt = alt;
+      img.classList.remove('icobeat');
+      break;
+    }
   }
 }
