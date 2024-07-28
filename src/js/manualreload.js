@@ -25,8 +25,6 @@ function throttle(func, wait) {
 async function reloadall() {
     const useCache = { cache: 'reload' };  // 不使用缓存
     const lastTime = await getlastTime();
-
-    console.log("reloadallreports");
     showLoadingMask(); // 显示加载动画
     clearReports(); // 清理旧的报告
     await genAllReports(useCache); // 生成新的报告
