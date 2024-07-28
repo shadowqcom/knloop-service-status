@@ -7,9 +7,9 @@
 export async function getclieninfo() {
   // 创建数据对象
   let data = {
-    ip: '0.0.0.0',
-    loc: 'shenzhen',
-    ts: new Date().toLocaleString(),
+    // ip: '0.0.0.0',
+    // loc: 'shenzhen',
+    // ts: new Date().toLocaleString(),
     uag: navigator.userAgent
   };
 
