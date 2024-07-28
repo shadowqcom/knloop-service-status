@@ -35,7 +35,7 @@ async function checkAndReloadReports() {
 }
 
 // 获取随机一个服务的最后一行时间
-async function getlastTime() {
+export async function getlastTime() {
   const configLines = await fetchUrlsConfig();
 
   const randomIndex = Math.floor(Math.random() * configLines.length);    // 从配置行中随机选择一行
@@ -49,7 +49,7 @@ async function getlastTime() {
 }
 
 // 清理旧的报告
-function clearReports() {
+export function clearReports() {
   const reportsElement = document.getElementById("reports");
   while (reportsElement.firstChild) {
     reportsElement.removeChild(reportsElement.firstChild);
@@ -57,7 +57,8 @@ function clearReports() {
   const img = document.querySelector("#statusImg");
   img.src = "./public/check/nodata.svg";
   img.alt = "No Data";
-
+  img.classList.add('icobeat'); // 跳动
+  
   refreshLastupdatedon("Loading..."); // 刷新 Last updated on
 
 }

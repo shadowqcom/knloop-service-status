@@ -158,7 +158,8 @@ footer {
   background-color: #fff;
   box-shadow: 0px 0px 2px 1px #dee2e6;
   border-radius: 5px;
-  max-width: 850px;
+  /* max-width: 850px; */
+  max-width: 55rem;
   margin: 2rem auto;
 }
 
@@ -212,7 +213,8 @@ footer {
   align-items: center;
   justify-content: space-between;
   width: auto;
-  max-width: 850px;
+  /* max-width: 850px; */
+  max-width: 55rem;
 }
 
 .statusSquare {
@@ -285,7 +287,7 @@ footer {
 canvas {
   max-height: 128px;
   min-width: 100px;
-  max-width: 850px;
+  max-width: 55rem;
   padding: 0rem 1rem 0rem 1.4rem;
 }
 
@@ -313,7 +315,7 @@ canvas {
   box-shadow: 0px 0px 2px 1px #dee2e6;
   border-radius: 5px;
   padding: 10px;
-  max-width: 850px;
+  max-width: 55rem;
   margin: 2rem auto;
 }
 
@@ -345,11 +347,6 @@ canvas {
   letter-spacing: 0.2em;
 }
 
-video {
-  max-width: 100%;
-  max-height: 100%;
-}
-
 /* 加载动画 */
 .loadinger {
   width: 45px;
@@ -378,6 +375,27 @@ video {
 
   80% {
     background-position: 0% 50%, 50% 50%, 100% 100%
+  }
+}
+
+/* 图片跳动动画 */
+#statusImg {
+  transition: transform 0.5s ease-in-out;
+}
+
+.icobeat {
+  animation: bounce 1s ease-in-out infinite alternate;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
   }
 }
 
@@ -498,7 +516,7 @@ video {
   .statusSquare {
     min-width: 7px;
     width: 100%;
-    margin-right: 1px;
+    margin-right: 2px;
   }
 
   .statusContainer {
@@ -527,6 +545,9 @@ video {
     box-shadow: 0px 0px 2px 1px #dee2e6;
   }
 
+  .reportContainer {
+    max-width: 55rem;
+  }
 
   .statusSubtitle {
     align-items: baseline;
@@ -567,7 +588,6 @@ video {
 
   .statusSquare {
     min-width: 7px;
-    width: 100%;
     margin-right: 1px;
   }
 
