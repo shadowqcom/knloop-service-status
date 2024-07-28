@@ -378,6 +378,27 @@ canvas {
   }
 }
 
+/* 图片跳动动画 */
+#statusImg {
+  transition: transform 0.5s ease-in-out;
+}
+
+.icobeat {
+  animation: bounce 1s ease-in-out infinite alternate;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
 
 /* 响应式设计 */
 @media screen and (max-width: 576px) {

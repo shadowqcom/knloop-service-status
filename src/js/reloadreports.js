@@ -57,7 +57,8 @@ export function clearReports() {
   const img = document.querySelector("#statusImg");
   img.src = "./public/check/nodata.svg";
   img.alt = "No Data";
-
+  img.classList.add('icobeat'); // 跳动
+  
   refreshLastupdatedon("Loading..."); // 刷新 Last updated on
 
 }
