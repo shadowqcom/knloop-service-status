@@ -15,7 +15,9 @@ export function swregister() {
         style.innerHTML = '::-webkit-scrollbar { display: none; }';
         document.head.appendChild(style);
 
-        // 隐藏头部，假设头部的类名或标识为 'header'
+        // 隐藏头部
         document.querySelector('header').style.display = 'none';
+        // 重设标题顶部距离
+        document.querySelector('.headline').style.margin = '1.2rem auto 0rem';
     }
 }
