@@ -14,14 +14,25 @@ import { maxHour } from "../index.js";
 export async function updateChart(el, logData) {
   try {
     const now = new Date();
-    const startOfCurrentHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), 0, 0, 0);
-    const twelveHoursAgo = new Date(startOfCurrentHour.getTime() - maxHour * 60 * 60 * 1000);
+    const startOfCurrentHour = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      0,
+      0,
+      0,
+    );
+
+    const twelveHoursAgo = new Date(
+      startOfCurrentHour.getTime() - maxHour * 60 * 60 * 1000,
+    );
 
     // 分割日志数据为单独的条目。
     const logEntries = logData.split(/\r\n|\n/).filter((entry) => entry !== "");
 
     // 初始化小时数据对象。
-    const hourlyData = new Map(); // 使用Map以获得更好的性能
+    const hourlyData = {};
 
     // 遍历日志条目，提取并汇总每小时的数据。
     logEntries.forEach((entry) => {
@@ -34,12 +45,12 @@ export async function updateChart(el, logData) {
         // 如果日期在过去12小时内，累加从现在到过去12小时的数据。
         if (date >= twelveHoursAgo && date <= now) {
           const hourKey = `${date.getHours()}:00`;
-          if (!hourlyData.has(hourKey)) {
-            hourlyData.set(hourKey, { total: 0, count: 0, values: [] });
+          if (!hourlyData[hourKey]) {
+            hourlyData[hourKey] = { total: 0, count: 0, values: [] };
           }
-          hourlyData.get(hourKey).total += delay;
-          hourlyData.get(hourKey).count++;
-          hourlyData.get(hourKey).values.push(delay);
+          hourlyData[hourKey].total += delay;
+          hourlyData[hourKey].count++;
+          hourlyData[hourKey].values.push(delay);
         }
       }
     });
@@ -53,22 +64,17 @@ export async function updateChart(el, logData) {
     let currentHour = new Date(startOfCurrentHour);
     for (let i = 0; i <= maxHour; i++) {
       const hourKey = `${currentHour.getHours()}:00`;
-      const hourlyDatum = hourlyData.get(hourKey) || { total: 0, count: 0, values: [] };
-
       const average =
-        hourlyDatum.count > 0
-          ? hourlyDatum.total / hourlyDatum.count
+        hourlyData[hourKey] && hourlyData[hourKey].count > 0
+          ? hourlyData[hourKey].total / hourlyData[hourKey].count
           : null;
-
       const median =
-        hourlyDatum.values.length > 0
-          ? calculateMedian(hourlyDatum.values)
+        hourlyData[hourKey] && hourlyData[hourKey].values.length > 0
+          ? calculateMedian(hourlyData[hourKey].values)
           : null;
-
       labels.push(hourKey);
       averageData.push(average);
       medianData.push(median);
-
       currentHour.setHours(currentHour.getHours() - 1);
     }
 
@@ -88,80 +94,64 @@ export async function updateChart(el, logData) {
 
     // 获取图表上下文并创建新的Chart实例。
     const ctx = el.getContext("2d");
-
-    // 如果图表实例已经存在，则更新它，而不是创建一个新的实例
-    let chartInstance = el.chartInstance;
-    if (!chartInstance) {
-      chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "平均值",
-              data: averageData,
-              fill: false,
-              borderColor: "#4bc0c0",
-              tension: 0.4,
-              segment: {
-                borderDash: (ctx) => skipped(ctx, [4, 6]),
-              },
-              spanGaps: true,
+    const skipped = (ctx, value) =>
+      ctx.p0.skip || ctx.p1.skip ? value : undefined;
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "平均值",
+            data: averageData,
+            fill: false,
+            borderColor: "#4bc0c0",
+            tension: 0.4,
+            segment: {
+              borderDash: (ctx) => skipped(ctx, [4, 6]),
             },
-            {
-              label: "中位数",
-              data: medianData,
-              fill: false,
-              borderColor: "#ff6384",
-              tension: 0.4,
-              segment: {
-                borderDash: (ctx) => skipped(ctx, [4, 6]),
-              },
-              spanGaps: true,
-            },
-          ],
-        },
-        options: {
-          plugins: {
-            legend: {
-              display: false, // 显示图例
-            },
+            spanGaps: true,
           },
-          scales: {
-            x: {
-              title: {
-                display: false,
-              },
-              ticks: {
-                autoSkip: true, // 确保每个点都被标记
-                maxRotation: 65, // 设置最大旋转角度
-                minRotation: 0, // 设置最小旋转角度
-              },
+          {
+            label: "中位数",
+            data: medianData,
+            fill: false,
+            borderColor: "#ff6384",
+            tension: 0.4,
+            segment: {
+              borderDash: (ctx) => skipped(ctx, [4, 6]),
             },
-            y: {
-              title: {
-                display: false,
-              },
-              beginAtZero: true,
-              ...yMaxConfig, // 使用yMaxConfig来有条件地设置max
-            },
+            spanGaps: true,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          legend: {
+            display: false, // 显示图例
           },
         },
-      });
-      el.chartInstance = chartInstance;
-    } else {
-      chartInstance.data.labels = labels;
-      chartInstance.data.datasets[0].data = averageData;
-      chartInstance.data.datasets[1].data = medianData;
-      chartInstance.options.scales.y = {
-        title: {
-          display: false,
+        scales: {
+          x: {
+            title: {
+              display: false,
+            },
+            ticks: {
+              autoSkip: true, // 确保每个点都被标记
+              maxRotation: 65, // 设置最大旋转角度
+              minRotation: 0, // 设置最小旋转角度
+            },
+          },
+          y: {
+            title: {
+              display: false,
+            },
+            beginAtZero: true,
+            ...yMaxConfig, // 使用yMaxConfig来有条件地设置max
+          },
         },
-        beginAtZero: true,
-        ...yMaxConfig,
-      };
-      chartInstance.update();
-    }
+      },
+    });
   } catch (error) {
     console.error("Error fetching or processing logs:", error);
   }
@@ -175,8 +165,4 @@ function calculateMedian(values) {
   } else {
     return values[middle];
   }
-}
-
-function skipped(ctx, value) {
-  return ctx.p0.skip || ctx.p1.skip ? value : undefined;
 }
