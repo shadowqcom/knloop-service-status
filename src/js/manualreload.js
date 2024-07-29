@@ -1,6 +1,7 @@
 import { showLoadingMask, hideLoadingMask, clearReports, getlastTime } from "./reloadreports.js";
 import { genAllReports, getLastDayStatus } from "./genReports.js";
 import { refreshLastupdatedon } from "./lastupdated.js";
+import {initScrollReveal} from './startanimation.js';
 
 export function manualreload() {
     document.addEventListener('DOMContentLoaded', () => {
@@ -22,6 +23,7 @@ function throttle(func, wait) {
 async function reloadall() {
     const useCache = { cache: 'reload' };  // 不使用缓存
     const lastTime = await getlastTime();
+    initScrollReveal();
     showLoadingMask(); // 显示加载动画
     clearReports(); // 清理旧的报告
     await genAllReports(useCache); // 生成新的报告
