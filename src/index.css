@@ -42,22 +42,19 @@ header.hidden {
 }
 
 .headerinner a {
-  color: #000000;
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  color: #000;
+  font-size: 1.17rem;
 }
+.headerinner svg {
+  margin-left: 0.5rem;
+}
+
 
 body {
   background-color: #f6f8fa;
-  /* color: #5B6F82; */
-  /* font-size: 14px;
-  font-weight: 400; */
-  font-family:
-    "Roboto",
-    sans-serif,
-    system-ui,
-    Segoe UI,
-    Helvetica Neue,
-    Arial;
+  font-family:  -apple-system, BlinkMacSystemFont, Arial, sans-serif, "Open Sans", "Segoe UI", "Noto Sans", Helvetica, "Apple Color Emoji", "Segoe UI Emoji";
   justify-content: center;
   line-height: 20px;
   min-width: 300px;
@@ -82,7 +79,6 @@ textarea,
 .copyright,
 .button {
   clear: both;
-  font-family: "Roboto", sans-serif;
 }
 
 h1,
@@ -268,7 +264,7 @@ footer {
 
 .nodata {
   background-color: #dddddd;
-  color: #ccc;
+  color: #7c7c7c;
 }
 
 .partial {
@@ -395,7 +391,6 @@ canvas {
 @media screen and (max-width: 576px) {
   .pageContainer {
     margin: 2rem 1rem;
-    box-shadow: 0px 0px 2px 1px #dee2e6;
   }
 
   .statusSubtitle {
@@ -464,7 +459,6 @@ canvas {
 @media screen and (min-width: 578px) and (max-width: 768px) {
   .pageContainer {
     margin: 2rem 1rem;
-    box-shadow: 0px 0px 2px 1px #dee2e6;
   }
 
   .statusSubtitle {
@@ -533,7 +527,6 @@ canvas {
   .pageContainer {
     margin: 2rem auto;
     max-width: calc(100% - 2rem);
-    box-shadow: 0px 0px 2px 1px #dee2e6;
   }
 
   .reportContainer {

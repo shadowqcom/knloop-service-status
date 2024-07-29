@@ -6,9 +6,7 @@ import { getyear } from './js/getyear.js';                             // 导入
 import { reloadReports } from './js/reloadreports.js';                 // 导入重新加载报告的函数
 import { manualreload } from './js/manualreload.js';
 import { swregister } from './js/swregister.js';
-import ('./js/scrollreveal.min.js');
-import('./js/startanimation.js')
-import('./js/chart.umd.js')
+import {initScrollReveal} from './js/startanimation.js';
 
 
 
@@ -24,6 +22,7 @@ export const reloadReportstime = 2.5;        // 重载报告的检测间隔时�
 // 主函数，异步执行一系列操作。
 async function main() {
   await Promise.all([
+    initScrollReveal(),
     getclieninfo(),
     getyear(),
     lastupdated(),
