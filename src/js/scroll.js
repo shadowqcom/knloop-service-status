@@ -26,7 +26,7 @@ export async function scrollheader() {
   const header = document.querySelector("header");
   window.addEventListener("scroll", () => {
     // 只要滚动就添加隐藏类
-    if (window.scrollY > 210) {
+    if (window.scrollY > 128) {
       header.classList.add("hidden");
     } else {
       header.classList.remove("hidden");

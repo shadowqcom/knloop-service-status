@@ -8,11 +8,13 @@
   <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
   <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志，并使用 GitHub Pages 进行页面展示。" />
   <link rel="icon" href="./public/favicon.ico" />
-  <link rel="stylesheet" href="./src/index.css" />
+  <link rel="stylesheet" href="./src/css/index.css" />
+  <link rel="stylesheet" href="./src/css/google.fonts.css">
   <link rel="manifest" href="/src/knloopsta.webmanifest">
+  <script src="./src/js/scrollreveal.min.js"></script>
 </head>
 
-<body>
+<body class="is-boxed has-animations">
   <header>
     <div class="headerinner">
       <div class="headerleft">
@@ -31,12 +33,12 @@
     <span id="lastDayStatus">
       <img id="statusImg" class="icobeat" src="./public/check/nodata.svg" alt="status" loading="eager" />
     </span>
-    <span> knloop service status </span>
-    <div id="updateTime">Last updated on: Loading...</div>
+    <span class="hero-title is-revealing"> knloop service status </span>
+    <p class="lastUpdatedTime is-revealing" id="updateTime">Last updated on: Loading...</p>
   </div>
 
-  <div id="pageContainer" class="pageContainer">
-    <div id="reports" class="reportContainer"></div>
+  <div id="pageContainer" class="pageContainer is-revealing">
+    <div id="reports" class="reportContainer is-revealing"></div>
 
     <div id="templates" class="hidden">
       <div id="statusSquareTemplate" class="statusSquare $color" data-status="$color"></div>
@@ -57,9 +59,9 @@
         </div>
       </div>
     </div>
-    <div id="loading-mask" class="loading-mask">
-      <div class="loadinger"></div>
-      <div class="loading-text">Data is Loading ...</div>
+    <div id="loading-mask" class="loading-mask is-revealing">
+      <div class="loadinger is-revealing"></div>
+      <div class="loading-text is-revealing">Data is Loading ...</div>
     </div>
   </div>
 
@@ -84,5 +86,7 @@
 </body>
 
 <script type="module" src="./src/index.js" defer></script>
+<!-- <script src="./src/js/scrollreveal.min.js" defer></script> -->
+<!-- <script src="./src/main.min.js" defer></script> -->
 
 </html>
