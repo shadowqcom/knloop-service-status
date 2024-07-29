@@ -36,6 +36,6 @@ export async function lastupdated(useCache = {}) {
 export function refreshLastupdatedon(lastUpdateTime) {
   const updateTimeElement = document.getElementById("updateTime");
   if (updateTimeElement) {
-    updateTimeElement.textContent = `Last updated on : ${lastUpdateTime}`;
+    updateTimeElement.textContent = `last updated on : ${lastUpdateTime}`;
   }
 }
