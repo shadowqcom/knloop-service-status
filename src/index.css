@@ -44,8 +44,8 @@ header.hidden {
 .headerinner a {
   display: flex;
   align-items: center;
-  color: #000000;
-  font-size: 1.4rem;
+  color: #000;
+  font-size: 1.17rem;
 }
 .headerinner svg {
   margin-left: 0.5rem;
@@ -54,13 +54,7 @@ header.hidden {
 
 body {
   background-color: #f6f8fa;
-  font-family:
-    "Roboto",
-    sans-serif,
-    system-ui,
-    Segoe UI,
-    Helvetica Neue,
-    Arial;
+  font-family:  -apple-system, BlinkMacSystemFont, Arial, sans-serif, "Open Sans", "Segoe UI", "Noto Sans", Helvetica, "Apple Color Emoji", "Segoe UI Emoji";
   justify-content: center;
   line-height: 20px;
   min-width: 300px;
@@ -85,7 +79,6 @@ textarea,
 .copyright,
 .button {
   clear: both;
-  font-family: "Roboto", sans-serif;
 }
 
 h1,

@@ -28,6 +28,6 @@ async function reloadall() {
     clearReports(); // 清理旧的报告
     await genAllReports(useCache); // 生成新的报告
     await getLastDayStatus(useCache);
-    refreshLastupdatedon(lastTime);  // 刷新 Last updated on
+    refreshLastupdatedon(lastTime);  // 刷新 last updated on
     hideLoadingMask(); // 隐藏加载动画
 }

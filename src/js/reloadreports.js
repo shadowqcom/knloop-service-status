@@ -23,7 +23,7 @@ async function checkAndReloadReports() {
       clearReports(); // 清理旧的报告
       await genAllReports(useCache); // 生成新的报告
       await getLastDayStatus(useCache);
-      refreshLastupdatedon(lastTime);  // 刷新 Last updated on
+      refreshLastupdatedon(lastTime);  // 刷新 last updated on
       hideLoadingMask(); // 隐藏加载动画
 
       startTime = lastTime;  // 重置开始时间
@@ -59,7 +59,7 @@ export function clearReports() {
   img.alt = "No Data";
   img.classList.add('icobeat'); // 跳动
   
-  refreshLastupdatedon("Loading..."); // 刷新 Last updated on
+  refreshLastupdatedon("Loading..."); // 刷新 last updated on
 
 }
 

@@ -6,12 +6,7 @@ import { getyear } from './js/getyear.js';                             // 导入
 import { reloadReports } from './js/reloadreports.js';                 // 导入重新加载报告的函数
 import { manualreload } from './js/manualreload.js';
 import { swregister } from './js/swregister.js';
-
-import './js/chart.umd.js'; 
 import {initScrollReveal} from './js/startanimation.js';
-
-
-export const Chart = window.Chart;
 
 
 
