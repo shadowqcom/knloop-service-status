@@ -5,23 +5,29 @@ import { normalizeData } from "./dataProcessing.js";
 import { create } from "./domManipulation.js";
 import { scrolltoright } from "./scroll.js";
 import { fetchUrlsConfig } from "./fetchurlsconfig.js";
-import { showLoadingMask, hideLoadingMask } from "./reloadreports.js";
+import { hideLoadingMask } from "./reloadreports.js";
 
 /**
  * 异步函数：根据 urls.cfg 文件，生成所有报告。
  * @param {string} urlspath - 配置文件的路径，其中包含需要生成报告的URL列表。
  */
 export async function genAllReports(useCache = {}) {
-  // showLoadingMask(); // 显示加载动画
-  const configLines = await fetchUrlsConfig();
-  for (let ii = 0; ii < configLines.length; ii++) {
-    const configLine = configLines[ii];
-    const [key, url] = configLine.split("=");
-    await genReportLog(document.getElementById("reports"), key, url, useCache);
+  try {
+    const configLines = await fetchUrlsConfig();
+    for (let ii = 0; ii < configLines.length; ii++) {
+      const configLine = configLines[ii];
+      const [key, url] = configLine.split("=");
+      await genReportLog(document.getElementById("reports"), key, url, useCache);
+    }
+
+  } catch (error) {
+    console.error("Error genAllReports :", error);
   }
-  hideLoadingMask(); // 隐藏加载动画
+
+  hideLoadingMask(); // 隐藏loading-mask
   scrolltoright();  // 滚动到最右侧
 }
+
 
 /**
  * 异步生成报告日志。
@@ -55,6 +61,7 @@ async function genReportLog(container, key, url, useCache = {}) {
   container.appendChild(canvas);
   updateChart(canvas, statusLines);
 }
+
 
 // 所有服务当天整体状态评估
 export async function getLastDayStatus(useCache = {}) {
