@@ -47,13 +47,14 @@ header.hidden {
   color: #000;
   font-size: 1.17rem;
 }
+
 .headerinner svg {
   margin-left: 0.5rem;
 }
 
 body {
   background-color: #f6f8fa;
-  font-family:  -apple-system, BlinkMacSystemFont, Arial, sans-serif, "Open Sans", "Segoe UI", "Noto Sans", Helvetica, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif, "Open Sans", "Segoe UI", "Noto Sans", Helvetica, "Apple Color Emoji", "Segoe UI Emoji";
   justify-content: center;
   line-height: 20px;
   min-width: 300px;
@@ -164,18 +165,6 @@ footer {
   line-height: normal;
 }
 
-.headline img {
-  width: 50px;
-  height: auto;
-  transition:
-    transform 0.3s ease-in-out,
-    box-shadow 0.3s ease-in-out;
-}
-
-.headline img:hover {
-  transform: scale(1.1);
-}
-
 .headline div {
   font-size: 14px;
   font-weight: 600;
@@ -256,7 +245,7 @@ footer {
   color: #fff;
 }
 
-.statusIcon{
+.statusIcon {
   margin-right: 0.5rem;
   width: 1.28rem;
 }
@@ -355,9 +344,18 @@ canvas {
   }
 }
 
+
 /* 图片跳动动画 */
-#statusImg {
-  transition: transform 0.5s ease-in-out;
+.statusImg {
+  width: 3.5rem;
+  height: auto;
+  transition:
+    transform 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
+}
+
+.statusImg:hover {
+  transform: scale(1.1);
 }
 
 .icobeat {
