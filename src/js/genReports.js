@@ -98,10 +98,10 @@ export async function getLastDayStatus(useCache = {}) {
   const nodateThreshold = totalCount * 0.5; // 有效服务 No Data 50% 即整体报告为No Data
 
   const conditions = [
-    { condition: successCount === totalCount, src: './public/check/up.svg', alt: 'UP' },
+    { condition: successCount === totalCount, src: './public/check/success.svg', alt: 'UP' },
     { condition: nodataCount === totalCount, src: './public/check/nodata.svg', alt: 'No Data' },
-    { condition: failureCount >= failureThreshold || nodataCount >= nodateThreshold, src: './public/check/down.svg', alt: 'Down' },
-    { condition: true, src: './public/check/degraded.svg', alt: 'Degraded' }
+    { condition: failureCount >= failureThreshold || nodataCount >= nodateThreshold, src: './public/check/failure.svg', alt: 'Down' },
+    { condition: true, src: './public/check/partial.svg', alt: 'Degraded' }
   ];
 
   const img = document.querySelector("#statusImg");
