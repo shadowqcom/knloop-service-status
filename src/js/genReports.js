@@ -5,7 +5,7 @@ import { normalizeData } from "./dataProcessing.js";
 import { create } from "./domManipulation.js";
 import { scrolltoright } from "./scroll.js";
 import { fetchUrlsConfig } from "./fetchurlsconfig.js";
-import { showLoadingMask, hideLoadingMask } from "./reloadreports.js";
+import { hideLoadingMask } from "./reloadreports.js";
 
 /**
  * 异步函数：根据 urls.cfg 文件，生成所有报告。
