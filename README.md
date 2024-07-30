@@ -7,7 +7,7 @@ knloop 相关的服务状态展示
 在线演示 : [status.knloop.com](https://status.knloop.com)
 
 截图展示 :
-![截图展示](public/20240721051941.png)
+![截图展示](public/20240731003153.png)
 
 ## ⚙️ 配置说明
 
