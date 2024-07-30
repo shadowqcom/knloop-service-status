@@ -14,7 +14,7 @@ import { initScrollReveal } from './js/startanimation.js';
 export const maxDays = 60;                 // 日志最大展示天数
 export const maxHour = 12;                 // 报表最大小时数
 export const urlspath = "/src/urls.cfg";  // 配置文件路径,不带后/
-export const logspath = "https://raw.github.knloop.com/knloop-service-status/page/logs";          // 日志文件路径,不带后/
+export const logspath = "./logs";          // 日志文件路径,不带后/
 export const reloadReportsdata = true;     // 是否重新加载报告
 export const reloadReportstime = 2.5;        // 重载报告的检测间隔时间
 
