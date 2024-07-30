@@ -25,7 +25,7 @@ export function getStatusText(color) {
   return color == "nodata"
     ? "No Data"
     : color == "success"
-      ? "UP"
+      ? "up"
       : color == "failure"
         ? "Down"
         : color == "partial"
@@ -35,45 +35,56 @@ export function getStatusText(color) {
 
 /**
  * 构建状态流
- * @param {string} key - 键
  * @param {string} url - URL
  * @param {Object} uptimeData - 运行时间数据
- * @returns {HTMLElement} - 状态流容器元素
  */
 export function constructStatusStream(key, url, uptimeData) {
   let streamContainer = templatize("statusStreamContainerTemplate");
   for (var ii = maxDays - 1; ii >= 0; ii--) {
-    let line = constructStatusLine(key, ii, uptimeData[ii]);
+    let line = constructStatusLine(ii, uptimeData[ii]);
     streamContainer.appendChild(line);
   }
   const lastSet = uptimeData[0];
   const color = getColor(lastSet);
+  const statusText = getStatusText(color);
+
+  // 创建 img 元素
+  const img = document.createElement('img');
+  img.className = 'statusIcon';
+  img.alt = `status${color}`;
+  img.src = `./public/check/${color}.svg`;
+
   const container = templatize("statusContainerTemplate", {
     title: key,
     url: url,
-    domainname: url.replace(/^(http:\/\/|https:\/\/)/, ""),
-    color: color,
-    status: getStatusText(color),
+    statusblock: statusText,
     upTime: uptimeData.upTime,
   });
+
+  // 将img元素插入到statusTitle之前
+  const parent = container.querySelector('#statusTitle').parentNode;
+  parent.insertBefore(img, parent.querySelector('#statusTitle'));
+
   container.appendChild(streamContainer);
+
+  // console.log(container)
+
   return container;
 }
 
 /**
  * 构建状态行
- * @param {string} key - 键
  * @param {number} relDay - 相对天数
  * @param {any} upTimeArray - 运行时间数组
  * @returns {HTMLElement} - 状态行元素
  */
-function constructStatusLine(key, relDay, upTimeArray) {
+function constructStatusLine(relDay, upTimeArray) {
   let date = new Date();
   date.setDate(date.getDate() - relDay);
-  return constructStatusSquare(key, date, upTimeArray);
+  return constructStatusSquare(date, upTimeArray);
 }
 
-function constructStatusSquare(key, date, uptimeVal) {
+function constructStatusSquare(date, uptimeVal) {
   const color = getColor(uptimeVal);
   let square = templatize("statusSquareTemplate", {
     color: color,

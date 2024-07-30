@@ -51,7 +51,6 @@ header.hidden {
   margin-left: 0.5rem;
 }
 
-
 body {
   background-color: #f6f8fa;
   font-family:  -apple-system, BlinkMacSystemFont, Arial, sans-serif, "Open Sans", "Segoe UI", "Noto Sans", Helvetica, "Apple Color Emoji", "Segoe UI Emoji";
@@ -63,7 +62,6 @@ body {
   text-align: center;
   transition: opacity 0.3s;
 }
-
 
 /* 文本样式 */
 h1,
@@ -142,8 +140,8 @@ footer {
   background-color: #fff;
   border-radius: 5px;
   max-width: 55rem;
-  margin: 2rem auto;
-  padding-bottom: 1.2rem;
+  margin: 0 auto;
+  padding-bottom: 0.5rem;
 }
 
 .pageContainer,
@@ -192,7 +190,7 @@ footer {
 .statusContainer {
   border-radius: 5px;
   text-align: left;
-  padding: 24px 24px 10px 24px;
+  padding: 24px 24px 12px 24px;
   margin-top: 30px;
 }
 
@@ -201,7 +199,6 @@ footer {
   align-items: center;
   justify-content: space-between;
   width: auto;
-  /* max-width: 850px; */
   max-width: 55rem;
 }
 
@@ -218,32 +215,19 @@ footer {
   overflow: hidden;
 }
 
-.sectionUrl {
-  font-size: 14px;
-  margin-right: 20px;
-}
 
 .statusHeader {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 2px;
-}
-
-.statusSubtitle {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 0.7rem;
 }
 
-.statusHeadline {
-  color: #eee;
-  padding: 0px 8px;
-  border-radius: 15px;
-  font-size: 12px;
-  margin-left: 12px;
-  margin-top: 3px;
+.statusHeader-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .statusUptime {
@@ -272,17 +256,23 @@ footer {
   color: #fff;
 }
 
+.statusIcon{
+  margin-right: 0.5rem;
+  width: 1.28rem;
+}
+
 canvas {
   max-height: 128px;
   min-width: 100px;
   max-width: 55rem;
   padding: 0rem 1rem 0rem 1.4rem;
+  margin-bottom: 3rem;
 }
 
 .span-wrapper {
   display: flex;
   justify-content: space-between;
-  padding: 0px 24px 0px 24px;
+  padding: 0 2rem 0 1.5rem;
 }
 
 .align-left {
@@ -393,18 +383,8 @@ canvas {
     margin: 2rem 1rem;
   }
 
-  .statusSubtitle {
-    align-items: baseline;
-  }
-
-  .sectionUrl {
-    margin-left: 0;
-    margin-top: 8px;
-    text-align: left;
-  }
-
-  .statusHeadline {
-    margin-top: 0px;
+  .span-wrapper {
+    padding: 0 1rem 0 1rem;
   }
 
   .statusUptime {
@@ -413,8 +393,7 @@ canvas {
     text-align: right;
   }
 
-  .statusTitle,
-  .statusHeadline {
+  .statusTitle {
     display: inline-block;
   }
 
@@ -444,6 +423,7 @@ canvas {
 
   canvas {
     padding: 0rem 0.2rem 0rem 0.5rem;
+    margin-bottom: 2rem;
   }
 
   .clientInfo {
@@ -461,18 +441,8 @@ canvas {
     margin: 2rem 1rem;
   }
 
-  .statusSubtitle {
-    align-items: baseline;
-  }
-
-  .sectionUrl {
-    margin-left: 0;
-    margin-top: 8px;
-    text-align: left;
-  }
-
-  .statusHeadline {
-    margin-top: 0px;
+  .span-wrapper {
+    padding: 0 1rem 0 1rem;
   }
 
   .statusUptime {
@@ -481,8 +451,7 @@ canvas {
     text-align: right;
   }
 
-  .statusTitle,
-  .statusHeadline {
+  .statusTitle {
     display: inline-block;
   }
 
@@ -511,6 +480,7 @@ canvas {
 
   canvas {
     padding: 0rem 0.2rem 0rem 0.5rem;
+    margin-bottom: 2rem;
   }
 
   .clientInfo {
@@ -533,18 +503,8 @@ canvas {
     max-width: 55rem;
   }
 
-  .statusSubtitle {
-    align-items: baseline;
-  }
-
-  .sectionUrl {
-    margin-left: 0;
-    margin-top: 8px;
-    text-align: left;
-  }
-
-  .statusHeadline {
-    margin-top: 0px;
+  .span-wrapper {
+    padding: 0 1rem 0 1rem;
   }
 
   .statusUptime {
@@ -553,8 +513,7 @@ canvas {
     text-align: right;
   }
 
-  .statusTitle,
-  .statusHeadline {
+  .statusTitle {
     display: inline-block;
   }
 
@@ -581,6 +540,7 @@ canvas {
 
   canvas {
     padding: 0rem 0.2rem 0rem 0.5rem;
+    margin-bottom: 2rem;
   }
 
   .clientInfo {

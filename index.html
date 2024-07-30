@@ -54,12 +54,10 @@
 
       <div id="statusContainerTemplate" class="statusContainer">
         <div class="statusHeader">
-          <h6 class="statusTitle">$title</h6>
-          <div class="$color statusHeadline">$status</div>
-        </div>
-        <div class="statusSubtitle">
-          <div class="sectionUrl">
-            <a href="$url" target="_blank">$domainname</a>
+          <div class="statusHeader-left">
+            <a id="statusTitle" href="$url" target="_blank">
+              <h6 class="statusTitle">$title</h6>
+            </a>
           </div>
           <div class="statusUptime">$upTime Uptime within 60 days</div>
         </div>
