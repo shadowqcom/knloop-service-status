@@ -8,8 +8,8 @@ if [ ! -d "./knloop-service-status/" ]; then
 fi
 
 cd ./knloop-service-status/
-git checkout -b page origin/page
-git pull origin page
+git checkout -b page origin/page > /dev/null 2>&1
+git pull origin page > /dev/null 2>&1
 sudo bash ./checkshell/servicecheck-local.sh
 
 # 如果./tmp/logs文件夹为空
