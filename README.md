@@ -1,6 +1,21 @@
 # 🆙 knloop service status
 
-knloop 相关的服务状态展示
+**轻量、开源、零依赖的服务状态监控。**  
+- 功能特点  
+    - 零依赖，无服务器依赖，纯静态页面。
+    - 支持企业微信和wehook 机器人推送。  
+    - 支持自建服务部署页面和监控节点。
+    - 本地部署可以实现秒级监控。
+    - 占用资源少，监控节点仅使在bash环境使用curl。
+-  GitHub Actions 运行监控脚本
+    - 最低每 5 分钟，workflows可以利用脚本批量访问你需要监控的网站并获得详细信息
+    - 手动或者在有新的页面变化的时候才部署GitHub Pages
+    - 当开启通知功能，当服务状态不可用时，会推送到企业微信或调用指定的webhook。
+- GitHub Pages 发布静态页面
+    - 简洁、美观自适应页面，支持 PWA
+    - 零依赖，无需任何构建工具
+    - 使用 GitHub RWA 从仓库访问最新数据
+
 
 ## 👀 查看效果
 
@@ -142,3 +157,4 @@ crontab -e
 - [statuspage](https://github.com/statsig-io/statuspage/)
 - [UptimeFlare](https://github.com/lyc8503/UptimeFlare)
 - [statusfy](https://github.com/juliomrqz/statusfy)
+- [uptime-status](https://github.com/yb/uptime-status)
