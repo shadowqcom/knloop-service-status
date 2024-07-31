@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "************************servicecheck-local.sh************************"
 
 export TZ='Asia/Shanghai'
 
@@ -47,8 +48,8 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       touch ./tmp/failed_urls.log
       exec 9> "./tmp/failed_urls.lock"
       flock -x 9
-      if ! grep -qFx "$url" ./tmp/failed_urls.log; then
-        echo "$url" >> ./tmp/failed_urls.log
+      if! grep -qFx "$url" ./tmp/failed_urls.log; then
+        echo "$url" >>./tmp/failed_urls.log
       fi
       exec 9>&-
     else
@@ -59,9 +60,9 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
 
     # 日志数据写入log文件
     dateTime=$(date +'%Y-%m-%d %H:%M')
-    echo "$dateTime, $result, ${connect_time_ms:-null}" >> "./tmp/${key}_report.log"
+    echo "$dateTime, $result, ${connect_time_ms:-null}" >>"./tmp/${key}_report.log"
     # 保留30000条数据
-    echo "$(tail -30000 ./tmp/${key}_report.log)" > "./tmp/${key}_report.log"
+    echo "$(tail -30000 ./tmp/${key}_report.log)" >"./tmp/${key}_report.log"
   ) &
   pids+=($!)
 done
@@ -70,37 +71,3 @@ done
 for pid in "${pids[@]}"; do
   wait $pid
 done
-
-# # 读取webhook.cfg配置，用一个数组webhookconfig存储配置项
-# declare -A webhookconfig
-# while IFS='=' read -r key value; do
-#   # 移除键和值两侧的空白字符
-#   key=$(echo "$key" | xargs)
-#   value=$(echo "$value" | xargs)
-#   # 存储键值对
-#   webhookconfig["$key"]="$value"
-# done <./src/webhook.cfg
-
-# # 构建Markdown消息
-# failedUrlsMessage=""
-# while IFS= read -r line; do
-#   if [ -n "$failedUrlsMessage" ]; then
-#     failedUrlsMessage+="\n"
-#   fi
-#   failedUrlsMessage+="$line"
-# done < ./tmp/failed_urls.log
-
-# # 检查是否开启推送，如果开启了推送并且有失败的url 则推送企业微信
-# if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; then
-#   echo "**********************************************"
-#   echo "检测完成，开始推送企业微信"
-#   MessageTime=$(date +'%Y-%m-%d %H:%M')
-#   curl "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=$WEBHOOK_KEY" \
-#     -H 'Content-Type: application/json' \
-#     -d '{
-#           "msgtype": "markdown",
-#           "markdown": {
-#             "content": "### Service Down\n > '"$MessageTime"'\n > 以下 url/api 请求失败:\n\n'"$failedUrlsMessage"'"
-#           }
-#       }'
-# fi

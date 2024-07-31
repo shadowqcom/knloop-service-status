@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo "************************actions-local.sh************************"
 # 这个脚本放在本地或者服务器运行。
 # 前置条件是配置好了git，并且对仓库有读写权限。
 # 建议把user.name、user.email、git commit -m的内容改成特定的，比较容易区分commits信息。
