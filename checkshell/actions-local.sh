@@ -55,9 +55,6 @@ githubapi="https://api.github.com/repos/shadowqcom/knloop-service-status/actions
 
 # 使用 curl 下载 JSON 数据，并使用 head 和 tail 限制到第 5 行和第 15 行
 json_data=$(curl -sSL $auth_header "$githubapi" | head -n 15 | tail -n +5)
-
-echo $json_data
-
 # 提取 name 和 status 字段
 name=$(echo "$json_data" | grep -Po '"name"\s*:\s*"Service Status Check"' | grep -c "Service Status Check")
 completed=$(echo "$json_data" | grep -Po '"status"\s*:\s*"completed"' | grep -c "completed")
@@ -65,10 +62,10 @@ in_progress=$(echo "$json_data" | grep -Po '"status"\s*:\s*"in_progress"' | grep
 
 # 判断是否有actions在运行
 if [ "$in_progress" -gt 0 ]; then
-    echo "正在运行"
+    echo "actions正在运行"
     exit 0
 elif [ "$name" -gt 0 ] && [ "$completed" -gt 0 ]; then
-    echo "未运行"
+    echo "actions未运行"
     # 拉取最新代码
     git pull origin page
 
