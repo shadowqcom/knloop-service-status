@@ -45,7 +45,7 @@ currentTime=$(date -d "$dateTime" +%s)
 timeDifference=$((currentTime - startTime))
 hours=$((timeDifference / 360))
 
-if [ $hours < 2]; then
+if [ $hours -lt 2 ]; then
     echo "无需提交"
     exit 0
 fi
