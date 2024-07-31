@@ -32,7 +32,7 @@ done <"$urlsConfig"
 
 random_number=$((RANDOM % ${#KEYSARRAY[@]}))
 key=${KEYSARRAY[$random_number]}
-first_line=$(head -n 1 "./logs/${key}_report.log")
+first_line=$(head -n 1 "./tmp/logs/${key}_report.log")
 timestamp=$(echo "$first_line" | awk '{print $1 " " $2}')
 statrtime="${timestamp%,}"
 
