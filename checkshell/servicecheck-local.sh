@@ -73,4 +73,4 @@ for pid in "${pids[@]}"; do
   wait $pid
 done
 
-echo "************************servicecheck-local.sh************************"
+echo "************************end   servicecheck-local.sh************************"
