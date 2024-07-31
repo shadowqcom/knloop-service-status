@@ -55,36 +55,53 @@ if [ $hours -lt 2 ]; then
     exit 0
 fi
 
-# GitHub API URL
-url="https://api.github.com/repos/shadowqcom/knloop-service-status/actions/runs"
+# 拉取最新代码
+git pull origin page
 
-# 使用 curl 下载 JSON 数据，并使用 head 和 tail 限制到第 5 行和第 15 行
-json_data=$(curl -sSL "$url" | head -n 15 | tail -n +5)
-# 提取 name 和 status 字段
-name=$(echo "$json_data" | grep -Po '"name"\s*:\s*"Service Status Check"' | grep -c "Service Status Check")
-completed=$(echo "$json_data" | grep -Po '"status"\s*:\s*"completed"' | grep -c "completed")
-in_progress=$(echo "$json_data" | grep -Po '"status"\s*:\s*"in_progress"' | grep -c "in_progress")
+# 合并临时文件到本地仓库
+for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
+    key="${KEYSARRAY[index]}"
+    cat ./tmp/logs/${key}_report.log >> ./logs/${key}_report.log
+done
 
-# 判断是否有actions在运行
-if [ "$in_progress" -gt 0 ]; then
-    echo "actions正在运行"
-    exit 0
-elif [ "$name" -gt 0 ] && [ "$completed" -gt 0 ]; then
-    echo "actions未运行"
-    # 拉取最新代码
-    git pull origin page
+# 配置用户信息并提交到page分支
+git config --local user.name 'Github Actions'
+git config --local user.email 'actions@knloop.com'
+git add -A --force ./logs/
+git commit -m '🆙 [Automated] Update service status logs'
+git push origin page
+cd ..
 
-    # 合并临时文件到本地仓库
-    for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
-        key="${KEYSARRAY[index]}"
-        cat ./tmp/logs/${key}_report.log >> ./logs/${key}_report.log
-    done
+# # GitHub API URL
+# url="https://api.github.com/repos/shadowqcom/knloop-service-status/actions/runs"
 
-    # 配置用户信息并提交到page分支
-    git config --local user.name 'Github Actions'
-    git config --local user.email 'actions@knloop.com'
-    git add -A --force ./logs/
-    git commit -m '🆙 [Automated] Update service status logs'
-    git push origin page
-    cd ..
-fi
+# # 使用 curl 下载 JSON 数据，并使用 head 和 tail 限制到第 5 行和第 15 行
+# json_data=$(curl -sSL "$url" | head -n 15 | tail -n +5)
+# # 提取 name 和 status 字段
+# name=$(echo "$json_data" | grep -Po '"name"\s*:\s*"Service Status Check"' | grep -c "Service Status Check")
+# completed=$(echo "$json_data" | grep -Po '"status"\s*:\s*"completed"' | grep -c "completed")
+# in_progress=$(echo "$json_data" | grep -Po '"status"\s*:\s*"in_progress"' | grep -c "in_progress")
+
+# # 判断是否有actions在运行
+# if [ "$in_progress" -gt 0 ]; then
+#     echo "actions正在运行"
+#     exit 0
+# elif [ "$name" -gt 0 ] && [ "$completed" -gt 0 ]; then
+#     echo "actions未运行"
+#     # 拉取最新代码
+#     git pull origin page
+
+#     # 合并临时文件到本地仓库
+#     for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
+#         key="${KEYSARRAY[index]}"
+#         cat ./tmp/logs/${key}_report.log >> ./logs/${key}_report.log
+#     done
+
+#     # 配置用户信息并提交到page分支
+#     git config --local user.name 'Github Actions'
+#     git config --local user.email 'actions@knloop.com'
+#     git add -A --force ./logs/
+#     git commit -m '🆙 [Automated] Update service status logs'
+#     git push origin page
+#     cd ..
+# fi
