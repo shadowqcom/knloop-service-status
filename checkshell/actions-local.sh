@@ -59,10 +59,10 @@ if [ $hours -lt 2 ]; then
 fi
 
 # GitHub API URL
-githubapi="https://api.github.com/repos/shadowqcom/knloop-service-status/actions/runs"
+url="https://api.github.com/repos/shadowqcom/knloop-service-status/actions/runs"
 
 # 使用 curl 下载 JSON 数据，并使用 head 和 tail 限制到第 5 行和第 15 行
-json_data=$(curl -sSL $auth_header "$githubapi" | head -n 15 | tail -n +5)
+json_data=$(curl -sSL "$url" | head -n 15 | tail -n +5)
 # 提取 name 和 status 字段
 name=$(echo "$json_data" | grep -Po '"name"\s*:\s*"Service Status Check"' | grep -c "Service Status Check")
 completed=$(echo "$json_data" | grep -Po '"status"\s*:\s*"completed"' | grep -c "completed")
