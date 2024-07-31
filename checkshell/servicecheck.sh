@@ -47,7 +47,7 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       touch ./tmp/failed_urls.log
       exec 9>"./tmp/failed_urls.lock"
       flock -x 9
-      if! grep -qFx "$url" ./tmp/failed_urls.log; then
+      if ! grep -qFx "$url" ./tmp/failed_urls.log; then
         echo "$url" >>./tmp/failed_urls.log
       fi
       exec 9>&-
