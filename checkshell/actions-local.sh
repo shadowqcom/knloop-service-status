@@ -48,7 +48,7 @@ timeDifference=$((currentTime - startTime))
 hours=$((timeDifference / 60))
 
 if [ $hours -lt 180 ]; then
-    echo "无需提交"
+    echo "时间间隔太短，暂不提交。"
     exit 0
 fi
 
