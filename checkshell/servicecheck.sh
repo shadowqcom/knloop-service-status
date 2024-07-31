@@ -105,5 +105,3 @@ if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; th
           }
       }'
 fi
-# 清理临时目录
-rm -rf ./tmp/
