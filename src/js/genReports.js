@@ -99,7 +99,7 @@ export async function getLastDayStatus(useCache = {}) {
 
   const conditions = [
     { condition: successCount === totalCount, src: './public/check/success.svg', alt: 'UP' },
-    { condition: nodataCount === totalCount, src: './public/check/nodata.svg', alt: 'No Data' },
+    { condition: nodataCount === totalCount, src: './public/check/nodata.svg', alt: 'No data' },
     { condition: failureCount >= failureThreshold || nodataCount >= nodateThreshold, src: './public/check/failure.svg', alt: 'Down' },
     { condition: true, src: './public/check/partial.svg', alt: 'Degraded' }
   ];
