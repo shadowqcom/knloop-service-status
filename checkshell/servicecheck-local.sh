@@ -19,8 +19,9 @@ while read -r line; do
 done <"$urlsConfig"
 
 # 创建需要的文件夹
-mkdir -p ./logs
-mkdir -p ./tmp/logs
+mkdir -p ./logs/
+mkdir -p ./tmp/
+mkdir -p ./tmp/logs/
 
 # 创建一个数组来保存所有子shell的PID
 pids=()
@@ -53,7 +54,7 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       fi
       exec 9>&-
     else
-      # 通过curl测试连接耗时
+      # 测试连接耗时
       connect_time_seconds=$(curl -o /dev/null -s -w "%{time_connect}\n" "$url")
       connect_time_ms=$(awk '{printf "%.0f\n", ($1 * 1000 + 0.5)}' <<<"$connect_time_seconds")
     fi
@@ -71,3 +72,5 @@ done
 for pid in "${pids[@]}"; do
   wait $pid
 done
+
+echo "************************servicecheck-local.sh************************"
