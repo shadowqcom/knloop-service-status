@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo "************************actions-local.sh************************"
 # 这个脚本放在本地或者服务器运行。
 # 前置条件是配置好了git，并且对仓库有读写权限。
 # 建议把user.name、user.email、git commit -m的内容改成特定的，比较容易区分commits信息。
@@ -16,6 +16,12 @@ cd ./knloop-service-status/
 git checkout -b page origin/page
 git pull origin page
 bash ./checkshell/servicecheck-local.sh
+
+# 如果./tmp/logs文件夹为空
+if [ ! -d "./tmp/logs" ]; then
+    echo "没有检测到日志，请检查配置"
+    exit 0
+fi
 
 KEYSARRAY=()
 
@@ -45,7 +51,7 @@ currentTime=$(date -d "$dateTime" +%s)
 timeDifference=$((currentTime - startTime))
 hours=$((timeDifference / 360))
 
-if [ $hours < 2]; then
+if [ $hours -lt 2 ]; then
     echo "无需提交"
     exit 0
 fi
@@ -55,9 +61,6 @@ githubapi="https://api.github.com/repos/shadowqcom/knloop-service-status/actions
 
 # 使用 curl 下载 JSON 数据，并使用 head 和 tail 限制到第 5 行和第 15 行
 json_data=$(curl -sSL $auth_header "$githubapi" | head -n 15 | tail -n +5)
-
-echo $json_data
-
 # 提取 name 和 status 字段
 name=$(echo "$json_data" | grep -Po '"name"\s*:\s*"Service Status Check"' | grep -c "Service Status Check")
 completed=$(echo "$json_data" | grep -Po '"status"\s*:\s*"completed"' | grep -c "completed")
@@ -65,10 +68,10 @@ in_progress=$(echo "$json_data" | grep -Po '"status"\s*:\s*"in_progress"' | grep
 
 # 判断是否有actions在运行
 if [ "$in_progress" -gt 0 ]; then
-    echo "正在运行"
+    echo "actions正在运行"
     exit 0
 elif [ "$name" -gt 0 ] && [ "$completed" -gt 0 ]; then
-    echo "未运行"
+    echo "actions未运行"
     # 拉取最新代码
     git pull origin page
 

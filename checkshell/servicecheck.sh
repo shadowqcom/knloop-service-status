@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 export TZ='Asia/Shanghai'
 
 KEYSARRAY=()
@@ -60,9 +59,9 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
 
     # 日志数据写入log文件
     dateTime=$(date +'%Y-%m-%d %H:%M')
-    echo "$dateTime, $result, ${connect_time_ms:-null}" >>"./logs/${key}_report.log"
+    echo "$dateTime, $result, ${connect_time_ms:-null}" >> "./logs/${key}_report.log"
     # 保留30000条数据
-    echo "$(tail -30000 ./logs/${key}_report.log)" >"./logs/${key}_report.log"
+    echo "$(tail -30000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
   ) &
   pids+=($!)
 done
@@ -81,6 +80,13 @@ while IFS='=' read -r key value; do
   # 存储键值对
   webhookconfig["$key"]="$value"
 done <./src/webhook.cfg
+
+
+# 如果./tmp/failed_urls.log不存在
+if [ ! -f "./tmp/failed_urls.log" ]; then
+  echo "没有失败的url"
+  exit 0
+fi
 
 # 构建Markdown消息
 failedUrlsMessage=""
@@ -105,5 +111,3 @@ if [[ "${webhookconfig["push"]}" == "true" ]] && [ -n "$failedUrlsMessage" ]; th
           }
       }'
 fi
-# 清理临时目录
-rm -rf ./tmp/
