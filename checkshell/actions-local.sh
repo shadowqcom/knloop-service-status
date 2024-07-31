@@ -17,6 +17,12 @@ git checkout -b page origin/page
 git pull origin page
 bash ./checkshell/servicecheck-local.sh
 
+# 如果./tmp/logs文件夹为空
+if [ ! -d "./tmp/logs" ]; then
+    echo "没有检测到日志，请检查配置"
+    exit 0
+fi
+
 KEYSARRAY=()
 
 urlsConfig="./src/urls.cfg"

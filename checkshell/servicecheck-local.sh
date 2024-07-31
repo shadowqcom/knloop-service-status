@@ -20,7 +20,7 @@ done <"$urlsConfig"
 
 # 创建需要的文件夹
 mkdir -p ./logs
-mkdir -p ./tmp
+mkdir -p ./tmp/logs
 
 # 创建一个数组来保存所有子shell的PID
 pids=()
@@ -42,26 +42,17 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       sleep 5
     done
 
-    # 失败的url写入临时文件,成功的url使用ping测试延迟
-    if [[ $result == "failed" ]]; then
-      touch ./tmp/failed_urls.lock
-      touch ./tmp/failed_urls.log
-      exec 9>"./tmp/failed_urls.lock"
-      flock -x 9
-      if ! grep -qFx "$url" ./tmp/failed_urls.log; then
-        echo "$url" >> ./tmp/failed_urls.log
-      fi
-      exec 9>&-
-    else
+    # 成功的url使用ping测试延迟
+    if [[ $result == "success" ]]; then
       connect_time_seconds=$(curl -o /dev/null -s -w "%{time_connect}\n" "$url")
       connect_time_ms=$(awk '{printf "%.0f\n", ($1 * 1000 + 0.5)}' <<< "$connect_time_seconds")
     fi
 
     # 日志数据写入log文件
     dateTime=$(date +'%Y-%m-%d %H:%M')
-    echo "$dateTime, $result, ${connect_time_ms:-null}" >>"./tmp/${key}_report.log"
-    # 保留30000条数据
-    echo "$(tail -30000 ./tmp/${key}_report.log)" >"./tmp/${key}_report.log"
+    echo "$dateTime, $result, ${connect_time_ms:-null}" >>"./tmp/logs/${key}_report.log"
+    # 保留1000条数据
+    echo "$(tail -1000 ./tmp/logs/${key}_report.log)" >"./tmp/logs/${key}_report.log"
   ) &
   pids+=($!)
 done
