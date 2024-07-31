@@ -11,11 +11,13 @@ if [ ! -d "./knloop-service-status/" ]; then
     git clone git@github.com:shadowqcom/knloop-service-status.git
 fi
 
-# 执行检测，得到临时logs
 cd ./knloop-service-status/
 git checkout -b page origin/page
 git pull origin page
+
+echo "************************start  servicecheck-local.sh************************"
 bash ./checkshell/servicecheck-local.sh
+echo "************************end   servicecheck-local.sh************************"
 
 # 如果./tmp/logs文件夹为空
 if [ ! -d "./tmp/logs" ]; then
