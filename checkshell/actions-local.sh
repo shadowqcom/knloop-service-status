@@ -62,8 +62,8 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
 done
 
 # 配置用户信息并提交到page分支
-git config --local user.name 'Github Actions'
-git config --local user.email 'actions@knloop.com'
+git config --local user.name 'Hongkong Actions'
+git config --local user.email 'Hongkongactions@knloop.com'
 git add -A --force ./logs/
 git commit -m '🆙 [Automated] Update service status logs'
 git push origin page
