@@ -47,6 +47,8 @@ currentTime=$(date -d "$dateTime" +%s)
 timeDifference=$((currentTime - startTime))
 hours=$((timeDifference / 60))
 
+echo "********************************************"
+echo $statrtime
 echo $hours
 
 if [ $hours -lt 180 ]; then
