@@ -22,13 +22,8 @@ KEYSARRAY=()
 
 urlsConfig="./src/urls.cfg"
 
-while read -r line; do
-    if [[ ${line} =~ ^\s*# ]] ; then
-        continue
-    fi
-    IFS='=' read -ra TOKENS <<<"$line"
-    KEYSARRAY+=(${TOKENS[0]})
-done <"$urlsConfig"
+# 从配置文件中读取键
+mapfile -t KEYSARRAY < <(grep -v '^#' "$urlsConfig" | cut -d '=' -f 1)
 
 random_number=$((RANDOM % ${#KEYSARRAY[@]}))
 key=${KEYSARRAY[$random_number]}
@@ -55,22 +50,26 @@ fi
 # 拉取最新代码
 git pull origin page
 
-# 合并临时文件到本地仓库
+# 遍历数组中的每个键
 for key in "${KEYSARRAY[@]}"; do
-    # 创建一个临时文件
-    temp_sorted_log=$(mktemp)
-    # 使用 tail 获取主文件的最后30行
-    tail -n 30 "./logs/${key}_report.log" > "$temp_sorted_log"
+    # 提取最后30行并保存到临时文件
+    tail -n 30 "./logs/${key}_report.log" > "./tmp/logs/${key}_report.log.tmp"
+
     # 从主文件中删除最后30行
-    head -n -30 "./logs/${key}_report.log" > "./logs/${key}_report.log"
+    tail -n -30 "./logs/${key}_report.log" > "./logs/${key}_report.log.tmp" && mv "./logs/${key}_report.log.tmp" "./logs/${key}_report.log"
+
     # 将临时文件中的行合并到临时日志文件
-    cat "$temp_sorted_log" >> "./tmp/logs/${key}_report.log"
+    cat "./tmp/logs/${key}_report.log.tmp" >> "./tmp/logs/${key}_report.log"
+
     # 使用 sort 命令进行排序
-    sort -t ',' -k1,1 -k2,2n "./tmp/logs/${key}_report.log" > "$temp_sorted_log"
+    sort -t ',' -k1,1 -k2,2n "./tmp/logs/${key}_report.log" > "./tmp/logs/${key}_report.log.sorted"
+
     # 将排序后的行追加到主日志文件中
-    cat "$temp_sorted_log" >> "./logs/${key}_report.log"
+    cat "./tmp/logs/${key}_report.log.sorted" >> "./logs/${key}_report.log"
+    
     # 清理临时文件
-    rm "$temp_sorted_log"
+    rm "./tmp/logs/${key}_report.log.tmp"
+    rm "./tmp/logs/${key}_report.log.sorted"
 done
 
 # 配置用户信息并提交到page分支
