@@ -90,7 +90,7 @@ export async function updateChart(el, logData) {
     // 获取图表上下文并创建新的Chart实例。
     const ctx = el.getContext("2d");
 
-    // 如果图表实例已经存在，则更新它，而不是创建一个新的实例
+    // 如果图表实例已经存在，则更新它，而不是创建一个新的实例。
     let chartInstance = el.chartInstance;
     if (!chartInstance) {
       chartInstance = new Chart(ctx, {

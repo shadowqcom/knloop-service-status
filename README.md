@@ -86,7 +86,7 @@ export const reloadReportstime = 5;        // 重载报告的检测间隔时间
 
 - `Build and deployment` 设置为 Deploy from a branch ，
 
-- `Branch` 设置为 main ，
+- `Branch` 设置为 main,
 
 - `Custom domain` 配置你的自定义域名，
 

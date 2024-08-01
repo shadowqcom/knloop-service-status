@@ -22,7 +22,7 @@ export function showTooltip(element, date, color) {
   const nextElement = statusContainer.nextElementSibling;
   const tooltipContent = nextElement.querySelector(".span-text"); // 获取 tooltipContent 元素
   tooltipContent.innerText = formatTiptime + " " + getStatusText(color);
-  tooltipContent.style.display = "block"; // 显示提示内容
+  tooltipContent.style.display = "block"; // 显示提示内容。
 }
 
 /**

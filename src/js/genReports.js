@@ -78,7 +78,7 @@ export async function getLastDayStatus(useCache = {}) {
     // 获取最后一天的状态
     const lastDayStatus = normalized[0];
     const statusText = getColor(lastDayStatus); // nodata success failure
-    statusTexts.push(statusText); // 将 statusText 存入数组
+    statusTexts.push(statusText); // 将 statusText 存入数组。
   }
 
   let successCount = 0, failureCount = 0, nodataCount = 0;

@@ -8,7 +8,7 @@ export function swregister() {
         }
     });
 
-    // 检测是否处于 PWA 独立窗口模式
+    // 检测是否处于 PWA 独立窗口模式。
     if (window.matchMedia('(display-mode: standalone)').matches) {
         // 如果是 PWA 独立窗口，隐藏滚动条
         const style = document.createElement('style');

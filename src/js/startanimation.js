@@ -1,4 +1,4 @@
-// 初始化页面加载动效
+// 初始化页面加载动效。
 export function initScrollReveal() {
   // 添加对文档的 class 操作
   const doc = document.documentElement
