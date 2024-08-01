@@ -42,6 +42,9 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       sleep 5
     done
 
+    # 获取当前时间
+    dateTime=$(date +'%Y-%m-%d %H:%M')
+
     # 失败的url写入临时文件,成功的url使用ping测试延迟
     if [[ $result == "failed" ]]; then
       touch ./tmp/failed_urls.lock
@@ -49,7 +52,7 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       exec 9>"./tmp/failed_urls.lock"
       flock -x 9
       if ! grep -qFx "$url" ./tmp/failed_urls.log; then
-        echo "$url" >>./tmp/failed_urls.log
+        echo "$dateTime, $url" >>./tmp/failed_urls.log
       fi
       exec 9>&-
     else
@@ -59,7 +62,7 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
     fi
 
     # 日志数据写入log文件
-    dateTime=$(date +'%Y-%m-%d %H:%M')
+    
     echo "$dateTime, $result, ${connect_time_ms:-null}" >>"./tmp/logs/${key}_report.log"
     # 保留1000条数据
     echo "$(tail -1000 ./tmp/logs/${key}_report.log)" >"./tmp/logs/${key}_report.log"
@@ -71,3 +74,4 @@ done
 for pid in "${pids[@]}"; do
   wait $pid
 done
+rm -f ./tmp/failed_urls.lock
