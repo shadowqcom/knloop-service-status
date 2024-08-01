@@ -41,7 +41,7 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
       sleep 5
     done
 
-    # 成功的url使用ping测试延迟
+    # 成功的url使用ping测试延迟。
     if [[ $result == "success" ]]; then
       # 通过curl测试连接耗时
       connect_time_seconds=$(curl -o /dev/null -s -w "%{time_connect}\n" "$url")

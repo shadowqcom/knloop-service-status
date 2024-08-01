@@ -2,7 +2,7 @@
  * 模板化
  * @param {string} templateId - 模板 ID
  * @param {Object} parameters - 参数对象
- * @returns {HTMLElement} - 模板化后的元素
+ * @returns {HTMLElement} - 模板化后的元素。
  */
 let cloneId = 0;
 export function templatize(templateId, parameters) {

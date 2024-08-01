@@ -52,23 +52,6 @@ self.addEventListener('install', function (event) {
   );
 });
 
-// self.addEventListener('fetch', function (event) {
-//   event.respondWith(
-//     caches.match(event.request).then(function (response) {
-//       // 如果缓存中有响应，则直接返回
-//       if (response) {
-//         return response;
-//       }
-
-//       // 尝试从网络获取资源
-//       return fetch(event.request).catch(function () {
-//         // 如果网络请求失败，再次尝试从缓存中获取资源
-//         return caches.match(event.request);
-//       });
-//     })
-//   );
-// });
-
 const putInCache = async (request, response) => {
   const cache = await caches.open("v1");
   await cache.put(request, response);

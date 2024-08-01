@@ -61,7 +61,7 @@ export function constructStatusStream(key, url, uptimeData) {
     upTime: uptimeData.upTime,
   });
 
-  // 将img元素插入到statusTitle之前
+  // 将img元素插入到statusTitle之前。
   const parent = container.querySelector('#statusTitle').parentNode;
   parent.insertBefore(img, parent.querySelector('#statusTitle'));
 

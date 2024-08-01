@@ -25,7 +25,7 @@ mkdir -p ./tmp/logs/
 # 创建一个数组来保存所有子shell的PID
 pids=()
 
-# 对于每一个URL，启动一个子shell来执行检测
+# 对于每一个URL，启动一个子shell来执行检测。
 for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
   key="${KEYSARRAY[index]}"
   url="${URLSARRAY[index]}"

@@ -2,7 +2,7 @@
 
 export TZ='Asia/Shanghai'
 
-# 检查是否有仓库
+# 检查是否有仓库。
 if [ ! -d "./knloop-service-status/" ]; then
     git clone git@github.com:shadowqcom/knloop-service-status.git
 fi

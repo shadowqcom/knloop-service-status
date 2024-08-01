@@ -24,7 +24,7 @@ export async function lastupdated(useCache = {}) {
   // 提取每个日志文件的最后一行时间
   const lastTimes = responseTexts.map(extractLastUpdateTime);
 
-  // 找到最后更新的时间
+  // 找到最后更新的时间。
   const lastTime = lastTimes.reduce((a, b) => {
     return new Date(a) > new Date(b) ? a : b;
   });
