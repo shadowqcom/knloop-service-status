@@ -20,7 +20,6 @@ export async function reslogs(key, useCache = { cache: 'default' }) {
     // 如果请求失败，使用备选logspath
     if (!response.ok) {
       console.warn('Fetch failed. Attempting to use the alternate logspath.');
-      // url = logspathB + "/" + key + "_report.log";
       const responseB = await fetch(urlB, useCache);
       const responsetext = await responseB.text();
       return responsetext;
