@@ -65,6 +65,6 @@ done
 git config --local user.name 'Hongkong Actions'
 git config --local user.email 'Hongkongactions@knloop.com'
 git add -A --force ./logs/
-git commit -m '🆙 [Automated] Update service status logs'
+git commit -m '🆙 [Hongkong Actions] Update service status logs'
 git push origin page
 rm -f ./tmp/logs/*
