@@ -42,6 +42,7 @@ currentTime=$(date -d "$dateTime" +%s)
 timeDifference=$((currentTime - startTime))
 hours=$((timeDifference / 60))
 
+# 每180分钟提交一次
 if [ $hours -lt 180 ]; then
     echo "时间间隔太短，暂不提交。"
     exit 0
@@ -50,26 +51,28 @@ fi
 # 拉取最新代码
 git pull origin page
 
-# 遍历数组中的每个键
+# 整理和排序 确保文件按照时间顺序排列
 for key in "${KEYSARRAY[@]}"; do
     # 提取最后30行并保存到临时文件
     tail -n 30 "./logs/${key}_report.log" > "./tmp/logs/${key}_report.log.tmp"
 
-    # 从主文件中删除最后30行
-    tail -n -30 "./logs/${key}_report.log" > "./logs/${key}_report.log.tmp" && mv "./logs/${key}_report.log.tmp" "./logs/${key}_report.log"
+    # 删除原文件的末尾 30 行
+    head -n -30 "./logs/${key}_report.log" > "./logs/${key}_report.log.new"
+    mv "./logs/${key}_report.log.new" "./logs/${key}_report.log"
 
     # 将临时文件中的行合并到临时日志文件
     cat "./tmp/logs/${key}_report.log.tmp" >> "./tmp/logs/${key}_report.log"
 
-    # 使用 sort 命令进行排序
+    # 对临时日志文件进行排序
     sort -t ',' -k1,1 -k2,2n "./tmp/logs/${key}_report.log" > "./tmp/logs/${key}_report.log.sorted"
 
     # 将排序后的行追加到主日志文件中
     cat "./tmp/logs/${key}_report.log.sorted" >> "./logs/${key}_report.log"
     
     # 清理临时文件
-    rm "./tmp/logs/${key}_report.log.tmp"
-    rm "./tmp/logs/${key}_report.log.sorted"
+    rm -f "./tmp/logs/${key}_report.log.tmp"
+    rm -f "./logs/${key}_report.log.new"
+    rm -f "./tmp/logs/${key}_report.log.sorted"
 done
 
 # 配置用户信息并提交到page分支
