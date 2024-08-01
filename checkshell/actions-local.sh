@@ -42,6 +42,7 @@ currentTime=$(date -d "$dateTime" +%s)
 timeDifference=$((currentTime - startTime))
 hours=$((timeDifference / 60))
 
+# 每180分钟提交一次
 if [ $hours -lt 180 ]; then
     echo "时间间隔太短，暂不提交。"
     exit 0
@@ -50,7 +51,7 @@ fi
 # 拉取最新代码
 git pull origin page
 
-# 遍历数组中的每个键
+# 整理和排序 确保文件按照时间顺序排列
 for key in "${KEYSARRAY[@]}"; do
     # 提取最后30行并保存到临时文件
     tail -n 30 "./logs/${key}_report.log" > "./tmp/logs/${key}_report.log.tmp"
