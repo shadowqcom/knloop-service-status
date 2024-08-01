@@ -19,7 +19,7 @@ export const reloadReportsdata = true;     // 是否重新加载报告
 export const reloadReportstime = 2.5;        // 重载报告的检测间隔时间
 
 
-// 主函数，异步执行一系列操作。
+// 主函数，异步执行一系列操作
 async function main() {
   await Promise.all([
     initScrollReveal(),

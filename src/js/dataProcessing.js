@@ -46,7 +46,7 @@ function getRelativeDays(dateend, datestart) {
 /**
  * 按日期分割行
  * @param {Array} rows - 行数组
- * @returns {Object} - 按日期分割后的数据
+ * @returns {Object} - 按日期分割后的数据。
  */
 function splitRowsByDate(rows) {
   let dateValues = {};

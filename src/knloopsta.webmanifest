@@ -2,7 +2,7 @@
     "name": "knloop status",
     "short_name": "knloop",
     "start_url": "/index.html",
-    "description": "零依赖的状态页",
+    "description": "零依赖的状态页。",
     "display": "standalone",
     "background_color": "#000",
     "theme_color": "#fff",

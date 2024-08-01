@@ -1,4 +1,4 @@
-// 更新页脚年份
+// 更新页脚年份。
 export async function getyear() {
   try {
     var currentYearElement = document.getElementById("currentYear");

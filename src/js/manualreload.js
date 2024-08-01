@@ -21,7 +21,7 @@ function throttle(func, wait) {
     };
 }
 async function reloadall() {
-    const useCache = { cache: 'reload' };  // 不使用缓存
+    const useCache = { cache: 'reload' };  // 不使用缓存。
     const lastTime = await getlastTime();
     initScrollReveal();
     showLoadingMask(); // 显示加载动画

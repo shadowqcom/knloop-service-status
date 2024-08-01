@@ -4,7 +4,7 @@ export async function scrolltoright() {
   containers.forEach(function (container) {
     const finalScrollLeft = container.scrollWidth;
     const currentScrollLeft = container.scrollLeft;
-    const duration = 700; // 动画持续时间，单位毫秒
+    const duration = 700; // 动画持续时间，单位毫秒。
     const startTime = performance.now();
 
     function step(timestamp) {
