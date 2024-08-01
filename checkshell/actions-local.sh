@@ -56,9 +56,21 @@ fi
 git pull origin page
 
 # 合并临时文件到本地仓库
-for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
-    key="${KEYSARRAY[index]}"
-    cat ./tmp/logs/${key}_report.log >> ./logs/${key}_report.log
+for key in "${KEYSARRAY[@]}"; do
+    # 创建一个临时文件
+    temp_sorted_log=$(mktemp)
+    # 使用 tail 获取主文件的最后30行
+    tail -n 30 "./logs/${key}_report.log" > "$temp_sorted_log"
+    # 从主文件中删除最后30行
+    head -n -30 "./logs/${key}_report.log" > "./logs/${key}_report.log"
+    # 将临时文件中的行合并到临时日志文件
+    cat "$temp_sorted_log" >> "./tmp/logs/${key}_report.log"
+    # 使用 sort 命令进行排序
+    sort -t ',' -k1,1 -k2,2n "./tmp/logs/${key}_report.log" > "$temp_sorted_log"
+    # 将排序后的行追加到主日志文件中
+    cat "$temp_sorted_log" >> "./logs/${key}_report.log"
+    # 清理临时文件
+    rm "$temp_sorted_log"
 done
 
 # 配置用户信息并提交到page分支
