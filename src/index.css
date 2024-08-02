@@ -1,5 +1,5 @@
-html {
-  height: 100%;
+:root {
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -9,8 +9,7 @@ header {
   display: flex;
   align-items: center;
   flex-direction: row;
-  width: 100%;
-  margin: 0 auto;
+  width: 100vw;
   height: 4rem;
   transition: transform 0.2s ease;
   transform: translateY(0);
@@ -53,6 +52,8 @@ header.hidden {
 }
 
 body {
+  --max-width: 55rem;
+  --mobile-width: calc(100% - 2rem);
   background-color: #f6f8fa;
   font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif, "Open Sans", "Segoe UI", "Noto Sans", Helvetica, "Apple Color Emoji", "Segoe UI Emoji";
   justify-content: center;
@@ -61,7 +62,6 @@ body {
   margin: 0;
   padding: 0;
   text-align: center;
-  transition: opacity 0.3s;
 }
 
 /* 文本样式 */
@@ -140,7 +140,7 @@ footer {
 .pageContainer {
   background-color: #fff;
   border-radius: 5px;
-  max-width: 55rem;
+  max-width: var(--max-width);
   margin: 0 auto;
   padding-bottom: 0.5rem;
 }
@@ -188,7 +188,7 @@ footer {
   align-items: center;
   justify-content: space-between;
   width: auto;
-  max-width: 55rem;
+  max-width: var(--max-width);
 }
 
 .statusSquare {
@@ -253,7 +253,7 @@ footer {
 canvas {
   max-height: 128px;
   min-width: 100px;
-  max-width: 55rem;
+  max-width: var(--max-width);
   padding: 0rem 1rem 0rem 1.4rem;
   margin-bottom: 3rem;
 }
@@ -281,7 +281,7 @@ canvas {
   background-color: #fff;
   border-radius: 5px;
   padding: 10px;
-  max-width: 55rem;
+  max-width: var(--max-width);
   margin: 2rem auto;
 }
 
@@ -417,7 +417,9 @@ canvas {
 /* 响应式设计 */
 @media screen and (max-width: 576px) {
   .pageContainer {
-    margin: 2rem 1rem;
+    margin: 2rem auto;
+    width: var(--mobile-width);
+    max-width: var(--max-width);
   }
 
   .span-wrapper {
@@ -480,11 +482,13 @@ canvas {
 
 @media screen and (min-width: 578px) and (max-width: 768px) {
   .pageContainer {
-    margin: 2rem 1rem;
+    margin: 2rem auto;
+    width: var(--mobile-width);
+    max-width: var(--max-width);
   }
 
   .span-wrapper {
-    padding: 0 1rem 0 1rem;
+    padding: 0 1rem 0 0.5rem;
   }
 
   .statusUptime {
@@ -543,16 +547,17 @@ canvas {
 @media screen and (min-width: 769px) and (max-width: 992px) {
   .pageContainer {
     margin: 2rem auto;
-    max-width: calc(100% - 2rem);
+    width: var(--mobile-width);
+    max-width: var(--max-width);
   }
 
   .reportContainer {
-    max-width: 55rem;
+    max-width: var(--max-width);
   }
 
-  .span-wrapper {
+  /* .span-wrapper {
     padding: 0 1rem 0 1rem;
-  }
+  } */
 
   .statusUptime {
     margin-left: 0;
@@ -586,7 +591,7 @@ canvas {
   }
 
   canvas {
-    padding: 0rem 0.2rem 0rem 0.5rem;
+    /* padding: 0rem 0.2rem 0rem 0.5rem; */
     margin-bottom: 2rem;
   }
 
