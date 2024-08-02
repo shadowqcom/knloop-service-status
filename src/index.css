@@ -291,41 +291,6 @@ canvas {
   color: #555555;
 }
 
-/* 日志重载时的遮罩 */
-.reports-container {
-  position: relative;
-}
-
-.loading-mask {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  height: 25rem;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.hidden {
-  display: none;
-}
-
-.loading-text {
-  letter-spacing: 0.2em;
-}
-
-/* 加载动画 */
-.loadinger {
-  width: 45px;
-  aspect-ratio: .75;
-  --c: no-repeat linear-gradient(#00dfa2 0 0);
-  background:
-    var(--c) 0% 50%,
-    var(--c) 50% 50%,
-    var(--c) 100% 50%;
-  background-size: 20% 50%;
-  animation: l6 1s infinite linear;
-}
-
 /* 定义滚动条的整体宽度 */
 ::-webkit-scrollbar {
   width: 0.4rem;
@@ -343,21 +308,79 @@ canvas {
   background-color: #7a7a7a;
 }
 
+/* 日志重载时的遮罩 */
+.reports-container {
+  position: relative;
+}
+
+.loading-mask {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 25rem;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.hidden {
+  display: none;
+}
+
+.loading-text {
+  letter-spacing: 0.2em;
+}
+
+/* 加载动画 */
+.loadinger {
+  width: 60px;
+  position: relative;
+}
+
+/* 每个矩形 */
+.loadinger div {
+  width: 10px;
+  height: 30px;
+  position: absolute;
+  border-radius: 3px;
+}
+
+.loadinger div:nth-child(1) {
+  left: 0;
+  animation: l6 1s infinite linear;
+  background: linear-gradient(#ff0060 0 0);
+}
+
+.loadinger div:nth-child(2) {
+  left: 30%;
+  animation: l6 1s infinite linear 0.33s;
+  background: linear-gradient(#ffb84c 0 0);
+}
+
+.loadinger div:nth-child(3) {
+  left: 60%;
+  animation: l6 1s infinite linear 0.66s;
+  background: linear-gradient(#00dfa2 0 0);
+}
+
 @keyframes l6 {
-  20% {
-    background-position: 0% 0%, 50% 50%, 100% 50%
+  0% {
+    top: 0;
   }
 
-  40% {
-    background-position: 0% 100%, 50% 0%, 100% 50%
+  25% {
+    top: 10px;
   }
 
-  60% {
-    background-position: 0% 50%, 50% 100%, 100% 0%
+  50% {
+    top: 0;
   }
 
-  80% {
-    background-position: 0% 50%, 50% 50%, 100% 100%
+  75% {
+    top: -10px;
+  }
+
+  100% {
+    top: 0;
   }
 }
 
@@ -448,6 +471,11 @@ canvas {
     height: 14rem;
   }
 
+  /* 每个矩形 */
+  .loadinger div {
+    width: 7px;
+  }
+
 }
 
 @media screen and (min-width: 578px) and (max-width: 768px) {
@@ -503,6 +531,11 @@ canvas {
 
   .loading-mask {
     height: 14rem;
+  }
+
+  /* 每个矩形 */
+  .loadinger div {
+    width: 8px;
   }
 
 }
@@ -564,5 +597,4 @@ canvas {
   .loading-mask {
     height: 20rem;
   }
-
 }
