@@ -57,10 +57,9 @@ export const logspath = "./page/logs";          // 日志文件路径,不带后/
 export const reloadReportsdata = true;     // 是否重新加载报告
 export const reloadReportstime = 2.5;        // 重载报告的检测间隔时间
 ```
+进阶操作：可以把logspath设置为 `https://raw.githubusercontent.com/用户名/仓库名/分支名/logs` 这样可以访问仓库内最新的log文件，而无需等待重新部署页面。弊端就是raw.githubusercontent.com域名在大陆地区访问质量不高。  
 
 ### 5. 配置 GitHub Pages 和 actions权限
-
-如果你使用其他静态页面托管服务则跳过此步骤。
 
 - 转到 `settings --> pages` ，
 
@@ -75,6 +74,9 @@ export const reloadReportstime = 2.5;        // 重载报告的检测间隔时�
 除此之外 还需要配置 actions 对仓库的读写权限，否则检测的结果无法写回仓库。
 - 转到 `settings --> actions ---> General` ，
 - `Workflow permissions` 设置为 Read and write permissions .
+
+进阶操作：由于每次提交日志都会触发页面部署，造成不必要的免费额度浪费，所以增加了一个 `deploy-status-pages.yml`文件 可以手动触发 也可以通过提交触发，根据需求灵活配置。
+关于GitHub actions的相关配置就不多阐述，请参考官方文件。
 
 ### 6. 配置自动任务
 修改 `service-status-check.yml` 里面的相关配置
