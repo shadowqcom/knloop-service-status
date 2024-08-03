@@ -73,7 +73,9 @@ export const reloadReportstime = 2.5;        // 重载报告的检测间隔时�
 
 除此之外 还需要配置 actions 对仓库的读写权限，否则检测的结果无法写回仓库。
 - 转到 `settings --> actions ---> General` ，
-- `Workflow permissions` 设置为 Read and write permissions .
+- `Workflow permissions` 设置为 Read and write permissions .  
+
+![Workflow permissions](public/Workflowpermissions.png)
 
 进阶操作：由于每次提交日志都会触发页面部署，造成不必要的免费额度浪费，所以增加了一个 `deploy-status-pages.yml`文件 可以手动触发 也可以通过提交触发，根据需求灵活配置。
 关于GitHub actions的相关配置就不多阐述，请参考官方文件。
