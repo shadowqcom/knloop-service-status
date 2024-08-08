@@ -66,64 +66,18 @@ body {
 }
 
 /* 文本样式 */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-button,
-footer,
-input,
-textarea,
-.copyright,
-.button {
-  clear: both;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #202B36;
-  font-weight: 500;
-}
 
 h1 {
-  font-size: 32px;
-  margin: 0px;
+  font-size: 2.3rem;
+  margin: 1rem auto;
+  color: #202B36;
+  font-weight: 700;
+  
 }
 
 h2 {
-  font-size: 28px;
-  margin: 16px 0 8px;
-}
-
-h3 {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 8px 0 4px;
-}
-
-h4 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 5px;
-  margin-bottom: 4px;
-}
-
-h5 {
-  font-size: 16px;
-  margin-top: 5px;
-  margin-bottom: 4px;
-}
-
-h6 {
-  font-size: 16px;
-  margin-top: 5px;
-  margin-bottom: 4px;
+  font-size: 1rem;
+  color: #202B36;
 }
 
 a {
@@ -416,7 +370,7 @@ canvas {
 
 
 /* 响应式设计 */
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 640px) {
   .pageContainer {
     margin: 2rem auto;
     width: var(--mobile-width);
@@ -481,7 +435,7 @@ canvas {
 
 }
 
-@media screen and (min-width: 578px) and (max-width: 768px) {
+@media screen and (min-width: 641px) and (max-width: 768px) {
   .pageContainer {
     margin: 2rem auto;
     width: var(--mobile-width);
@@ -545,7 +499,7 @@ canvas {
 
 }
 
-@media screen and (min-width: 769px) and (max-width: 992px) {
+@media screen and (min-width: 769px) and (max-width: 1024px) {
   .pageContainer {
     margin: 2rem auto;
     width: var(--mobile-width);
@@ -555,10 +509,6 @@ canvas {
   .reportContainer {
     max-width: var(--max-width);
   }
-
-  /* .span-wrapper {
-    padding: 0 1rem 0 1rem;
-  } */
 
   .statusUptime {
     margin-left: 0;
@@ -592,12 +542,64 @@ canvas {
   }
 
   canvas {
-    /* padding: 0rem 0.2rem 0rem 0.5rem; */
     margin-bottom: 2rem;
   }
 
   .clientInfo {
     max-width: calc(100% - 2rem);
+    width: var(--max-width);
+  }
+
+  .loading-mask {
+    height: 20rem;
+  }
+}
+
+
+@media screen and (min-width: 1280px) {
+  .pageContainer {
+    margin: 2rem auto;
+    width: var(--mobile-width);
+    max-width: var(--max-width);
+  }
+
+  .reportContainer {
+    max-width: var(--max-width);
+  }
+
+  .statusUptime {
+    margin-left: 0;
+    margin-top: 3px;
+    text-align: right;
+  }
+
+  .statusTitle {
+    display: inline-block;
+  }
+
+  .statusStreamContainer {
+    overflow-x: scroll;
+    height: 37px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* 隐藏滚动条 */
+  .statusStreamContainer::-webkit-scrollbar {
+    display: none;
+  }
+
+  .statusSquare {
+    min-width: 7px;
+    margin-right: 1px;
+  }
+
+  .statusContainer {
+    margin-top: 15px;
+  }
+
+  canvas {
+    margin-bottom: 2rem;
   }
 
   .loading-mask {
