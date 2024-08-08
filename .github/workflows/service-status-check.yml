@@ -2,7 +2,7 @@ name: Service Status Check
 
 on:
   schedule:
-    - cron: "*/25 * * * *"
+    - cron: "1,25,55 * * * *"
 
   # 添加手动触发事件
   workflow_dispatch:
