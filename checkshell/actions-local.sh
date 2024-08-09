@@ -40,10 +40,10 @@ currentTime=$(date -d "$dateTime" +%s)
 
 # 计算时间差
 timeDifference=$((currentTime - startTime))
-hours=$((timeDifference / 60))
+minute=$((timeDifference / 60))
 
 # 每180分钟提交一次
-if [ $hours -lt 180 ]; then
+if [ $minute -lt 180 ]; then
     echo "时间间隔太短，暂不提交。"
     exit 0
 fi
