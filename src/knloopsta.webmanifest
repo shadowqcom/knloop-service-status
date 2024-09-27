@@ -1,23 +1,36 @@
 {
-    "name": "knloop status",
-    "short_name": "knloop",
-    "start_url": "/index.html",
-    "description": "零依赖的状态页。",
-    "display": "standalone",
-    "background_color": "#000",
-    "theme_color": "#fff",
-    "icons": [
-      {
-        "src": "/public/logo.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "/public/logo.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      }
-    ],
-    "id": "knloop status"
-  }
-  
+  "name": "knloop status",
+  "short_name": "knloop",
+  "start_url": "/index.html",
+  "description": "零依赖的状态页。",
+  "display": "standalone",
+  "background_color": "#000",
+  "theme_color": "#fff",
+  "icons": [
+    {
+      "src": "/public/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "device": "pc"
+    },
+    {
+      "src": "/public/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "device": "pc"
+    },
+    {
+      "src": "/public/logom.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "device": "mobile"
+    },
+    {
+      "src": "/public/logom.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "device": "mobile"
+    }
+  ],
+  "id": "knloop status"
+}
