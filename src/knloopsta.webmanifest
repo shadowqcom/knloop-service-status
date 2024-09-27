@@ -10,12 +10,26 @@
       {
         "src": "/public/logo.png",
         "sizes": "192x192",
-        "type": "image/png"
+        "type": "image/png",
+        "device": "pc"
       },
       {
         "src": "/public/logo.png",
         "sizes": "512x512",
-        "type": "image/png"
+        "type": "image/png",
+        "device": "pc"
+      },
+      {
+        "src": "/public/logom.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "device": "mobile"
+      },
+      {
+        "src": "/public/logom.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "device": "mobile"
       }
     ],
     "id": "knloop status"
