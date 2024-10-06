@@ -3,6 +3,7 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
+  user-select: none;
 }
 
 header {
@@ -72,7 +73,6 @@ h1 {
   margin: 1rem auto;
   color: #202B36;
   font-weight: 400;
-  
 }
 
 h2 {
