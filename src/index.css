@@ -56,7 +56,7 @@ body {
   --max-width: 55rem;
   --mobile-width: calc(100% - 2rem);
   background-color: #f6f8fa;
-  font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif, "Open Sans", "Segoe UI", "Noto Sans", Helvetica, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: "MiSans", Arial, "Open Sans", "Segoe UI", "Noto Sans", sans-serif;
   justify-content: center;
   line-height: 20px;
   min-width: 300px;
@@ -71,13 +71,14 @@ h1 {
   font-size: 2.3rem;
   margin: 1rem auto;
   color: #202B36;
-  font-weight: 700;
+  font-weight: 400;
   
 }
 
 h2 {
   font-size: 1rem;
   color: #202B36;
+  font-weight: 400;
 }
 
 a {
