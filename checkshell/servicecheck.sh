@@ -51,8 +51,8 @@ for ((index = 0; index < ${#KEYSARRAY[@]}; index++)); do
     # 日志数据写入log文件
     dateTime=$(date +'%Y-%m-%d %H:%M')
     echo "$dateTime, $result, ${connect_time_ms:-null}" >> "./logs/${key}_report.log"
-    # 保留35000条数据
-    echo "$(tail -35000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
+    # 保留50000条数据
+    echo "$(tail -50000 ./logs/${key}_report.log)" > "./logs/${key}_report.log"
   ) &
   pids+=($!)
 done
