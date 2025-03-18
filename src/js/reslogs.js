@@ -1,5 +1,8 @@
 import { logspath } from "../index.js";
 
+// 缓存对象
+const logCache = {};
+
 /**
  * 异步函数：获取日志文件内容。
  * 
@@ -12,6 +15,11 @@ import { logspath } from "../index.js";
  * @throws {Error} - 如果请求失败，将抛出一个包含错误信息的异常。
  */
 export async function reslogs(key, useCache = { cache: 'default' }) {
+  const cacheKey = key + JSON.stringify(useCache);
+  if (logCache[cacheKey]) {
+    return logCache[cacheKey];
+  }
+
   const url = logspath + "/" + key + "_report.log";
   const urlB = "./logs/" + key + "_report.log"; // 备选logspath
 
@@ -22,10 +30,12 @@ export async function reslogs(key, useCache = { cache: 'default' }) {
       console.warn('Fetch failed. Attempting to use the alternate logspath.');
       const responseB = await fetch(urlB, useCache);
       const responsetext = await responseB.text();
+      logCache[cacheKey] = responsetext;
       return responsetext;
     }
     // 请求成功，返回文本
     const responsetext = await response.text();
+    logCache[cacheKey] = responsetext;
     return responsetext;
   } catch (error) {
     console.error(error);

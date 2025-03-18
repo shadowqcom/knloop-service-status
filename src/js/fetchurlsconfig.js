@@ -1,5 +1,8 @@
 import { urlspath } from "../index.js";
 
+// 缓存对象
+const urlConfigCache = {};
+
 /**
  * 异步获取URL配置列表。
  *
@@ -9,11 +12,17 @@ import { urlspath } from "../index.js";
  * @returns {Promise<Array<string>>} 返回一个Promise，解析为包含配置文件有效行的数组
  */
 export async function fetchUrlsConfig() {
+  if (urlConfigCache['urlsConfig']) {
+    return urlConfigCache['urlsConfig'];
+  }
+
   const response = await fetch(urlspath);
   const configText = await response.text();
   const configLines = configText
     .split(/\r\n|\n/)
     .filter((entry) => entry !== "")
     .filter((line) => !line.trim().startsWith("#"));
+
+  urlConfigCache['urlsConfig'] = configLines;
   return configLines;
 }
