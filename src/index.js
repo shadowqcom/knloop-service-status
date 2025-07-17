@@ -22,7 +22,6 @@ export const reloadReportstime = 2.5;        // 重载报告的检测间隔时�
 // 主函数，异步执行一系列操作
 async function main() {
   await Promise.all([
-    initScrollReveal(),
     getclieninfo(),
     getyear(),
     lastupdated(),
@@ -35,6 +34,7 @@ async function main() {
     getLastDayStatus(),
   ]);
   await Promise.all([
+    initScrollReveal(),
     scrollheader(),
     reloadReports(),
   ]);
