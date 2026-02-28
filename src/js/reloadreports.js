@@ -4,7 +4,7 @@ import { fetchUrlsConfig } from "./fetchurlsconfig.js";
 import { genAllReports, getLastDayStatus } from "./genReports.js";
 import { refreshLastupdatedon } from "./lastupdated.js";
 
-const useCache = { cache: 'reload' };  // 不使用缓存
+const useCache = { cache: 'no-cache' };  // 不使用缓存
 let startTime;
 async function checkAndReloadReports() {
   startTime = await getlastTime(); // 初始化全局变量
