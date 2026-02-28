@@ -1,0 +1,5 @@
+{"time":"2026-03-01 06:57:39","status":"success","latency":93}
+{"time":"2026-03-01 06:57:39","status":"success","latency":60}
+{"time":"2026-03-01 06:57:39","status":"success","latency":1358}
+{"time":"2026-03-01 06:57:39","status":"success","latency":2333}
+{"time":"2026-03-01 06:57:39","status":"failure","latency":7000}
