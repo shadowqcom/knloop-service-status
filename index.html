@@ -278,7 +278,7 @@
         </div>
       </div>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-100">
+      <div class="grid grid-cols-2 md:grid-cols-4">
         <div class="bg-bg-secondary p-4 text-center">
           <p class="text-2xl font-medium text-text-primary" x-text="serviceSummary.avgUptime + '%'"></p>
           <p class="text-xs text-text-secondary mt-1">60天可用率</p>
@@ -302,7 +302,7 @@
       </div>
       
       <div class="p-4 bg-gray-50 border-t border-gray-100">
-        <div class="flex flex-col gap-3 text-sm">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm">
           <div class="flex items-center gap-2 min-h-5">
             <div class="w-4 h-4 flex items-center justify-center flex-shrink-0">
               <template x-if="serviceSummary.lastFailureTime">
