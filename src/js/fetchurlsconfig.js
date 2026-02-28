@@ -1,4 +1,4 @@
-import { urlspath } from "../index.js";
+import { getConfig, loadConfig } from './configLoader.js';
 
 // 缓存对象
 const urlConfigCache = {};
@@ -6,8 +6,7 @@ const urlConfigCache = {};
 /**
  * 异步获取URL配置列表。
  *
- * 该函数通过网络请求获取配置文件内容，随后处理这些内容以去除空行和注释行，
- * 最终返回一个包含所有有效配置行的数组。
+ * 该函数通过网络请求获取配置文件内容，随后处理这些内容以返回服务配置。
  *
  * @returns {Promise<Array<string>>} 返回一个Promise，解析为包含配置文件有效行的数组
  */
@@ -16,12 +15,11 @@ export async function fetchUrlsConfig() {
     return urlConfigCache['urlsConfig'];
   }
 
-  const response = await fetch(urlspath);
-  const configText = await response.text();
-  const configLines = configText
-    .split(/\r\n|\n/)
-    .filter((entry) => entry !== "")
-    .filter((line) => !line.trim().startsWith("#"));
+  // 确保配置已加载
+  await loadConfig();
+  const config = getConfig();
+  const services = config.services || [];
+  const configLines = services.map(service => `${service.key}=${service.url}`);
 
   urlConfigCache['urlsConfig'] = configLines;
   return configLines;

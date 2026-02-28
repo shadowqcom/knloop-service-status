@@ -1,102 +1,59 @@
-import { templatize } from "./domManipulation.js";
-import { showTooltip, hideTooltip } from "./tooltip.js";
-import { maxDays } from "../index.js";
-/**
- * 获取颜色
- * @param {any} uptimeVal - 运行时间值
- * @returns {string} - 颜色字符串
- */
-export function getColor(uptimeVal) {
-  return uptimeVal == null
-    ? "nodata"
-    : uptimeVal == 1
-      ? "success"
-      : uptimeVal < 0.3
-        ? "failure"
-        : "partial";
-}
-
-/**
- * 获取状态文本
- * @param {string} color - 颜色
- * @returns {string} - 状态文本
- */
-export function getStatusText(color) {
-  return color == "nodata"
-    ? "No Data"
-    : color == "success"
-      ? "up"
-      : color == "failure"
-        ? "Down"
-        : color == "partial"
-          ? "Degraded"
-          : "Unknown";
-}
-
-/**
- * 构建状态流
- * @param {string} url - URL
- * @param {Object} uptimeData - 运行时间数据
- */
-export function constructStatusStream(key, url, uptimeData) {
-  let streamContainer = templatize("statusStreamContainerTemplate");
-  for (var ii = maxDays - 1; ii >= 0; ii--) {
-    let line = constructStatusLine(ii, uptimeData[ii]);
-    streamContainer.appendChild(line);
+export function parseBeijingTime(timeStr) {
+  if (!timeStr) return null;
+  
+  if (timeStr.includes('Z')) {
+    return new Date(timeStr);
   }
-  const lastSet = uptimeData[0];
-  const color = getColor(lastSet);
-  const statusText = getStatusText(color);
-
-  // 创建 img 元素
-  const img = document.createElement('img');
-  img.className = 'statusIcon';
-  img.alt = `status${color}`;
-  img.src = `./public/check/${color}.svg`;
-
-  const container = templatize("statusContainerTemplate", {
-    title: key,
-    url: url,
-    statusblock: statusText,
-    upTime: uptimeData.upTime,
-  });
-
-  // 将img元素插入到statusTitle之前。
-  const parent = container.querySelector('#statusTitle').parentNode;
-  parent.insertBefore(img, parent.querySelector('#statusTitle'));
-
-  container.appendChild(streamContainer);
-
-  // console.log(container)
-
-  return container;
+  
+  const normalized = timeStr.replace(' ', 'T');
+  return new Date(normalized + '+08:00');
 }
 
-/**
- * 构建状态行
- * @param {number} relDay - 相对天数
- * @param {any} upTimeArray - 运行时间数组
- * @returns {HTMLElement} - 状态行元素
- */
-function constructStatusLine(relDay, upTimeArray) {
-  let date = new Date();
-  date.setDate(date.getDate() - relDay);
-  return constructStatusSquare(date, upTimeArray);
+export function formatDate(date, format = 'full') {
+  if (!date) return '';
+  
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hour = date.getHours().toString().padStart(2, '0');
+  const minute = date.getMinutes().toString().padStart(2, '0');
+  
+  switch (format) {
+    case 'date':
+      return `${year}-${month}-${day}`;
+    case 'time':
+      return `${hour}:${minute}`;
+    case 'full':
+    default:
+      return `${year}-${month}-${day} ${hour}:${minute}`;
+  }
 }
 
-function constructStatusSquare(date, uptimeVal) {
-  const color = getColor(uptimeVal);
-  let square = templatize("statusSquareTemplate", {
-    color: color,
-  });
-  const show = () => {
-    showTooltip(square, date, color);
+export function debounce(fn, delay) {
+  let timer = null;
+  return function(...args) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
   };
-  const hide = () => {
-    hideTooltip(square);
-  };
-  square.addEventListener("mouseover", show);
-  square.addEventListener("mousedown", show);
-  square.addEventListener("mouseout", hide);
-  return square;
 }
+
+export const STATUS_MAP = {
+  success: '正常',
+  failure: '故障',
+  partial: '部分故障',
+  nodata: '无数据'
+};
+
+export const STATUS_COLOR_MAP = {
+  success: 'text-success',
+  failure: 'text-failure',
+  partial: 'text-partial',
+  nodata: 'text-nodata'
+};
+
+export const STATUS_BG_MAP = {
+  success: 'bg-success',
+  failure: 'bg-failure',
+  partial: 'bg-partial',
+  nodata: 'bg-nodata'
+};

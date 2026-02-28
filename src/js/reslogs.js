@@ -1,43 +1,126 @@
-import { logspath } from "../index.js";
+import { getConfig, onConfigLoaded } from './configLoader.js';
+import { handleError } from './errorHandler.js';
 
-// 缓存对象
-const logCache = {};
+let logspath = getConfig().logspath;
 
-/**
- * 异步函数：获取日志文件内容。
- * 
- * 该函数通过HTTP请求从指定的URL获取日志文件的内容。如果请求成功，它将返回日志文本；
- * 如果请求失败，它将抛出一个错误。这个函数使用了fetch API来进行网络请求，并支持使用缓存。
- * 
- * @param {string} key - 日志文件名的关键字，用于构造URL。
- * @param {Object} uesCache - 控制是否使用缓存的对象，默认为使用'default'缓存策略。该参数的具体作用取决于fetch函数的实现。
- * @returns {Promise<string>} - 返回一个承诺，该承诺解析为日志文件的文本内容。
- * @throws {Error} - 如果请求失败，将抛出一个包含错误信息的异常。
- */
-export async function reslogs(key, useCache = { cache: 'default' }) {
-  const cacheKey = key + JSON.stringify(useCache);
-  if (logCache[cacheKey]) {
-    return logCache[cacheKey];
+onConfigLoaded(config => {
+  logspath = config.logspath;
+});
+
+const CACHE_TTL = 5 * 60 * 1000;
+const MAX_CACHE_SIZE = 50;
+
+class CacheEntry {
+  constructor(data) {
+    this.data = data;
+    this.timestamp = Date.now();
   }
-
-  const url = logspath + "/" + key + "_report.log";
-  const urlB = "./logs/" + key + "_report.log"; // 备选logspath
-
-  try {
-    const response = await fetch(url, useCache);
-    // 如果请求失败，使用备选logspath
-    if (!response.ok) {
-      console.warn('Fetch failed. Attempting to use the alternate logspath.');
-      const responseB = await fetch(urlB, useCache);
-      const responsetext = await responseB.text();
-      logCache[cacheKey] = responsetext;
-      return responsetext;
-    }
-    // 请求成功，返回文本
-    const responsetext = await response.text();
-    logCache[cacheKey] = responsetext;
-    return responsetext;
-  } catch (error) {
-    console.error(error);
+  
+  isExpired() {
+    return Date.now() - this.timestamp > CACHE_TTL;
   }
 }
+
+const logCache = new Map();
+
+function cleanExpiredCache() {
+  for (const [key, entry] of logCache.entries()) {
+    if (entry.isExpired()) {
+      logCache.delete(key);
+    }
+  }
+}
+
+function enforceMaxCacheSize() {
+  if (logCache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(logCache.entries());
+    entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+    
+    const toDelete = entries.slice(0, logCache.size - MAX_CACHE_SIZE);
+    for (const [key] of toDelete) {
+      logCache.delete(key);
+    }
+  }
+}
+
+let cleanupInterval = null;
+
+function startCleanupTimer() {
+  if (cleanupInterval) return;
+  
+  cleanupInterval = setInterval(() => {
+    cleanExpiredCache();
+  }, CACHE_TTL);
+}
+
+function stopCleanupTimer() {
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+    cleanupInterval = null;
+  }
+}
+
+startCleanupTimer();
+
+export function clearLogCache(key) {
+  if (key) {
+    logCache.delete(key);
+  } else {
+    logCache.clear();
+  }
+}
+
+export function getCacheStats() {
+  return {
+    size: logCache.size,
+    maxSize: MAX_CACHE_SIZE,
+    ttl: CACHE_TTL
+  };
+}
+
+export async function reslogs(key, useCache = { cache: 'default' }) {
+  const cacheKey = key;
+  const shouldUseCache = useCache.cache === 'default';
+  
+  if (shouldUseCache && logCache.has(cacheKey)) {
+    const entry = logCache.get(cacheKey);
+    if (!entry.isExpired()) {
+      return entry.data;
+    }
+    logCache.delete(cacheKey);
+  }
+
+  const localUrl = "./logs/" + key + "_report.log";
+  const remoteUrl = logspath + "/" + key + "_report.log";
+
+  const isLocalhost = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1';
+
+  const urls = isLocalhost ? [localUrl, remoteUrl] : [remoteUrl, localUrl];
+
+  let lastError = null;
+  
+  for (const url of urls) {
+    try {
+      const fetchOptions = useCache.cache === 'no-cache' || useCache.cache === 'reload' 
+        ? { cache: 'no-cache' } 
+        : {};
+      const response = await fetch(url, fetchOptions);
+      if (response.ok) {
+        const responsetext = await response.text();
+        if (shouldUseCache) {
+          logCache.set(cacheKey, new CacheEntry(responsetext));
+          enforceMaxCacheSize();
+        }
+        return responsetext;
+      }
+    } catch (error) {
+      lastError = error;
+      handleError(error, `reslogs:${url}`);
+    }
+  }
+
+  throw new Error(`Failed to fetch logs for ${key} from all sources: ${lastError?.message || 'unknown error'}`);
+}
+
+export { startCleanupTimer, stopCleanupTimer };

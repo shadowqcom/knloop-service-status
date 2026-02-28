@@ -4,7 +4,6 @@ on:
   schedule:
     - cron: "1,25,55 * * * *"
 
-  # 添加手动触发事件
   workflow_dispatch:
 
 jobs:
@@ -14,9 +13,9 @@ jobs:
     name: Check knloop service status
     env:
       WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
+      PUSH_ENABLED: ${{ secrets.PUSH_ENABLED }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # 新任务挂起
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: false
@@ -27,11 +26,18 @@ jobs:
         with:
           ref: page
 
-      - name: Run Shell Script
-        id: shell_script_run
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache-dependency-path: checkshell/go.sum
+
+      - name: Run Service Check
+        id: service_check_run
+        working-directory: ./checkshell
         run: |
-          chmod +x ./checkshell/servicecheck.sh
-          bash ./checkshell/servicecheck.sh
+          go mod download
+          go run .
 
       - name: Commit and push changes
         run: |

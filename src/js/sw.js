@@ -32,12 +32,12 @@ self.addEventListener('install', function (event) {
         '/public/check/success.svg',
 
         // 本地日志
-        // '/logs/Web_report.log',
-        // '/logs/Dev_report.log',
-        // '/logs/Mojocn_report.log',
-        // '/logs/Mojoo_report.log',
-        // '/logs/ShadowQ_report.log',
-        // '/logs/Google_report.log',
+        '/logs/Web_report.log',
+        '/logs/Dev_report.log',
+        '/logs/Mojocn_report.log',
+        '/logs/Mojoo_report.log',
+        '/logs/ShadowQ_report.log',
+        '/logs/Google_report.log',
 
         // 网络资源
         'https://raw.github.knloop.com/knloop-service-status/page/logs/Web_report.log',
