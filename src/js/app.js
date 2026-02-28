@@ -1,10 +1,9 @@
-import { fetchUrlsConfig } from './fetchurlsconfig.js';
-import { reslogs, clearLogCache } from './reslogs.js';
-import { normalizeData, parseLogData, calculateAvgLatency, calculateServiceStats, calculateGlobalStats } from './dataProcessing.js';
+import { loadAllLogData, clearCache, getLatestLogTime } from './logDataManager.js';
+import { calculateAvgLatency, calculateGlobalStats } from './dataProcessing.js';
 import { updateChart } from './timelapsechart.js';
 import { getConfig, onConfigLoaded, loadConfig } from './configLoader.js';
-import { parseBeijingTime, formatDate, STATUS_MAP, STATUS_COLOR_MAP, STATUS_BG_MAP } from './utils.js';
-import { handleError, getErrorMessage, ERROR_TYPES } from './errorHandler.js';
+import { STATUS_MAP, STATUS_COLOR_MAP, STATUS_BG_MAP } from './utils.js';
+import { handleError, getErrorMessage } from './errorHandler.js';
 
 let reloadReportsdata = getConfig().reloadReportsdata;
 let reloadReportstime = getConfig().reloadReportstime;
@@ -39,16 +38,14 @@ window.statusApp = function() {
       this.setupAutoReload();
     },
 
-    async loadAllData(useCache = { cache: 'default' }) {
+    async loadAllData(forceRefresh = false) {
       this.loading = true;
       this.loadError = null;
       try {
-        const configLines = await fetchUrlsConfig();
-        const servicePromises = configLines.map(line => this.loadServiceData(line, useCache));
-        const services = await Promise.all(servicePromises);
-        this.services = services;
+        const data = await loadAllLogData(forceRefresh);
+        this.services = data.services;
+        this.lastUpdateTime = data.lastUpdateTime;
         this.calculateOverallStatus();
-        await this.updateLastTime();
         
         this.$nextTick(() => {
           this.renderCharts();
@@ -74,36 +71,6 @@ window.statusApp = function() {
     },
 
     onScroll(event) {
-      // 可以在这里添加滚动相关的逻辑
-    },
-
-    async loadServiceData(configLine, useCache) {
-      const [key, url] = configLine.split('=');
-      const logText = await reslogs(key, useCache);
-      const statusPoints = parseLogData(logText);
-      const normalized = normalizeData(logText);
-      const avgLatency = calculateAvgLatency(logText);
-      const stats = calculateServiceStats(logText);
-      
-      const successCount = statusPoints.filter(p => p.status === 'success').length;
-      const uptime = statusPoints.length > 0 
-        ? ((successCount / statusPoints.length) * 100).toFixed(2) 
-        : 0;
-
-      return {
-        key,
-        title: key,
-        url,
-        statusPoints,
-        uptime,
-        avgLatency,
-        rawLog: logText,
-        lastStatus: normalized[0] || 'nodata',
-        hoveredPoint: null,
-        selectedDay: null,
-        selectedDayLatency: null,
-        stats
-      };
     },
 
     calculateOverallStatus() {
@@ -124,42 +91,6 @@ window.statusApp = function() {
         this.overallStatus = 'failure';
       } else {
         this.overallStatus = 'partial';
-      }
-    },
-
-    async updateLastTime() {
-      try {
-        const configLines = await fetchUrlsConfig();
-        const times = [];
-        
-        for (const line of configLines) {
-          const [key] = line.split('=');
-          const logText = await reslogs(key, { cache: 'default' });
-          const lines = logText.split(/\r\n|\n/).filter(l => l.trim());
-          if (lines.length > 0) {
-            const lastLine = lines[lines.length - 1];
-            try {
-              const data = JSON.parse(lastLine);
-              if (data.time) {
-                times.push(data.time);
-              }
-            } catch (e) {
-              // 单行解析错误不影响整体
-            }
-          }
-        }
-        
-        if (times.length > 0) {
-          const latestTime = times.reduce((a, b) => {
-            const dateA = parseBeijingTime(a);
-            const dateB = parseBeijingTime(b);
-            return dateA > dateB ? a : b;
-          });
-          const date = parseBeijingTime(latestTime);
-          this.lastUpdateTime = formatDate(date, 'full');
-        }
-      } catch (error) {
-        handleError(error, 'updateLastTime');
       }
     },
 
@@ -260,10 +191,10 @@ window.statusApp = function() {
 
     async checkAndReload(startTime) {
       try {
-        const newTime = await this.getLatestTime();
+        const newTime = await getLatestLogTime();
         if (startTime !== newTime) {
-          clearLogCache();
-          await this.loadAllData({ cache: 'no-cache' });
+          clearCache();
+          await this.loadAllData(true);
           return newTime;
         }
       } catch (error) {
@@ -272,29 +203,17 @@ window.statusApp = function() {
       return null;
     },
 
-    async getLatestTime() {
-      const configLines = await fetchUrlsConfig();
-      const randomIndex = Math.floor(Math.random() * configLines.length);
-      const randomLine = configLines[randomIndex];
-      const [key] = randomLine.split('=');
-      const logText = await reslogs(key, { cache: 'no-cache' });
-      const lines = logText.split(/\r\n|\n/).filter(l => l.trim());
-      return lines.length > 0 ? lines[lines.length - 1].split(',')[0] : null;
-    },
-
     async manualReload() {
       if (this.loading) return;
       
-      clearLogCache();
+      clearCache();
       this.loading = true;
       
       try {
-        const configLines = await fetchUrlsConfig();
-        const servicePromises = configLines.map(line => this.loadServiceData(line, { cache: 'reload' }));
-        const services = await Promise.all(servicePromises);
-        this.services = services;
+        const data = await loadAllLogData(true);
+        this.services = data.services;
+        this.lastUpdateTime = data.lastUpdateTime;
         this.calculateOverallStatus();
-        await this.updateLastTime();
         
         this.$nextTick(() => {
           this.renderCharts();
