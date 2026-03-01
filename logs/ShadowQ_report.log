@@ -98,3 +98,8 @@
 {"time":"2026-03-01 21:53:01","status":"success","latency":1761}
 {"time":"2026-03-01 21:53:01","status":"success","latency":2732}
 {"time":"2026-03-01 21:53:01","status":"success","latency":5212}
+{"time":"2026-03-01 22:20:50","status":"success","latency":102}
+{"time":"2026-03-01 22:20:50","status":"success","latency":59}
+{"time":"2026-03-01 22:20:50","status":"success","latency":1397}
+{"time":"2026-03-01 22:20:50","status":"success","latency":2749}
+{"time":"2026-03-01 22:20:50","status":"failure","latency":null}
