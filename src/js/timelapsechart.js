@@ -7,6 +7,8 @@ onConfigLoaded(config => {
   maxHour = config.maxHour;
 });
 
+const chartInstances = new WeakMap();
+
 export async function updateChart(el, logData, selectedDay = null) {
   try {
     const logEntries = logData.split(/\r\n|\n/).filter((entry) => entry !== "");
@@ -78,7 +80,7 @@ export async function updateChart(el, logData, selectedDay = null) {
 
     const ctx = el.getContext("2d");
 
-    let chartInstance = el.chartInstance;
+    let chartInstance = chartInstances.get(el);
     if (!chartInstance) {
       chartInstance = new Chart(ctx, {
         type: "line",
@@ -130,7 +132,7 @@ export async function updateChart(el, logData, selectedDay = null) {
           },
         },
       });
-      el.chartInstance = chartInstance;
+      chartInstances.set(el, chartInstance);
     } else {
       chartInstance.data.labels = labels;
       chartInstance.data.datasets[0].data = averageData;
@@ -143,7 +145,7 @@ export async function updateChart(el, logData, selectedDay = null) {
       chartInstance.update();
     }
   } catch (error) {
-    // 忽略错误
+    console.debug('[updateChart] Chart render error:', error.message);
   }
 }
 
@@ -165,7 +167,7 @@ function parseLogEntry(entry) {
                typeof data.responseTime === 'number' ? data.responseTime : null
     };
   } catch (e) {
-    // 忽略错误
+    console.debug('[parseLogEntry] Parse error:', e.message);
     return null;
   }
 }

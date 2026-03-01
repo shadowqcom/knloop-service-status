@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -27,6 +28,9 @@ type Config struct {
 	ReloadReportsTime float64       `json:"reloadReportstime"`
 	Webhook           WebhookConfig `json:"webhook"`
 	Services          []Service     `json:"services"`
+	MaxRetries        int           `json:"maxRetries"`
+	RetryDelayMs      int           `json:"retryDelayMs"`
+	RequestTimeoutMs  int           `json:"requestTimeoutMs"`
 }
 
 type Service struct {
@@ -35,13 +39,13 @@ type Service struct {
 }
 
 type CheckResult struct {
-	Key      string
-	URL      string
-	Source   string
-	Success  bool
-	Latency  int64
+	Key       string
+	URL       string
+	Source    string
+	Success   bool
+	Latency   int64
 	Timestamp time.Time
-	Error    error
+	Error     error
 }
 
 type ServiceCheckResult struct {
@@ -63,13 +67,18 @@ func toNotifierResult(r ServiceCheckResult) notifier.CheckResult {
 	}
 }
 
-const (
-	MaxRetries     = 3
-	RetryDelay     = 5 * time.Second
-	RequestTimeout = 7 * time.Second
-)
+var configPath = flag.String("config", "", "Path to config file (default: ../src/config.json)")
+
+var defaultConfig = Config{
+	MaxRetries:       3,
+	RetryDelayMs:     5000,
+	RequestTimeoutMs: 7000,
+	MaxLogLines:      10500,
+}
 
 func main() {
+	flag.Parse()
+
 	loc, err := time.LoadLocation("Asia/Shanghai")
 	if err != nil {
 		log.Printf("Warning: Failed to load timezone: %v, using UTC", err)
@@ -93,7 +102,7 @@ func main() {
 		wg.Add(1)
 		go func(s Service) {
 			defer wg.Done()
-			result := checkService(s)
+			result := checkService(s, config)
 			results <- result
 		}(service)
 	}
@@ -109,10 +118,12 @@ func main() {
 
 		for _, r := range result.Results {
 			statusStr := "failure"
-			if r.Success {
+			var latencyPtr *int64
+			if r.Success && r.Latency <= int64(config.RequestTimeoutMs) {
 				statusStr = "success"
+				latencyPtr = &r.Latency
 			}
-			if err := logger.WriteLog(result.Key, r.Timestamp, statusStr, r.Latency, config.MaxLogLines); err != nil {
+			if err := logger.WriteLog(result.Key, r.Timestamp, statusStr, latencyPtr, config.MaxLogLines); err != nil {
 				log.Printf("Failed to write log for %s (%s): %v", result.Key, r.Source, err)
 			}
 		}
@@ -144,19 +155,31 @@ func main() {
 }
 
 func loadConfig() (*Config, error) {
-	configPath := filepath.Join("..", "src", "config.json")
-	data, err := os.ReadFile(configPath)
+	cfgPath := *configPath
+	if cfgPath == "" {
+		cfgPath = filepath.Join("..", "src", "config.json")
+	}
+	data, err := os.ReadFile(cfgPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
 
-	var config Config
+	config := defaultConfig
 	if err := json.Unmarshal(data, &config); err != nil {
 		return nil, fmt.Errorf("failed to parse config: %w", err)
 	}
 
 	if config.MaxLogLines <= 0 {
 		config.MaxLogLines = 10500
+	}
+	if config.MaxRetries <= 0 {
+		config.MaxRetries = 3
+	}
+	if config.RetryDelayMs <= 0 {
+		config.RetryDelayMs = 5000
+	}
+	if config.RequestTimeoutMs <= 0 {
+		config.RequestTimeoutMs = 7000
 	}
 
 	return &config, nil
@@ -172,12 +195,14 @@ func ensureDirectories() error {
 	return nil
 }
 
-func checkService(service Service) ServiceCheckResult {
+func checkService(service Service, config *Config) ServiceCheckResult {
 	timestamp := time.Now()
-	checkResults := checker.CheckURLAll(service.URL, RequestTimeout)
+	requestTimeout := time.Duration(config.RequestTimeoutMs) * time.Millisecond
+	checkResults := checker.CheckURLAll(service.URL, requestTimeout)
 
 	successCount := 0
 	var totalLatency int64 = 0
+	var maxFailedLatency int64 = 0
 
 	detailedResults := make([]CheckResult, len(checkResults))
 	for i, r := range checkResults {
@@ -193,14 +218,19 @@ func checkService(service Service) ServiceCheckResult {
 		if r.Success {
 			successCount++
 			totalLatency += r.Latency
+		} else if r.Latency > maxFailedLatency {
+			maxFailedLatency = r.Latency
 		}
 	}
 
 	status := "failure"
-	var avgLatency int64 = 7000
+	var avgLatency int64 = int64(config.RequestTimeoutMs)
+
 	if successCount >= 3 {
 		status = "success"
 		avgLatency = totalLatency / int64(successCount)
+	} else if maxFailedLatency > 0 {
+		avgLatency = maxFailedLatency
 	}
 
 	return ServiceCheckResult{

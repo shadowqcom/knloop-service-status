@@ -147,7 +147,7 @@
       
       <template x-if="loading && services.length === 0">
         <div class="divide-y divide-gray-100">
-          <template x-for="i in 3" :key="i">
+          <template x-for="i in skeletonCount" :key="i">
             <div class="p-6">
               <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2">

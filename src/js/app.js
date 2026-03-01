@@ -8,11 +8,13 @@ import { handleError, getErrorMessage } from './errorHandler.js';
 let reloadReportsdata = getConfig().reloadReportsdata;
 let reloadReportstime = getConfig().reloadReportstime;
 let maxDays = getConfig().maxDays;
+let serviceCount = getConfig().services?.length || 3;
 
 onConfigLoaded(config => {
   reloadReportsdata = config.reloadReportsdata;
   reloadReportstime = config.reloadReportstime;
   maxDays = config.maxDays;
+  serviceCount = config.services?.length || 3;
 });
 
 window.statusApp = function() {
@@ -30,9 +32,11 @@ window.statusApp = function() {
     nextReloadCountdown: 0,
     countdownInterval: null,
     countdownDisplay: '0:00',
+    skeletonCount: serviceCount,
 
     async init() {
       await loadConfig();
+      this.skeletonCount = serviceCount;
       await this.loadAllData();
       this.setupScrollListener();
       this.setupAutoReload();
@@ -59,18 +63,15 @@ window.statusApp = function() {
     },
 
     scrollToRight() {
-      setTimeout(() => {
-        const isMobile = window.innerWidth < 768;
-        if (!isMobile) return;
-        
+      const isMobile = window.innerWidth < 768;
+      if (!isMobile) return;
+      
+      requestAnimationFrame(() => {
         const containers = document.querySelectorAll('[x-ref="statusContainer"]');
         containers.forEach(container => {
           container.scrollLeft = container.scrollWidth;
         });
-      }, 100);
-    },
-
-    onScroll(event) {
+      });
     },
 
     calculateOverallStatus() {
@@ -363,11 +364,11 @@ window.statusApp = function() {
       }
     },
 
-    getStatusBlockWidth() {
+    getStatusLayout() {
       const isMobile = window.innerWidth < 768;
       
       if (isMobile) {
-        return 12;
+        return { width: 12, gap: 2 };
       }
       
       const container = document.querySelector('[x-ref="statusContainer"]');
@@ -384,14 +385,18 @@ window.statusApp = function() {
       
       const effectiveMaxDays = Math.min(maxDays, 60);
       
+      if (maxDays >= 60) {
+        const defaultGap = 2;
+        const defaultTotalGaps = (60 - 1) * defaultGap;
+        const defaultAvailableWidth = containerWidth - defaultTotalGaps;
+        const defaultBlockWidth = defaultAvailableWidth / 60;
+        return { width: Math.max(defaultBlockWidth, 3), gap: 2 };
+      }
+      
       const defaultGap = 2;
       const defaultTotalGaps = (60 - 1) * defaultGap;
       const defaultAvailableWidth = containerWidth - defaultTotalGaps;
       const defaultBlockWidth = defaultAvailableWidth / 60;
-      
-      if (maxDays >= 60) {
-        return Math.max(defaultBlockWidth, 3);
-      }
       
       const minBlockWidth = Math.max(defaultBlockWidth, 3);
       const totalBlockWidth = minBlockWidth * effectiveMaxDays;
@@ -404,60 +409,25 @@ window.statusApp = function() {
       const newAvailableWidth = containerWidth - newTotalGaps;
       const newBlockWidth = newAvailableWidth / effectiveMaxDays;
       
-      return Math.max(newBlockWidth, 3);
+      return { width: Math.max(newBlockWidth, 3), gap: newGap };
+    },
+
+    getStatusBlockWidth() {
+      return this.getStatusLayout().width;
     },
 
     getStatusBlockStyle() {
       const isMobile = window.innerWidth < 768;
-      const width = this.getStatusBlockWidth();
+      const { width } = this.getStatusLayout();
       
       if (isMobile) {
         return `width: ${width}px; min-width: ${width}px;`;
-      } else {
-        return `width: ${width}px;`;
       }
-    },
-
-    getStatusBlockGap() {
-      const isMobile = window.innerWidth < 768;
-      
-      if (isMobile) {
-        return 2;
-      }
-      
-      const container = document.querySelector('[x-ref="statusContainer"]');
-      let containerWidth;
-      
-      if (container && container.clientWidth > 0) {
-        containerWidth = container.clientWidth;
-      } else {
-        const maxContainerWidth = 896;
-        const padding = 48;
-        const windowWidth = window.innerWidth;
-        containerWidth = Math.min(windowWidth - padding, maxContainerWidth - 48);
-      }
-      
-      const effectiveMaxDays = Math.min(maxDays, 60);
-      
-      if (maxDays >= 60) {
-        return 2;
-      }
-      
-      const defaultGap = 2;
-      const defaultTotalGaps = (60 - 1) * defaultGap;
-      const defaultAvailableWidth = containerWidth - defaultTotalGaps;
-      const defaultBlockWidth = defaultAvailableWidth / 60;
-      
-      const minBlockWidth = Math.max(defaultBlockWidth, 3);
-      const totalBlockWidth = minBlockWidth * effectiveMaxDays;
-      const remainingWidth = containerWidth - totalBlockWidth;
-      
-      const maxGap = Math.floor(remainingWidth / (effectiveMaxDays - 1 || 1));
-      return Math.min(maxGap, 8);
+      return `width: ${width}px;`;
     },
 
     getStatusContainerStyle() {
-      const gap = this.getStatusBlockGap();
+      const { gap } = this.getStatusLayout();
       return `gap: ${gap}px;`;
     }
   };
