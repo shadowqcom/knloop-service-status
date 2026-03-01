@@ -39,7 +39,7 @@ export function getCacheStats() {
   };
 }
 
-async function fetchLogContent(key) {
+async function fetchLogContent(key, useCache = true) {
   const localUrl = "./logs/" + key + "_report.log";
   const remoteUrl = logspath + "/" + key + "_report.log";
 
@@ -47,44 +47,19 @@ async function fetchLogContent(key) {
                       window.location.hostname === '127.0.0.1';
 
   const urls = isLocalhost ? [localUrl, remoteUrl] : [remoteUrl, localUrl];
+  const cacheOption = useCache ? 'default' : 'no-cache';
 
   let lastError = null;
   
   for (const url of urls) {
     try {
-      const response = await fetch(url, { cache: 'default' });
+      const response = await fetch(url, { cache: cacheOption });
       if (response.ok) {
         return await response.text();
       }
     } catch (error) {
       lastError = error;
       handleError(error, `fetchLogContent:${url}`);
-    }
-  }
-
-  throw new Error(`Failed to fetch logs for ${key} from all sources: ${lastError?.message || 'unknown error'}`);
-}
-
-async function fetchLogContentNoCache(key) {
-  const localUrl = "./logs/" + key + "_report.log";
-  const remoteUrl = logspath + "/" + key + "_report.log";
-
-  const isLocalhost = window.location.hostname === 'localhost' || 
-                      window.location.hostname === '127.0.0.1';
-
-  const urls = isLocalhost ? [localUrl, remoteUrl] : [remoteUrl, localUrl];
-
-  let lastError = null;
-  
-  for (const url of urls) {
-    try {
-      const response = await fetch(url, { cache: 'no-cache' });
-      if (response.ok) {
-        return await response.text();
-      }
-    } catch (error) {
-      lastError = error;
-      handleError(error, `fetchLogContentNoCache:${url}`);
     }
   }
 
@@ -132,6 +107,7 @@ function extractLatestTime(services) {
           times.push(data.time);
         }
       } catch (e) {
+        console.debug('[extractLatestTime] Parse error:', e.message);
       }
     }
   }
@@ -165,9 +141,7 @@ export async function loadAllLogData(forceRefresh = false) {
       
       const fetchPromises = configLines.map(async (line) => {
         const [key, url] = line.split('=');
-        const logText = forceRefresh 
-          ? await fetchLogContentNoCache(key) 
-          : await fetchLogContent(key);
+        const logText = await fetchLogContent(key, !forceRefresh);
         return parseServiceData(key, url, logText);
       });
       
@@ -195,7 +169,7 @@ export async function getLatestLogTime() {
   const randomLine = configLines[randomIndex];
   const [key] = randomLine.split('=');
   
-  const logText = await fetchLogContentNoCache(key);
+  const logText = await fetchLogContent(key, false);
   const lines = logText.split(/\r\n|\n/).filter(l => l.trim());
   
   return lines.length > 0 ? lines[lines.length - 1].split(',')[0] : null;

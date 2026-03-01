@@ -8,6 +8,9 @@
   "webhook": {
     "enabled": false
   },
+  "maxRetries": 3,
+  "retryDelayMs": 5000,
+  "requestTimeoutMs": 7000,
   "services": [
     {
       "key": "ShadowQ",

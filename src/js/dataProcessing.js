@@ -52,7 +52,7 @@ export function calculateServiceStats(logText) {
         }
       }
     } catch (e) {
-      // ignore parse errors
+      console.debug('[calculateServiceStats] Parse error:', e.message);
     }
   }
   
@@ -166,7 +166,7 @@ export function calculateAvgLatency(logText, targetDate = null) {
         }
       }
     } catch (e) {
-      // ignore parse errors
+      console.debug('[calculateAvgLatency] Parse error:', e.message);
     }
   }
   
@@ -206,7 +206,7 @@ export function parseLogData(logText) {
         dayData.failed++;
       }
     } catch (e) {
-      // 忽略错误
+      console.debug('[parseLogData] Parse error:', e.message);
     }
   }
   

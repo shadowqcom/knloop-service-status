@@ -12,10 +12,10 @@ import (
 type LogEntry struct {
 	Time    string `json:"time"`
 	Status  string `json:"status"`
-	Latency int64  `json:"latency"`
+	Latency *int64 `json:"latency"`
 }
 
-func WriteLog(key string, timestamp time.Time, status string, latency int64, maxLines int) error {
+func WriteLog(key string, timestamp time.Time, status string, latency *int64, maxLines int) error {
 	logDir := filepath.Join("..", "logs")
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		return fmt.Errorf("failed to create log directory: %w", err)
