@@ -1,0 +1,28 @@
+{
+  "maxDays": 60,
+  "maxHour": 12,
+  "maxLogLines": 10500,
+  "logspath": "https://raw.github.knloop.com/knloop-service-status/page/logs",
+  "reloadReportsdata": true,
+  "reloadReportstime": 2.5,
+  "webhook": {
+    "enabled": false
+  },
+  "maxRetries": 3,
+  "retryDelayMs": 5000,
+  "requestTimeoutMs": 7000,
+  "services": [
+    {
+      "key": "ShadowQ",
+      "url": "https://www.shadowq.com"
+    },
+    {
+      "key": "Mojoo",
+      "url": "https://mojoo.org"
+    },
+    {
+      "key": "Google",
+      "url": "https://www.google.com"
+    }
+  ]
+}
