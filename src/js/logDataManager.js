@@ -4,7 +4,7 @@ import { normalizeData, parseLogData, calculateAvgLatency, calculateServiceStats
 import { parseBeijingTime, formatDate } from './utils.js';
 import { handleError } from './errorHandler.js';
 
-let logspath = getConfig().logspath;
+let logspath = null;
 
 onConfigLoaded(config => {
   logspath = config.logspath;
@@ -41,7 +41,7 @@ export function getCacheStats() {
 
 async function fetchLogContent(key, useCache = true) {
   const localUrl = "./logs/" + key + "_report.log";
-  const remoteUrl = logspath + "/" + key + "_report.log";
+  const remoteUrl = (logspath || getConfig().logspath) + "/" + key + "_report.log";
 
   const isLocalhost = window.location.hostname === 'localhost' || 
                       window.location.hostname === '127.0.0.1';

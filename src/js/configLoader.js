@@ -1,17 +1,7 @@
 // 配置加载模块，确保config.json只被加载一次
 
-// 默认配置
-const defaultConfig = {
-  maxDays: 60,
-  maxHour: 12,
-  logspath: "https://raw.github.knloop.com/knloop-service-status/page/logs",
-  reloadReportsdata: true,
-  reloadReportstime: 2.5,
-  services: []
-};
-
 // 配置对象
-let config = { ...defaultConfig };
+let config = {};
 // 加载状态
 let isLoading = false;
 // 加载完成的回调函数
@@ -34,7 +24,7 @@ export async function loadConfig() {
       try {
         const response = await fetch('./src/config.json');
         const loadedConfig = await response.json();
-        config = { ...defaultConfig, ...loadedConfig };
+        config = loadedConfig;
       } catch (error) {
         // 忽略错误
       } finally {
