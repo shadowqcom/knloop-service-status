@@ -1,21 +1,9 @@
 import { loadAllLogData, clearCache, getLatestLogTime } from './logDataManager.js';
 import { calculateAvgLatency, calculateGlobalStats } from './dataProcessing.js';
 import { updateChart } from './timelapsechart.js';
-import { getConfig, onConfigLoaded, loadConfig } from './configLoader.js';
+import { getConfig, loadConfig } from './configLoader.js';
 import { STATUS_MAP, STATUS_COLOR_MAP, STATUS_BG_MAP } from './utils.js';
 import { handleError, getErrorMessage } from './errorHandler.js';
-
-let reloadReportsdata = getConfig().reloadReportsdata;
-let reloadReportstime = getConfig().reloadReportstime;
-let maxDays = getConfig().maxDays;
-let serviceCount = getConfig().services?.length || 3;
-
-onConfigLoaded(config => {
-  reloadReportsdata = config.reloadReportsdata;
-  reloadReportstime = config.reloadReportstime;
-  maxDays = config.maxDays;
-  serviceCount = config.services?.length || 3;
-});
 
 window.statusApp = function() {
   return {
@@ -32,11 +20,12 @@ window.statusApp = function() {
     nextReloadCountdown: 0,
     countdownInterval: null,
     countdownDisplay: '0:00',
-    skeletonCount: serviceCount,
+    skeletonCount: 3,
 
     async init() {
       await loadConfig();
-      this.skeletonCount = serviceCount;
+      const config = getConfig();
+      this.skeletonCount = config.services?.length || 3;
       await this.loadAllData();
       this.setupScrollListener();
       this.setupAutoReload();
@@ -149,14 +138,15 @@ window.statusApp = function() {
     },
 
     setupAutoReload() {
-      if (!reloadReportsdata) return;
+      const config = getConfig();
+      if (!config.reloadReportsdata) return;
       
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
         this.countdownInterval = null;
       }
       
-      const intervalSeconds = Math.floor(reloadReportstime * 60);
+      const intervalSeconds = Math.floor(config.reloadReportstime * 60);
       let startTime = this.lastUpdateTime;
       let lastTick = Date.now();
 
@@ -221,7 +211,8 @@ window.statusApp = function() {
           this.scrollToRight();
         });
         
-        const intervalSeconds = Math.floor(reloadReportstime * 60);
+        const config = getConfig();
+        const intervalSeconds = Math.floor(config.reloadReportstime * 60);
         this.nextReloadCountdown = intervalSeconds;
         this.updateCountdownDisplay();
       } catch (error) {
@@ -283,7 +274,7 @@ window.statusApp = function() {
         statusText = `${failure} 个服务故障`;
         statusClass = 'text-failure';
       } else if (partial > 0) {
-        statusText = `${partial} 个服务部分故障`;
+        statusText = `${partial} 个服务异常`;
         statusClass = 'text-partial';
       } else if (nodata === total) {
         statusText = '暂无监控数据';
@@ -318,7 +309,7 @@ window.statusApp = function() {
     },
 
     get checkInterval() {
-      return reloadReportstime;
+      return getConfig().reloadReportstime;
     },
 
     get statusIconHref() {
@@ -365,6 +356,7 @@ window.statusApp = function() {
     },
 
     getStatusLayout() {
+      const config = getConfig();
       const isMobile = window.innerWidth < 768;
       
       if (isMobile) {
@@ -383,9 +375,9 @@ window.statusApp = function() {
         containerWidth = Math.min(windowWidth - padding, maxContainerWidth - 48);
       }
       
-      const effectiveMaxDays = Math.min(maxDays, 60);
+      const effectiveMaxDays = Math.min(config.maxDays, 60);
       
-      if (maxDays >= 60) {
+      if (config.maxDays >= 60) {
         const defaultGap = 2;
         const defaultTotalGaps = (60 - 1) * defaultGap;
         const defaultAvailableWidth = containerWidth - defaultTotalGaps;

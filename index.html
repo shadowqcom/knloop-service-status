@@ -203,17 +203,17 @@
               </template>
             </div>
             
-            <div class="flex justify-between text-xs text-text-secondary mt-2 px-1">
-              <span class="flex items-center gap-2">
-                响应时间(ms)
-                <template x-if="service.selectedDay">
-                  <span class="flex items-center gap-1 text-partial">
-                    <span x-text="formatSelectedDay(service.selectedDay)"></span>
-                    <span @click="clearSelectedDay(service)" class="cursor-pointer hover:text-failure">✕</span>
-                  </span>
-                </template>
-              </span>
-              <span x-text="service.hoveredPoint ? formatPointInfo(service.hoveredPoint) : formatAvgLatency(service)"></span>
+            <div class="flex flex-col text-xs text-text-secondary mt-2 px-1 gap-1">
+              <div class="flex justify-between items-center">
+                <span>响应时间(ms)</span>
+                <span x-text="service.hoveredPoint ? formatPointInfo(service.hoveredPoint) : formatAvgLatency(service)"></span>
+              </div>
+              <template x-if="service.selectedDay">
+                <span class="flex items-center gap-1 text-partial">
+                  <span x-text="formatSelectedDay(service.selectedDay)"></span>
+                  <span @click="clearSelectedDay(service)" class="cursor-pointer hover:text-failure text-base px-1">✕</span>
+                </span>
+              </template>
             </div>
             
             <div class="h-48 mt-2">
@@ -240,7 +240,7 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div class="flex items-center gap-4">
             <button @click="manualReload()" 
-                    class="w-16 h-16 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
+                    class="w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
                     :disabled="loading"
                     :style="`background-color: rgba(${overallStatus === 'success' ? '0, 223, 162' : overallStatus === 'failure' ? '255, 0, 96' : overallStatus === 'partial' ? '255, 184, 76' : '221, 221, 221'}, 0.15);`">
               <svg class="w-8 h-8 transition-transform" 
@@ -251,9 +251,10 @@
             </button>
             <div>
               <p class="text-xl font-medium text-text-primary" x-text="serviceSummary.statusText"></p>
-              <p class="text-sm text-text-secondary">
-                监控 <span class="font-medium text-text-primary" x-text="serviceSummary.total"></span> 个服务 · 
-                最后更新: <span x-text="lastUpdateTime"></span>
+              <p class="text-sm text-text-secondary leading-relaxed">
+                <span class="block sm:inline">监控 <span class="font-medium text-text-primary" x-text="serviceSummary.total"></span> 个服务</span>
+                <span class="hidden sm:inline"> · </span>
+                <span class="block sm:inline">最后更新: <span x-text="lastUpdateTime"></span></span>
               </p>
             </div>
           </div>
@@ -267,7 +268,7 @@
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" style="background-color: rgba(255, 184, 76, 0.1);">
               <div class="w-2 h-2 rounded-full" style="background-color: #ffb84c;"></div>
               <span class="font-bold text-base" style="color: #ffb84c;" x-text="serviceSummary.partial"></span>
-              <span class="text-text-secondary">部分故障</span>
+              <span class="text-text-secondary">异常</span>
             </div>
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" style="background-color: rgba(255, 0, 96, 0.1);">
               <div class="w-2 h-2 rounded-full" style="background-color: #ff0060;"></div>
@@ -301,7 +302,7 @@
         </div>
       </div>
       
-      <div class="p-4 bg-gray-50 border-t border-gray-100">
+      <div class="p-4 pl-7 md:pl-10 md:pr-10 bg-gray-50 border-t border-gray-100">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm">
           <div class="flex items-center gap-2 min-h-5">
             <div class="w-4 h-4 flex items-center justify-center flex-shrink-0">
