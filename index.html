@@ -99,6 +99,10 @@
       }
     }
   </style>
+  
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
 </head>
 
 <body class="min-w-[300px] min-h-screen bg-bg-primary font-sans flex flex-col items-center" 
@@ -132,17 +136,25 @@
     </section>
 
     <section class="bg-bg-secondary rounded-lg shadow-lg overflow-hidden">
-      <div x-show="loadError" class="p-6 text-center">
-        <div class="text-failure mb-2">
-          <svg class="w-12 h-12 mx-auto">
-            <use href="./public/icons.svg#icon-failure" />
-          </svg>
+      <div x-cloak x-show="loadError && !loading" class="p-12 text-center">
+        <div class="flex flex-col items-center gap-4">
+          <div class="w-20 h-20 rounded-full flex items-center justify-center" style="background-color: rgba(221, 221, 221, 0.2);">
+            <svg class="w-10 h-10 text-nodata">
+              <use href="./public/icons.svg#icon-nodata" />
+            </svg>
+          </div>
+          <div class="flex flex-col items-center gap-2">
+            <p class="text-lg text-text-primary">暂无检测数据</p>
+            <p class="text-sm text-text-secondary">请检查网络连接或稍后重试</p>
+          </div>
+          <button @click="manualReload()" 
+                  class="mt-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-text-primary transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4">
+              <use href="./public/icons.svg#icon-success" />
+            </svg>
+            重新加载
+          </button>
         </div>
-        <p class="text-text-secondary" x-text="getErrorMessage()"></p>
-        <button @click="manualReload()" 
-                class="mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors">
-          重新加载
-        </button>
       </div>
       
       <template x-if="loading && services.length === 0">

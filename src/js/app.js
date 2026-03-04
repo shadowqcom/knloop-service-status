@@ -198,6 +198,7 @@ window.statusApp = function() {
       if (this.loading) return;
       
       clearCache();
+      this.loadError = null;
       this.loading = true;
       
       try {

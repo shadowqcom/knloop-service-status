@@ -32,8 +32,8 @@ export async function updateChart(el, logData, selectedDay = null) {
     });
 
     const labels = [];
-    const averageData = [];
     const medianData = [];
+    const p95Data = [];
 
     if (selectedDay) {
       const selectedDate = new Date(selectedDay);
@@ -46,12 +46,12 @@ export async function updateChart(el, logData, selectedDay = null) {
         const hourKey = formatHourKey(hourDate);
         const hourlyDatum = hourlyData.get(hourKey) || { total: 0, count: 0, values: [] };
 
-        const average = hourlyDatum.count > 0 ? hourlyDatum.total / hourlyDatum.count : null;
         const median = hourlyDatum.values.length > 0 ? calculateMedian(hourlyDatum.values) : null;
+        const p95 = hourlyDatum.values.length > 0 ? calculatePercentile(hourlyDatum.values, 95) : null;
 
         labels.push(`${h.toString().padStart(2, '0')}:00`);
-        averageData.push(average);
         medianData.push(median);
+        p95Data.push(p95);
       }
     } else {
       const endHour = new Date(now);
@@ -62,17 +62,17 @@ export async function updateChart(el, logData, selectedDay = null) {
         const hourKey = formatHourKey(currentHour);
         const hourlyDatum = hourlyData.get(hourKey) || { total: 0, count: 0, values: [] };
 
-        const average = hourlyDatum.count > 0 ? hourlyDatum.total / hourlyDatum.count : null;
         const median = hourlyDatum.values.length > 0 ? calculateMedian(hourlyDatum.values) : null;
+        const p95 = hourlyDatum.values.length > 0 ? calculatePercentile(hourlyDatum.values, 95) : null;
 
         const hours = currentHour.getHours();
         labels.unshift(`${hours.toString().padStart(2, '0')}:00`);
-        averageData.unshift(average);
         medianData.unshift(median);
+        p95Data.unshift(p95);
       }
     }
 
-    const combinedData = averageData.concat(medianData).filter((value) => value !== null && !isNaN(value));
+    const combinedData = medianData.concat(p95Data).filter((value) => value !== null && !isNaN(value));
     let yMaxConfig = {};
     if (combinedData.length === 0 || Math.max(...combinedData) <= 14) {
       yMaxConfig.max = 15;
@@ -88,8 +88,8 @@ export async function updateChart(el, logData, selectedDay = null) {
           labels,
           datasets: [
             {
-              label: "平均值",
-              data: averageData,
+              label: "中位数",
+              data: medianData,
               fill: false,
               borderColor: "#3b82f6",
               tension: 0.4,
@@ -99,10 +99,10 @@ export async function updateChart(el, logData, selectedDay = null) {
               pointHoverRadius: 6,
             },
             {
-              label: "中位数",
-              data: medianData,
+              label: "P95",
+              data: p95Data,
               fill: false,
-              borderColor: "#8b5cf6",
+              borderColor: "#f59e0b",
               tension: 0.4,
               segment: { borderDash: (ctx) => skipped(ctx, [4, 6]) },
               spanGaps: true,
@@ -135,8 +135,8 @@ export async function updateChart(el, logData, selectedDay = null) {
       chartInstances.set(el, chartInstance);
     } else {
       chartInstance.data.labels = labels;
-      chartInstance.data.datasets[0].data = averageData;
-      chartInstance.data.datasets[1].data = medianData;
+      chartInstance.data.datasets[0].data = medianData;
+      chartInstance.data.datasets[1].data = p95Data;
       chartInstance.options.scales.y = {
         title: { display: false },
         beginAtZero: true,
@@ -180,6 +180,19 @@ function calculateMedian(values) {
   } else {
     return sorted[middle];
   }
+}
+
+function calculatePercentile(values, percentile) {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = (percentile / 100) * (sorted.length - 1);
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  if (lower === upper) {
+    return sorted[lower];
+  }
+  const weight = index - lower;
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
 }
 
 function skipped(ctx, value) {
