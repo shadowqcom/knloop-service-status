@@ -40,7 +40,7 @@ export function debounce(fn, delay) {
 export const STATUS_MAP = {
   success: '正常',
   failure: '故障',
-  partial: '部分故障',
+  partial: '异常',
   nodata: '无数据'
 };
 
