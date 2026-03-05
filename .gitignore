@@ -13,3 +13,4 @@ node_modules/
 CNAME
 package-lock.json
 package.json
+generate-logs.js

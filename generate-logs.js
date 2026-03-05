@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 const services = [
   { key: 'ShadowQ', url: 'https://www.shadowq.com' },
@@ -44,7 +44,7 @@ function generateLogEntry(date, status, serviceKey) {
 
 function generateLogsForService(service) {
   const logs = [];
-  const endDate = new Date(2026, 2, 4);
+  const endDate = new Date();
   endDate.setHours(23, 59, 59, 999);
   
   const failureDays = new Set();
@@ -64,12 +64,13 @@ function generateLogsForService(service) {
     }
   }
   
-  console.log(`  Failure days (0-indexed from Jan 4): [${Array.from(failureDays).sort((a,b) => a-b).join(', ')}]`);
-  console.log(`  Partial days (0-indexed from Jan 4): [${Array.from(partialDays).sort((a,b) => a-b).join(', ')}]`);
+  console.log(`  Failure days (0-indexed): [${Array.from(failureDays).sort((a,b) => a-b).join(', ')}]`);
+  console.log(`  Partial days (0-indexed): [${Array.from(partialDays).sort((a,b) => a-b).join(', ')}]`);
   
   for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
-    const dayDate = new Date(2026, 0, 4);
-    dayDate.setDate(dayDate.getDate() + dayIndex);
+    const dayDate = new Date();
+    dayDate.setDate(dayDate.getDate() - (TOTAL_DAYS - dayIndex - 1));
+    dayDate.setHours(0, 0, 0, 0);
     
     let dayStatus;
     if (failureDays.has(dayIndex)) {
@@ -115,24 +116,28 @@ function generateLogsForService(service) {
 }
 
 function main() {
-  const logsDir = path.join(__dirname, 'logs');
+  const logsDir = join(process.cwd(), 'logs');
   
-  if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir, { recursive: true });
+  if (!existsSync(logsDir)) {
+    mkdirSync(logsDir, { recursive: true });
   }
   
   for (const service of services) {
     console.log(`Generating logs for ${service.key}...`);
     const logs = generateLogsForService(service);
-    const filePath = path.join(logsDir, `${service.key}_report.log`);
-    fs.writeFileSync(filePath, logs);
+    const filePath = join(logsDir, `${service.key}_report.log`);
+    writeFileSync(filePath, logs);
     const lineCount = logs.split('\n').length;
     console.log(`  Generated ${lineCount} entries for ${service.key}`);
   }
   
   console.log('\nDone!');
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - (TOTAL_DAYS - 1));
+  
   console.log('Summary:');
-  console.log(`  - Date range: 2026-01-04 to 2026-03-04`);
+  console.log(`  - Date range: ${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')} to ${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`);
   console.log(`  - Total days: ${TOTAL_DAYS}`);
   console.log(`  - Entries per hour: ${ENTRIES_PER_HOUR}`);
   console.log(`  - Entries per day: ${24 * ENTRIES_PER_HOUR}`);
