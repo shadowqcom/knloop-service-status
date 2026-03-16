@@ -8853,3 +8853,8 @@
 {"time":"2026-03-16 15:44:05","status":"success","latency":1986}
 {"time":"2026-03-16 15:44:05","status":"success","latency":2775}
 {"time":"2026-03-16 15:44:05","status":"success","latency":5320}
+{"time":"2026-03-16 16:42:55","status":"success","latency":147}
+{"time":"2026-03-16 16:42:55","status":"success","latency":50}
+{"time":"2026-03-16 16:42:55","status":"failure","latency":null}
+{"time":"2026-03-16 16:42:55","status":"failure","latency":null}
+{"time":"2026-03-16 16:42:55","status":"success","latency":5227}
