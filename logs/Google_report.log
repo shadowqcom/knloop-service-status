@@ -1,8 +1,3 @@
-{"time":"2026-02-07 00:00:49","status":"success","latency":26}
-{"time":"2026-02-07 00:02:17","status":"success","latency":36}
-{"time":"2026-02-07 00:22:36","status":"success","latency":89}
-{"time":"2026-02-07 00:32:56","status":"success","latency":95}
-{"time":"2026-02-07 00:38:35","status":"success","latency":91}
 {"time":"2026-02-07 01:00:44","status":"success","latency":26}
 {"time":"2026-02-07 01:16:59","status":"success","latency":93}
 {"time":"2026-02-07 01:20:33","status":"success","latency":70}
@@ -10498,3 +10493,8 @@
 {"time":"2026-05-17 13:49:35","status":"success","latency":1506}
 {"time":"2026-05-17 13:49:35","status":"success","latency":2266}
 {"time":"2026-05-17 13:49:35","status":"failure","latency":null}
+{"time":"2026-05-17 16:07:10","status":"success","latency":85}
+{"time":"2026-05-17 16:07:10","status":"success","latency":56}
+{"time":"2026-05-17 16:07:10","status":"success","latency":1727}
+{"time":"2026-05-17 16:07:10","status":"success","latency":2531}
+{"time":"2026-05-17 16:07:10","status":"failure","latency":null}
