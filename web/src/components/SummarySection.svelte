@@ -29,10 +29,10 @@
   }[overallStatus]);
 
   function formatCompactCount(value: number): string {
-    if (value >= 10000) {
-      const tenThousands = value / 10000;
-      const digits = tenThousands >= 10 ? 0 : 1;
-      return tenThousands.toFixed(digits).replace(/\.0$/, '') + '万';
+    if (value >= 1000) {
+      const thousands = value / 1000;
+      const digits = thousands >= 100 ? 0 : 1;
+      return thousands.toFixed(digits).replace(/\.0$/, '') + 'k';
     }
     return value.toLocaleString('zh-CN');
   }
