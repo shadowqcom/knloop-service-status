@@ -24,13 +24,13 @@ export async function probeService(
 ): Promise<ProbeOutcome> {
   const fetchImpl = deps.fetchImpl ?? fetch;
   const globalpingPromise = cfg.globalping.enabled
-    ? probeGlobalping(service.url, cfg.globalping, deps.token, fetchImpl)
+    ? probeGlobalping(service.url, cfg.globalping, deps.token, fetchImpl, service.acceptedStatusCodes)
     : Promise.resolve<ProviderProbe>({ name: 'globalping', ok: false, latencyMs: null, apiError: true, error: 'disabled' });
   const xxapiPromise = cfg.xxapi.enabled
     ? probeXxapi(service.url, fetchImpl)
     : Promise.resolve<ProviderProbe>({ name: 'xxapi', ok: false, latencyMs: null, apiError: true, error: 'disabled' });
   const directPromise = cfg.direct.enabled
-    ? probeDirect(service.url, cfg.direct.timeoutMs, fetchImpl)
+    ? probeDirect(service.url, cfg.direct.timeoutMs, fetchImpl, service.acceptedStatusCodes)
     : Promise.resolve<ProviderProbe>({ name: 'direct', ok: false, latencyMs: null, apiError: true, error: 'disabled' });
 
   const [globalping, xxapi, direct] = await Promise.all([globalpingPromise, xxapiPromise, directPromise]);

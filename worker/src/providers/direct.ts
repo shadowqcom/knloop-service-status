@@ -3,7 +3,12 @@ import { errorText, round1, truncate } from '../util';
 
 type FetchLike = typeof fetch;
 
-export async function probeDirect(targetUrl: string, timeoutMs: number, fetchImpl: FetchLike = fetch): Promise<ProviderProbe> {
+export async function probeDirect(
+  targetUrl: string,
+  timeoutMs: number,
+  fetchImpl: FetchLike = fetch,
+  acceptedStatusCodes?: number[],
+): Promise<ProviderProbe> {
   const name = 'direct';
   try {
     const start = performance.now();
@@ -15,7 +20,9 @@ export async function probeDirect(targetUrl: string, timeoutMs: number, fetchImp
     });
     const latency = round1(performance.now() - start);
     try { await response.body?.cancel(); } catch {}
-    const ok = response.status >= 200 && response.status < 400;
+    const ok = acceptedStatusCodes && acceptedStatusCodes.length > 0
+      ? acceptedStatusCodes.includes(response.status)
+      : response.status >= 200 && response.status < 400;
     return {
       name,
       ok,

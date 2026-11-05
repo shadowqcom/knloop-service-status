@@ -1,7 +1,7 @@
 # knloop-status Worker（TypeScript）
 
 Cloudflare Worker 同时承担：
-- 每 10 分钟 Cron 检测（Globalping 主 + xxapi 并行 + uapis 预算内兜底 + 直连降级）；
+- 每 5 分钟 Cron 检测（Globalping 主 + xxapi 并行 + uapis 预算内兜底 + 直连降级）；
 - KV 存储 60 天状态（`state:v1` / `status:v2`）；
 - Hono API：`GET /api/status`、`GET /data/status.json`、`GET /healthz`；
 - 托管 `web/` 构建出的 Svelte 页面（Static Assets）。
@@ -51,7 +51,7 @@ Invoke-RestMethod -Method Post -Uri 'https://<你的域名>/api/admin/run' -Head
 ## 配置
 
 服务列表与 provider 开关在 `src/config.ts`：
-- `globalping.locations`：默认 CN + US 各 1 个 probe，3 服务 × 2 × 6 次/小时 = 36 probes/小时（匿名额度 250/小时）；
+- `globalping.locations`：默认 CN + US 各 1 个 probe，4 个服务 × 2 地区 × 12 次/小时 = 96 probes/小时（匿名额度 250/小时）；
 - `xxapi.enabled`：与 Globalping 并行，作为 ping 可达性佐证；
 - `uapis.dailyCap`：默认 30 次/天（uapis 免费额度 1500/月），只在 Globalping 异常/失败时调用；
 - `direct`：Worker 直连降级；
@@ -59,7 +59,7 @@ Invoke-RestMethod -Method Post -Uri 'https://<你的域名>/api/admin/run' -Head
 
 ## 数据/额度
 
-- KV 写入：每轮 `state` + `status` 两个 key，10 分钟一轮 = 288 写/天（免费 1000/天）；
+- KV 写入：每轮 `state` + `status` 两个 key，5 分钟一轮 = 576 写/天（免费 1000/天）；
 - 读取：页面每 60 秒读 `/api/status`，低流量下远低于 100,000 读/天；流量大时再上 R2/CDN；
 - CPU：每轮只有少量 JSON 解析/聚合，远低于免费版 10ms；
 - Globalping 失败/限流只降级，不会把服务判成 failure；uapis 只做兜底。

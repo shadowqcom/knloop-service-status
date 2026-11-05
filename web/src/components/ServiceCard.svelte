@@ -4,7 +4,6 @@
     STATUS_TEXT_CLASS,
     formatAvgLatencyText,
     formatStatusPoint,
-    formatUptime,
     selectHourlyWindow
   } from '../lib/status';
   import StatusGrid from './StatusGrid.svelte';
@@ -22,6 +21,8 @@
 
   const chartPayload = $derived(selectHourlyWindow(service, selectedDay, { now: Date.now(), maxHour: 12 }));
   const statusClass = $derived(STATUS_TEXT_CLASS[service.status]);
+  const successRateText = $derived(service.successRate === null ? '--' : service.successRate.toFixed(2));
+  const errorRateText = $derived(service.errorRate === null ? '--' : service.errorRate.toFixed(2));
 
   function handleSelect(point: DailyPoint): void {
     onSelectDay(selectedDay === point.date ? null : point.date);
@@ -41,7 +42,7 @@
         class="truncate text-lg font-normal text-text-primary transition-colors hover:text-success"
       >{service.title}</a>
     </div>
-    <span class="text-xs text-text-secondary">60天内可用率 {formatUptime(service)}%</span>
+    <span class="text-xs text-text-secondary" data-testid="service-rates">成功率 {successRateText}% · 错误率 {errorRateText}%</span>
   </div>
 
   <StatusGrid

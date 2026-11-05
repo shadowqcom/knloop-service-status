@@ -14,7 +14,7 @@
     { "binding": "STATUS_KV" }
   ],
   "triggers": {
-    "crons": ["*/10 * * * *"]
+    "crons": ["*/5 * * * *"]
   },
   "vars": {
     "STATUS_RETENTION_DAYS": "60"

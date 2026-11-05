@@ -111,6 +111,12 @@ describe('direct provider', () => {
     expect(probe.latencyMs).not.toBeNull();
   });
 
+  it('accepts a configured 4xx status', async () => {
+    const fetchImpl = (async () => new Response(null, { status: 404 })) as typeof fetch;
+    const probe = await probeDirect('https://api.knloop.com', 1_000, fetchImpl, [200, 404]);
+    expect(probe.ok).toBe(true);
+  });
+
   it('fails on 5xx', async () => {
     const fetchImpl = (async () => new Response('err', { status: 503 })) as typeof fetch;
     const probe = await probeDirect('https://www.shadowq.com', 1_000, fetchImpl);

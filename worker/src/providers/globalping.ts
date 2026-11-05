@@ -27,6 +27,7 @@ export async function probeGlobalping(
   cfg: GlobalpingConfig,
   token?: string,
   fetchImpl: FetchLike = fetch,
+  acceptedStatusCodes?: number[],
 ): Promise<ProviderProbe> {
   const name = 'globalping';
   try {
@@ -77,7 +78,7 @@ export async function probeGlobalping(
       if (measurement.status === 'finished') {
         const probes = measurement.results ?? [];
         if (probes.length === 0) return { name, ok: false, latencyMs: null, apiError: true, error: 'empty measurement results' };
-        return summarize(probes, cfg, created.probesCount ?? probes.length);
+        return summarize(probes, cfg, created.probesCount ?? probes.length, acceptedStatusCodes);
       }
       if (measurement.status && measurement.status !== 'in-progress') {
         return { name, ok: false, latencyMs: null, apiError: true, error: `measurement status ${measurement.status}` };
@@ -90,7 +91,7 @@ export async function probeGlobalping(
   }
 }
 
-function summarize(probes: GlobalpingProbeResponse[], cfg: GlobalpingConfig, total: number): ProviderProbe {
+function summarize(probes: GlobalpingProbeResponse[], cfg: GlobalpingConfig, total: number, acceptedStatusCodes?: number[]): ProviderProbe {
   const regions: RegionResult[] = [];
   const latencies: number[] = [];
   for (const probe of probes) {
@@ -113,7 +114,7 @@ function summarize(probes: GlobalpingProbeResponse[], cfg: GlobalpingConfig, tot
       continue;
     }
     const statusCode = result.statusCode ?? 0;
-    if (statusCode < 200 || statusCode >= 400) {
+    if (!isAcceptedStatus(statusCode, acceptedStatusCodes)) {
       regions.push({ country, city, ok: false, latencyMs: null, statusCode, error: `status ${statusCode}` });
       continue;
     }
@@ -135,4 +136,9 @@ function summarize(probes: GlobalpingProbeResponse[], cfg: GlobalpingConfig, tot
     detail: `${okCount}/${boundedTotal} probes ok`,
     regions,
   };
+}
+
+export function isAcceptedStatus(code: number, acceptedStatusCodes?: number[]): boolean {
+  if (acceptedStatusCodes && acceptedStatusCodes.length > 0) return acceptedStatusCodes.includes(code);
+  return code >= 200 && code < 400;
 }
