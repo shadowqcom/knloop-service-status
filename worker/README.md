@@ -37,6 +37,27 @@ Invoke-RestMethod 'http://127.0.0.1:8787/api/status'
 6. 在 Cloudflare 控制台给 Worker 绑定自定义域（例如 `status.example.com`），页面和 `/api/status` 同源；
 7. 确认 Cron Trigger 为 `*/10 * * * *`（免费 5 个 trigger 之内）。
 
+## 一次性填充 60 天测试数据
+
+仅用于上线前把页面填满（会覆盖当前 KV 里的 `state:v1` / `status:v2`）：
+
+1. Worker 设置运行时 Secret `ADMIN_TOKEN`；
+2. 调用：
+
+```powershell
+Invoke-RestMethod -Method Post `
+  -Uri 'https://<你的域名>/api/admin/seed?force=1' `
+  -Headers @{ Authorization = 'Bearer <ADMIN_TOKEN>' }
+```
+
+返回示例：
+
+```json
+{ "ok": true, "services": 4, "days": 60, "checks": 68328 }
+```
+
+数据写入后，正常的 5 分钟 Cron 会继续在今天的 `currentDay` 上追加真实检测；如果不再需要这个接口，移除 `ADMIN_TOKEN` 即可让它返回 404。
+
 ## 手动触发一次采集（可选）
 
 设置 secret `ADMIN_TOKEN` 后，可以手动触发一次采集（用于首次部署/排查，不影响 Cron）：
