@@ -21,7 +21,6 @@
   const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
   const FETCH_TIMEOUT_MS = 8000;
   const POLL_MS = DEFAULT_POLL_SECONDS * 1000;
-  const REFRESH_HINT = '自动刷新：每 ' + DEFAULT_POLL_SECONDS + ' 秒';
 
   let dashboard = $state<Dashboard | null>(null);
   let loading = $state(true);
@@ -49,7 +48,6 @@
     }
     return list;
   });
-  const dataSourceText = $derived(sourceLabel ? '数据源：' + sourceLabel : '');
 
   function readCache(): StatusSnapshot | null {
     try {
@@ -213,10 +211,7 @@
       summary={dashboard.summary}
       overallStatus={dashboard.overallStatus}
       lastUpdateText={dashboard.lastUpdateText}
-      {dataSourceText}
-      refreshHint={REFRESH_HINT}
       {refreshing}
-      lastFailureTime={dashboard.summary.lastFailureTime}
       onRefresh={() => void refresh()}
     />
   {/if}

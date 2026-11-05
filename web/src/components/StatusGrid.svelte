@@ -38,7 +38,7 @@
         data-status={point.status}
         title={formatStatusPoint(point)}
         aria-label={formatStatusPoint(point)}
-        class="h-10 w-full cursor-pointer rounded-[2px] transition-transform duration-150 hover:scale-y-125 {STATUS_BG_CLASS[point.status]} {selectedDate === point.date ? 'scale-y-125 ring-2 ring-text-primary ring-offset-1' : ''}"
+        class="h-10 w-full cursor-pointer origin-center rounded-[3px] transition-transform duration-150 hover:scale-y-125 {STATUS_BG_CLASS[point.status]} {selectedDate === point.date ? 'scale-y-125 ring-2 ring-text-primary ring-offset-1' : ''}"
         onmouseenter={() => onhover?.(point)}
         onmouseleave={() => onhover?.(null)}
         onclick={() => onselect?.(point)}

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>底部汇总区布局原型</title>
+<style>
+  :root{
+    --success:#00dfa2; --failure:#ff0060; --partial:#ffb84c; --nodata:#dddddd;
+    --text:#202b36; --muted:#7c7c7c; --bg:#f6f8fa; --card:#fff;
+    --line:#eef0f2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Maple Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Microsoft YaHei",sans-serif}
+  .wrap{max-width:880px;margin:0 auto;padding:36px 20px 80px}
+  h1{font-size:22px;font-weight:500;margin:0 0 8px;text-align:center}
+  .lead{color:var(--muted);font-size:13px;text-align:center;margin:0 0 34px}
+  .variant{margin:0 0 34px}
+  .caption{display:flex;align-items:center;gap:10px;margin:0 0 10px;color:var(--muted);font-size:12px}
+  .tag{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#e8edf1;color:var(--text);font-weight:600;font-size:11px}
+  .card{background:var(--card);border-radius:14px;box-shadow:0 10px 30px rgba(32,43,54,.07);border:1px solid rgba(32,43,54,.04)}
+  .muted{color:var(--muted)}
+  .icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+  .icon.ok{background:rgba(0,223,162,.14);color:var(--success)}
+  .icon svg{width:20px;height:20px}
+  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-size:12px;background:#f4f6f8;color:var(--muted)}
+  .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--success)} .dot.warn{background:var(--partial)} .dot.bad{background:var(--failure)}
+  .value{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+  /* A: 紧凑横条 */
+  .a{display:flex;align-items:center;gap:24px;padding:20px 22px}
+  .a .status{display:flex;align-items:center;gap:12px;min-width:240px}
+  .a h2{font-size:16px;font-weight:500;margin:0 0 3px}
+  .a .sub{font-size:12px;color:var(--muted)}
+  .a .kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;flex:1}
+  .kpi{border-radius:10px;background:#fafbfc;padding:10px 8px;text-align:center}
+  .kpi .num{display:block;font-size:17px;font-weight:600;line-height:1.2}
+  .kpi .lbl{display:block;font-size:11px;color:var(--muted);margin-top:4px;white-space:nowrap}
+  .kpi.ok .num{color:var(--success)} .kpi.bad .num{color:var(--failure)}
+  .refresh{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--muted);flex:none;cursor:pointer;font-size:15px}
+
+  /* B: 主次分明 */
+  .b{padding:22px}
+  .b-head{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:18px}
+  .b-head .left{display:flex;align-items:center;gap:12px}
+  .b h2{font-size:16px;font-weight:500;margin:0 0 3px}
+  .b .sub{font-size:12px;color:var(--muted)}
+  .b-body{display:grid;grid-template-columns:210px 1fr;gap:24px;padding-top:20px;align-items:center}
+  .ring{display:flex;align-items:center;gap:14px}
+  .ring svg{width:86px;height:86px;transform:rotate(-90deg)}
+  .ring .big{font-size:28px;font-weight:600;color:var(--success)}
+  .ring .lbl{font-size:11px;color:var(--muted)}
+  .b-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .b-grid .kpi{background:#fafbfc;text-align:left;padding:12px}
+  .b-grid .kpi .num{font-size:19px}
+
+  /* C: 极简移动优先 */
+  .c{padding:18px 20px}
+  .c-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .c .left{display:flex;align-items:center;gap:12px}
+  .c h2{font-size:15px;font-weight:500;margin:0}
+  .c .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .c .mini{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .c .mini .item{display:flex;align-items:baseline;gap:6px}
+  .c .mini .num{font-size:16px;font-weight:600}
+  .c .mini .lbl{font-size:11px;color:var(--muted)}
+  @media(max-width:720px){
+    .a{flex-wrap:wrap;gap:14px;padding:16px}
+    .a .kpis{grid-template-columns:repeat(3,minmax(0,1fr));order:3;width:100%}
+    .a .refresh{order:2;margin-left:auto}
+    .a .status{min-width:0;flex:1}
+    .b-body{grid-template-columns:1fr}
+    .b-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .c .mini{gap:10px 14px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>底部汇总区 · 布局原型</h1>
+  <p class="lead">同一组数据（4 个服务 / 成功率 99.72% / 错误率 0.28% / 平均延迟 180ms / 今日故障 0 / 连续正常 60 天）</p>
+
+  <section class="variant">
+    <div class="caption"><span class="tag">A</span> 紧凑横条（推荐：信息密度高、移动端自然换行）</div>
+    <div class="card a">
+      <div class="status">
+        <span class="icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m20 6-11 11-5-5"/></svg></span>
+        <div><h2>所有服务运行正常</h2><div class="sub">监控 4 个服务 · 最后更新 2 分钟前</div></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi ok"><span class="num value">99.72%</span><span class="lbl">平均成功率</span></div>
+        <div class="kpi bad"><span class="num value">0.28%</span><span class="lbl">平均错误率</span></div>
+        <div class="kpi"><span class="num value">180ms</span><span class="lbl">平均延迟</span></div>
+        <div class="kpi"><span class="num value">0</span><span class="lbl">今日故障</span></div>
+        <div class="kpi"><span class="num value">60天</span><span class="lbl">最长连续</span></div>
+      </div>
+      <button class="refresh" title="手动刷新">↻</button>
+    </div>
+  </section>
+
+  <section class="variant">
+    <div class="caption"><span class="tag">B</span> 主次分明：成功率作为视觉主角，其余为次级指标</div>
+    <div class="card b">
+      <div class="b-head">
+        <div class="left">
+          <span class="icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m20 6-11 11-5-5"/></svg></span>
+          <div><h2>所有服务运行正常</h2><div class="sub">监控 4 个服务 · 最后更新 2 分钟前</div></div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <span class="pill"><i class="dot ok"></i>4 正常</span>
+          <span class="pill"><i class="dot warn"></i>0 异常</span>
+          <span class="pill"><i class="dot bad"></i>0 故障</span>
+        </div>
+      </div>
+      <div class="b-body">
+        <div class="ring">
+          <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#eef0f2" stroke-width="4"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="#00dfa2" stroke-width="4" stroke-linecap="round" stroke-dasharray="97.2 100" pathLength="100"/></svg>
+          <div><div class="big value">99.72%</div><div class="lbl">平均成功率</div></div>
+        </div>
+        <div class="b-grid">
+          <div class="kpi"><span class="num value" style="color:var(--failure)">0.28%</span><span class="lbl">平均错误率</span></div>
+          <div class="kpi"><span class="num value">180ms</span><span class="lbl">平均延迟</span></div>
+          <div class="kpi"><span class="num value">0</span><span class="lbl">今日故障</span></div>
+          <div class="kpi"><span class="num value">60天</span><span class="lbl">最长连续正常</span></div>
+          <div class="kpi"><span class="num value">2.4k</span><span class="lbl">窗口检查次数</span></div>
+          <div class="kpi"><span class="num value muted">3 分钟前</span><span class="lbl">数据最后更新</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="variant">
+    <div class="caption"><span class="tag">C</span> 极简条：移动端优先，只保留最关键的 4 个指标</div>
+    <div class="card c">
+      <div class="c-row">
+        <div class="left">
+          <span class="icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m20 6-11 11-5-5"/></svg></span>
+          <div><h2>所有服务运行正常</h2><div class="sub">4 个服务 · 2 分钟前更新</div></div>
+        </div>
+        <div class="mini">
+          <span class="item"><span class="num value" style="color:var(--success)">99.72%</span><span class="lbl">成功率</span></span>
+          <span class="item"><span class="num value" style="color:var(--failure)">0.28%</span><span class="lbl">错误率</span></span>
+          <span class="item"><span class="num value">180ms</span><span class="lbl">延迟</span></span>
+          <span class="item"><span class="num value">0</span><span class="lbl">今日故障</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="lead" style="margin-top:8px;text-align:left">说明：已去掉「近期无故障记录 / 自动刷新 / 数据源」三行；A 方案把成功率、错误率、延迟、今日故障、连续正常压缩成 5 个小格，桌面一行、移动端换行；B 方案突出成功率圆环；C 方案适合窄屏。</p>
+</div>
+</body>
+</html>
