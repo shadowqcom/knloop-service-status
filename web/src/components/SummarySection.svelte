@@ -73,20 +73,24 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-4">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
     <div class="bg-bg-secondary p-4 text-center">
       <p class="text-2xl font-medium text-success" data-testid="total-success-rate">{summary.totalSuccessRate}%</p>
       <p class="mt-1 text-xs text-text-secondary">总成功率</p>
     </div>
     <div class="bg-bg-secondary p-4 text-center">
-      <p class="text-2xl font-medium {summary.totalFailures > 0 ? 'text-failure' : 'text-success'}" data-testid="total-failures" title="非成功检查次数（含异常 + 故障）">{summary.totalFailures}</p>
+      <p class="text-2xl font-medium text-failure" data-testid="total-failures" title="非成功检查次数（含异常 + 故障）">{summary.totalFailures}</p>
       <p class="mt-1 text-xs text-text-secondary">总故障次数</p>
     </div>
     <div class="bg-bg-secondary p-4 text-center">
-      <p class="text-2xl font-medium {summary.longestOutageDays > 0 ? 'text-failure' : 'text-text-primary'}" data-testid="longest-outage" title="连续全天故障的最长天数">{summary.longestOutageDays}天</p>
-      <p class="mt-1 text-xs text-text-secondary">最长中断</p>
+      <p class="text-2xl font-medium text-text-primary" data-testid="window-checks">{summary.windowChecks}</p>
+      <p class="mt-1 text-xs text-text-secondary">窗口检查次数</p>
     </div>
     <div class="bg-bg-secondary p-4 text-center">
+      <p class="text-2xl font-medium {summary.longestOutageDays > 0 ? 'text-failure' : 'text-text-primary'}" data-testid="longest-outage" title="连续全天故障的最长天数">{summary.longestOutageDays}天</p>
+      <p class="mt-1 text-xs text-text-secondary">最长连续中断</p>
+    </div>
+    <div class="bg-bg-secondary p-4 text-center max-sm:col-span-2">
       <p class="text-2xl font-medium text-success">{summary.maxConsecutiveDays}天</p>
       <p class="mt-1 text-xs text-text-secondary">最长连续运行</p>
     </div>

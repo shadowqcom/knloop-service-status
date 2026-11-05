@@ -69,21 +69,7 @@
           tooltip: {
             usePointStyle: true,
             caretPadding: 4,
-            position: (elements: any[], eventPosition: { x: number; y: number }) => {
-              if (!elements || elements.length === 0) return eventPosition;
-              let nearest = { x: eventPosition.x, y: eventPosition.y };
-              let nearestDistance = Number.POSITIVE_INFINITY;
-              for (const element of elements) {
-                const point = element.element?.getProps?.(['x', 'y'], true);
-                if (!point || !Number.isFinite(point.x) || !Number.isFinite(point.y)) continue;
-                const distance = (point.x - eventPosition.x) ** 2 + (point.y - eventPosition.y) ** 2;
-                if (distance < nearestDistance) {
-                  nearestDistance = distance;
-                  nearest = { x: point.x, y: point.y };
-                }
-              }
-              return nearest;
-            },
+            position: 'nearest',
             callbacks: {
               title: (items: any[]) => {
                 const index = items[0]?.dataIndex ?? 0;
