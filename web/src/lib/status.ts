@@ -154,6 +154,8 @@ export interface Dashboard {
 
 export interface ChartPayload {
   labels: string[];
+  /** 完整日期+小时，用于 tooltip 标题；labels 仍只放 HH:mm 给 x 轴 */
+  tooltipTitles: string[];
   median: Array<number | null>;
   p95: Array<number | null>;
   yMax: number | null;
@@ -657,18 +659,20 @@ export function selectHourlyWindow(
   for (const row of hourly) byHour.set(row[0], row);
 
   const labels: string[] = [];
+  const tooltipTitles: string[] = [];
   const median: Array<number | null> = [];
   const p95: Array<number | null> = [];
   const hourStartSec = (ms: number): number => Math.floor(ms / HOUR_MS) * 3600;
 
   if (selectedDay) {
     const dayStartMs = beijingDateStartMs(selectedDay);
-    if (dayStartMs === null) return { labels, median, p95, yMax: 15 };
+    if (dayStartMs === null) return { labels, tooltipTitles, median, p95, yMax: 15 };
     const today = beijingDateStr(now);
     const endHour = selectedDay === today ? getBeijingHour(now) : 23;
     for (let hour = 0; hour <= endHour; hour += 1) {
       const row = byHour.get(hourStartSec(dayStartMs + hour * HOUR_MS));
       labels.push(pad2(hour) + ':00');
+      tooltipTitles.push(selectedDay + ' ' + pad2(hour) + ':00');
       median.push(row ? row[1] : null);
       p95.push(row ? row[2] : null);
     }
@@ -678,6 +682,7 @@ export function selectHourlyWindow(
       const hourMs = currentHourMs - offset * HOUR_MS;
       const row = byHour.get(Math.floor(hourMs / 1000));
       labels.push(pad2(getBeijingHour(hourMs)) + ':00');
+      tooltipTitles.push(beijingDateStr(hourMs) + ' ' + pad2(getBeijingHour(hourMs)) + ':00');
       median.push(row ? row[1] : null);
       p95.push(row ? row[2] : null);
     }
@@ -687,7 +692,7 @@ export function selectHourlyWindow(
   for (const value of median) if (value !== null && Number.isFinite(value)) values.push(value);
   for (const value of p95) if (value !== null && Number.isFinite(value)) values.push(value);
   const yMax = values.length === 0 || Math.max(...values) <= 14 ? 15 : null;
-  return { labels, median, p95, yMax };
+  return { labels, tooltipTitles, median, p95, yMax };
 }
 
 /** 选中日期对应的 daily 数据块 */
