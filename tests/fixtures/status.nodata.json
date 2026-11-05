@@ -1,0 +1,65 @@
+{
+  "schema": 2,
+  "generatedAt": "2026-11-05T02:43:28+08:00",
+  "generatedAtUnix": 1793817808,
+  "retentionDays": 60,
+  "services": [
+    {
+      "key": "ShadowQ",
+      "url": "https://www.shadowq.com",
+      "status": "nodata",
+      "latency": null,
+      "lastCheckAt": null,
+      "uptime": 0,
+      "checks": {
+        "success": 0,
+        "partial": 0,
+        "failure": 0,
+        "total": 0,
+        "todayTotal": 0,
+        "todayFailures": 0,
+        "lastFailureAt": null
+      },
+      "daily": [],
+      "hourly": []
+    },
+    {
+      "key": "Mojoo",
+      "url": "https://mojoo.org",
+      "status": "nodata",
+      "latency": null,
+      "lastCheckAt": null,
+      "uptime": 0,
+      "checks": {
+        "success": 0,
+        "partial": 0,
+        "failure": 0,
+        "total": 0,
+        "todayTotal": 0,
+        "todayFailures": 0,
+        "lastFailureAt": null
+      },
+      "daily": [],
+      "hourly": []
+    },
+    {
+      "key": "Google",
+      "url": "https://www.google.com",
+      "status": "nodata",
+      "latency": null,
+      "lastCheckAt": null,
+      "uptime": 0,
+      "checks": {
+        "success": 0,
+        "partial": 0,
+        "failure": 0,
+        "total": 0,
+        "todayTotal": 0,
+        "todayFailures": 0,
+        "lastFailureAt": null
+      },
+      "daily": [],
+      "hourly": []
+    }
+  ]
+}

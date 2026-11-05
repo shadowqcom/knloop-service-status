@@ -11,5 +11,17 @@ node_modules/
 .vscode
 *.log
 CNAME
-package-lock.json
-package.json
+generate-logs.js
+
+# CI v2 构建产物与本地工具（不提交）
+checkshell/bin/
+.tools/
+checkshell/*.test
+*.exe
+# Worker / Web（本地构建产物）
+worker/node_modules/
+web/node_modules/
+worker/.wrangler/
+worker/public/
+web/dist/
+web/.vite/

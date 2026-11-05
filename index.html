@@ -5,112 +5,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="knloop Service Status 服务状态监测页面" />
-  <meta name="description" content="使用 Github Actions 每10分钟记录一次服务状态日志,并使用 GitHub Pages 进行页面展示。" />
+  <meta name="description" content="使用 Github Actions 定时记录服务状态并聚合为 status.json，由 GitHub Pages 展示。" />
   <link rel="stylesheet" href="./public/fonts/maple-mono.css" />
   <link rel="icon" href="./public/favicon.ico" />
-  
-  <script src="./src/js/tailwind.browser.min.js"></script>
-  <script src="./src/js/chart.umd.js"></script>
-  
-  <style type="text/tailwindcss">
-    @theme {
-      --color-success: #00dfa2;
-      --color-failure: #ff0060;
-      --color-partial: #ffb84c;
-      --color-nodata: #dddddd;
-      --color-text-primary: #202B36;
-      --color-text-secondary: #7c7c7c;
-      --color-bg-primary: #f6f8fa;
-      --color-bg-secondary: #ffffff;
-      --font-sans: "Maple Mono", system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
-    }
-    
-    @keyframes pulse-dot {
-      0%, 100% { 
-        transform: scale(0.6);
-        opacity: 0.4;
-      }
-      50% { 
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-    
-    .loading-dot {
-      animation: pulse-dot 1.2s ease-in-out infinite;
-    }
-    
-    .loading-dot-delay-1 { animation-delay: 0.15s; }
-    .loading-dot-delay-2 { animation-delay: 0.3s; }
-    .loading-dot-delay-3 { animation-delay: 0.45s; }
-    .loading-dot-delay-4 { animation-delay: 0.6s; }
-    .loading-dot-delay-5 { animation-delay: 0.75s; }
-    
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    
-    .skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-    }
-    
-    .skeleton-text {
-      border-radius: 0.25rem;
-    }
-    
-    .skeleton-block {
-      border-radius: 0.125rem;
-    }
-    
-    ::-webkit-scrollbar {
-      width: 0.4rem;
-      height: 0.5rem;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background-color: #a2a2a2;
-      border-radius: 0.5rem;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: #7a7a7a;
-    }
-    
-    .scrollbar-hide {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    
-    .scrollbar-hide::-webkit-scrollbar {
-      display: none;
-    }
-    
-    @media (min-width: 768px) {
-      .md\:scrollbar-auto {
-        -ms-overflow-style: auto;
-        scrollbar-width: auto;
-      }
-      
-      .md\:scrollbar-auto::-webkit-scrollbar {
-        display: block;
-      }
-    }
-  </style>
-  
+
+  <link rel="stylesheet" href="./public/app.css" />
+  <!-- Chart.js（206KB）改为 IntersectionObserver 进入视口后再加载，首屏不请求 -->
+  <!-- Tailwind v4 已用 CLI 预构建为 public/app.css，不再加载 272KB browser JIT -->
+
   <style>
     [x-cloak] { display: none !important; }
   </style>
 </head>
 
-<body class="min-w-[300px] min-h-screen bg-bg-primary font-sans flex flex-col items-center" 
-      x-data="statusApp" 
-      x-init="init()">
-  
-  <header class="fixed top-0 left-0 right-0 h-16 bg-bg-secondary shadow-sm z-50 transition-transform duration-200"
-          :class="{ '-translate-y-16': scrolledDown }">
+<body class="min-w-[300px] min-h-screen bg-bg-primary font-sans flex flex-col items-center"
+      x-data="statusApp">
+
+  <header id="site-header" class="fixed top-0 left-0 right-0 h-16 bg-bg-secondary shadow-sm z-50 transition-transform duration-200">
     <div class="max-w-4xl mx-auto px-4 h-full flex items-center justify-between">
       <a href="/" class="flex items-center gap-2 text-text-primary text-lg font-medium">
         <svg class="w-8 h-8 text-text-primary">
@@ -118,8 +29,8 @@
         </svg>
         <span>knloop</span>
       </a>
-      <a href="https://github.com/shadowqcom/knloop-service-status" 
-         target="_blank" 
+      <a href="https://github.com/shadowqcom/knloop-service-status"
+         target="_blank"
          rel="nofollow"
          class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
         <span class="text-sm">GitHub</span>
@@ -135,6 +46,19 @@
       <h1 class="text-3xl font-normal text-text-primary">knloop 服务状态</h1>
     </section>
 
+    <section x-cloak x-show="warnings.length > 0" class="w-full mb-4 space-y-2">
+      <template x-for="warning in warnings" :key="warning.type + warning.message">
+        <div class="flex items-start gap-2 rounded-lg px-4 py-3 text-sm text-text-primary"
+             :class="warning.type === 'stale' ? 'bg-partial/10' : 'bg-failure/10'">
+          <svg class="w-4 h-4 mt-0.5 flex-shrink-0"
+               :class="warning.type === 'stale' ? 'text-partial' : 'text-failure'">
+            <use href="./public/icons.svg#icon-partial" />
+          </svg>
+          <span x-text="warning.message"></span>
+        </div>
+      </template>
+    </section>
+
     <section class="bg-bg-secondary rounded-lg shadow-lg overflow-hidden">
       <div x-cloak x-show="loadError && !loading" class="p-12 text-center">
         <div class="flex flex-col items-center gap-4">
@@ -144,10 +68,10 @@
             </svg>
           </div>
           <div class="flex flex-col items-center gap-2">
-            <p class="text-lg text-text-primary">暂无检测数据</p>
+            <p class="text-lg text-text-primary" x-text="loadError"></p>
             <p class="text-sm text-text-secondary">请检查网络连接或稍后重试</p>
           </div>
-          <button @click="manualReload()" 
+          <button @click="manualReload()"
                   class="mt-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-text-primary transition-colors flex items-center gap-2">
             <svg class="w-4 h-4">
               <use href="./public/icons.svg#icon-success" />
@@ -156,7 +80,7 @@
           </button>
         </div>
       </div>
-      
+
       <template x-if="loading && services.length === 0">
         <div class="divide-y divide-gray-100">
           <template x-for="i in skeletonCount" :key="i">
@@ -168,24 +92,26 @@
                 </div>
                 <div class="w-28 h-4 skeleton skeleton-text"></div>
               </div>
-              
-              <div class="flex items-center py-3 gap-0.5 overflow-hidden">
-                <template x-for="j in 60" :key="j">
-                  <div class="h-10 w-1 skeleton skeleton-block"></div>
-                </template>
+
+              <div class="status-scroll">
+                <div class="status-grid">
+                  <template x-for="j in 60" :key="j">
+                    <div class="status-block skeleton"></div>
+                  </template>
+                </div>
               </div>
-              
+
               <div class="flex justify-between mt-2 px-1">
                 <div class="w-20 h-3 skeleton skeleton-text"></div>
                 <div class="w-24 h-3 skeleton skeleton-text"></div>
               </div>
-              
+
               <div class="h-48 mt-2 skeleton rounded"></div>
             </div>
           </template>
         </div>
       </template>
-      
+
       <div id="reports" class="divide-y divide-gray-100" x-show="!loading || services.length > 0">
         <template x-for="service in services" :key="service.key">
           <div class="p-6">
@@ -194,27 +120,30 @@
                 <svg class="w-5 h-5" :class="getServiceStatusColorClass(service.lastStatus)">
                   <use :href="getServiceStatusIconHref(service.lastStatus)" />
                 </svg>
-                <a :href="service.url" 
-                   target="_blank" 
+                <a :href="service.url"
+                   target="_blank"
+                   rel="nofollow"
                    class="text-lg font-normal text-text-primary hover:text-success transition-colors"
                    x-text="service.title">
                 </a>
               </div>
-              <span class="text-xs text-text-secondary" x-text="`60天内可用率 ${service.uptime}%`"></span>
+              <span class="text-xs text-text-secondary" x-text="'60天内可用率 ' + formatUptime(service) + '%'"></span>
             </div>
-            
-            <div class="flex items-center py-3 overflow-x-auto md:overflow-hidden scrollbar-hide md:scrollbar-auto" x-ref="statusContainer" :style="getStatusContainerStyle()" @scroll="onScroll($event)">
-              <template x-for="(point, index) in service.statusPoints" :key="index">
-                <div class="h-10 rounded-sm transition-transform hover:scale-y-125 cursor-pointer"
-                     :class="getStatusClass(point.status)"
-                     :style="getStatusBlockStyle()"
-                     @mouseenter="service.hoveredPoint = point"
-                     @mouseleave="service.hoveredPoint = null"
-                     @click="selectDay(service, point)">
-                </div>
-              </template>
+
+            <div class="status-scroll" x-ref="statusContainer">
+              <div class="status-grid">
+                <template x-for="point in service.statusPoints" :key="point.date">
+                  <div class="status-block"
+                       :class="getStatusClass(point.status)"
+                       :title="formatPointInfo(point)"
+                       @mouseenter="service.hoveredPoint = point"
+                       @mouseleave="service.hoveredPoint = null"
+                       @click="selectDay(service, point)">
+                  </div>
+                </template>
+              </div>
             </div>
-            
+
             <div class="flex flex-col text-xs text-text-secondary mt-2 px-1 gap-1">
               <div class="flex justify-between items-center">
                 <span>响应时间(ms)</span>
@@ -227,15 +156,15 @@
                 </span>
               </template>
             </div>
-            
+
             <div class="h-48 mt-2">
-              <canvas :id="`chart-${service.key}`" class="w-full h-full"></canvas>
+              <canvas :id="'chart-' + service.key" class="w-full h-full"></canvas>
             </div>
           </div>
         </template>
       </div>
-      
-      <div x-show="loading && services.length > 0" class="flex flex-col items-center justify-center py-8 gap-4">
+
+      <div x-cloak x-show="loading && services.length > 0" class="flex flex-col items-center justify-center py-8 gap-4">
         <div class="flex items-center gap-2">
           <div class="w-3 h-3 rounded-full bg-failure loading-dot"></div>
           <div class="w-3 h-3 rounded-full bg-partial loading-dot loading-dot-delay-1"></div>
@@ -247,103 +176,101 @@
       </div>
     </section>
 
-    <section class="bg-bg-secondary rounded-lg shadow-lg mt-8 overflow-hidden">
+    <section x-cloak x-show="services.length > 0" class="bg-bg-secondary rounded-lg shadow-lg mt-8 overflow-hidden">
       <div class="p-6 border-b border-gray-100">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div class="flex items-center gap-4">
-            <button @click="manualReload()" 
+            <button @click="manualReload()"
                     class="w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
-                    :disabled="loading"
-                    :style="`background-color: rgba(${overallStatus === 'success' ? '0, 223, 162' : overallStatus === 'failure' ? '255, 0, 96' : overallStatus === 'partial' ? '255, 184, 76' : '221, 221, 221'}, 0.15);`">
-              <svg class="w-8 h-8 transition-transform" 
-                   :style="`color: ${overallStatus === 'success' ? '#00dfa2' : overallStatus === 'failure' ? '#ff0060' : overallStatus === 'partial' ? '#ffb84c' : '#dddddd'};`"
-                   :class="{ 'animate-spin': loading }">
-                <use :href="`./public/icons.svg#icon-${overallStatus}`"></use>
+                    :disabled="refreshing"
+                    :style="'background-color: rgba(' + (overallStatus === 'success' ? '0, 223, 162' : overallStatus === 'failure' ? '255, 0, 96' : overallStatus === 'partial' ? '255, 184, 76' : '221, 221, 221') + ', 0.15);'">
+              <svg class="w-8 h-8 transition-transform"
+                   :style="'color: ' + (overallStatus === 'success' ? '#00dfa2' : overallStatus === 'failure' ? '#ff0060' : overallStatus === 'partial' ? '#ffb84c' : '#dddddd') + ';'"
+                   :class="{ 'animate-spin': refreshing }">
+                <use :href="'./public/icons.svg#icon-' + overallStatus"></use>
               </svg>
             </button>
             <div>
-              <p class="text-xl font-medium text-text-primary" x-text="serviceSummary.statusText"></p>
+              <p class="text-xl font-medium text-text-primary" x-text="statusText"></p>
               <p class="text-sm text-text-secondary leading-relaxed">
-                <span class="block sm:inline">监控 <span class="font-medium text-text-primary" x-text="serviceSummary.total"></span> 个服务</span>
+                <span class="block sm:inline">监控 <span class="font-medium text-text-primary" x-text="summary.total"></span> 个服务</span>
                 <span class="hidden sm:inline"> · </span>
-                <span class="block sm:inline">最后更新: <span x-text="lastUpdateTime"></span></span>
+                <span class="block sm:inline">最后更新: <span x-text="lastUpdateText"></span></span>
               </p>
             </div>
           </div>
-          
+
           <div class="flex flex-wrap items-center gap-4 text-sm">
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" style="background-color: rgba(0, 223, 162, 0.1);">
               <div class="w-2 h-2 rounded-full" style="background-color: #00dfa2;"></div>
-              <span class="font-bold text-base" style="color: #00dfa2;" x-text="serviceSummary.success"></span>
+              <span class="font-bold text-base" style="color: #00dfa2;" x-text="summary.success"></span>
               <span class="text-text-secondary">正常</span>
             </div>
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" style="background-color: rgba(255, 184, 76, 0.1);">
               <div class="w-2 h-2 rounded-full" style="background-color: #ffb84c;"></div>
-              <span class="font-bold text-base" style="color: #ffb84c;" x-text="serviceSummary.partial"></span>
+              <span class="font-bold text-base" style="color: #ffb84c;" x-text="summary.partial"></span>
               <span class="text-text-secondary">异常</span>
             </div>
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" style="background-color: rgba(255, 0, 96, 0.1);">
               <div class="w-2 h-2 rounded-full" style="background-color: #ff0060;"></div>
-              <span class="font-bold text-base" style="color: #ff0060;" x-text="serviceSummary.failure"></span>
+              <span class="font-bold text-base" style="color: #ff0060;" x-text="summary.failure"></span>
               <span class="text-text-secondary">故障</span>
             </div>
           </div>
         </div>
       </div>
-      
+
       <div class="grid grid-cols-2 md:grid-cols-4">
         <div class="bg-bg-secondary p-4 text-center">
-          <p class="text-2xl font-medium text-text-primary" x-text="serviceSummary.avgUptime + '%'"></p>
+          <p class="text-2xl font-medium text-text-primary" x-text="summary.avgUptime + '%'"></p>
           <p class="text-xs text-text-secondary mt-1">60天可用率</p>
         </div>
         <div class="bg-bg-secondary p-4 text-center">
-          <p class="text-2xl font-medium" :class="serviceSummary.avgLatency > 0 ? 'text-text-primary' : 'text-text-secondary'">
-            <span x-text="serviceSummary.avgLatency > 0 ? serviceSummary.avgLatency + 'ms' : '-'"></span>
+          <p class="text-2xl font-medium" :class="summary.avgLatency > 0 ? 'text-text-primary' : 'text-text-secondary'">
+            <span x-text="summary.avgLatency > 0 ? summary.avgLatency + 'ms' : '-'"></span>
           </p>
           <p class="text-xs text-text-secondary mt-1">平均延迟</p>
         </div>
         <div class="bg-bg-secondary p-4 text-center">
-          <p class="text-2xl font-medium" :class="serviceSummary.todayFailures > 0 ? 'text-failure' : 'text-success'">
-            <span x-text="serviceSummary.todayFailures"></span>
+          <p class="text-2xl font-medium" :class="summary.todayFailures > 0 ? 'text-failure' : 'text-success'">
+            <span x-text="summary.todayFailures"></span>
           </p>
           <p class="text-xs text-text-secondary mt-1">今日故障次数</p>
         </div>
         <div class="bg-bg-secondary p-4 text-center">
-          <p class="text-2xl font-medium text-success" x-text="serviceSummary.maxConsecutiveDays + '天'"></p>
+          <p class="text-2xl font-medium text-success" x-text="summary.maxConsecutiveDays + '天'"></p>
           <p class="text-xs text-text-secondary mt-1">最长连续运行</p>
         </div>
       </div>
-      
+
       <div class="p-4 pl-7 md:pl-10 md:pr-10 bg-gray-50 border-t border-gray-100">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm">
           <div class="flex items-center gap-2 min-h-5">
             <div class="w-4 h-4 flex items-center justify-center flex-shrink-0">
-              <template x-if="serviceSummary.lastFailureTime">
+              <template x-if="summary.lastFailureTime">
                 <svg class="w-4 h-4 text-failure">
                   <use href="./public/icons.svg#icon-failure"></use>
                 </svg>
               </template>
-              <template x-if="!serviceSummary.lastFailureTime">
+              <template x-if="!summary.lastFailureTime">
                 <svg class="w-4 h-4 text-success">
                   <use href="./public/icons.svg#icon-success"></use>
                 </svg>
               </template>
             </div>
             <span class="text-text-secondary">
-              <template x-if="serviceSummary.lastFailureTime">
-                <span>最近故障: <span class="text-text-primary" x-text="serviceSummary.lastFailureTime"></span></span>
+              <template x-if="summary.lastFailureTime">
+                <span>最近故障: <span class="text-text-primary" x-text="summary.lastFailureTime"></span></span>
               </template>
-              <template x-if="!serviceSummary.lastFailureTime">
+              <template x-if="!summary.lastFailureTime">
                 <span class="text-success">近期无故障记录</span>
               </template>
             </span>
           </div>
-          
-          <div class="flex items-center gap-2 min-h-5" x-show="nextReloadCountdown > 0">
-            <div class="w-4 h-4 flex items-center justify-center flex-shrink-0">
-              <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
-            </div>
-            <span class="text-text-secondary">下次刷新 <span class="text-text-primary font-mono" x-text="countdownDisplay"></span></span>
+
+          <div class="flex flex-wrap items-center gap-4 min-h-5">
+            <span class="text-text-secondary" x-text="refreshHint"></span>
+            <span class="text-text-secondary" x-show="dataSourceText" x-text="dataSourceText"></span>
           </div>
         </div>
       </div>
@@ -361,7 +288,7 @@
   </footer>
 
   <script type="module" src="./src/js/app.js"></script>
-  
+
   <script defer src="./src/js/alpine.min.js"></script>
 </body>
 </html>

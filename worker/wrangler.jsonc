@@ -1,0 +1,22 @@
+{
+  // Cloudflare Worker 同时提供 API 与静态页面（页面由 web/ 构建到 ./public）
+  "name": "knloop-status",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/data/*", "/healthz"]
+  },
+  "kv_namespaces": [
+    { "binding": "STATUS_KV" }
+  ],
+  "triggers": {
+    "crons": ["*/10 * * * *"]
+  },
+  "vars": {
+    "STATUS_RETENTION_DAYS": "60"
+  }
+}

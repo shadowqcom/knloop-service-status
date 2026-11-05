@@ -1,106 +1,139 @@
-import { loadAllLogData, clearCache, getLatestLogTime } from './logDataManager.js';
-import { calculateAvgLatency, calculateGlobalStats } from './dataProcessing.js';
-import { updateChart } from './timelapsechart.js';
+// 页面入口（Alpine 组件）：只负责状态与渲染，数据加载/解析全部交给 statusData.js + statusModel.js。
 import { getConfig, loadConfig } from './configLoader.js';
-import { STATUS_MAP, STATUS_COLOR_MAP, STATUS_BG_MAP } from './utils.js';
-import { handleError, getErrorMessage } from './errorHandler.js';
+import { createStatusController } from './statusData.js';
+import {
+  STATUS_BG_CLASS,
+  STATUS_LABELS,
+  STATUS_TEXT_CLASS,
+  formatStatusPoint,
+  selectHourlyWindow,
+  summarize
+} from './statusModel.js';
+import { observeChart, updateChartPayload } from './timelapsechart.js';
 
-window.statusApp = function() {
+const EMPTY_SUMMARY = summarize([]).summary;
+
+window.statusApp = function () {
   return {
     services: [],
-    loading: true,
-    loadError: null,
-    lastUpdateTime: '加载中...',
-    currentYear: new Date().getFullYear(),
-    userAgent: navigator.userAgent,
-    scrolledDown: false,
+    summary: { ...EMPTY_SUMMARY },
     overallStatus: 'nodata',
-    lastScrollY: 0,
-    reloadInterval: null,
-    nextReloadCountdown: 0,
-    countdownInterval: null,
-    countdownDisplay: '0:00',
+    statusText: '暂无监控数据',
+    statusClass: 'text-nodata',
+    loading: true,
+    refreshing: false,
+    loadError: null,
+    warnings: [],
+    sourceLabel: '',
+    lastUpdateText: '加载中...',
+    generatedAtUnix: null,
+    pollSeconds: 60,
+    staleAfterMin: 45,
     skeletonCount: 3,
+    currentYear: new Date().getFullYear(),
+
+    _controller: null,
+    _scrollHandler: null,
+    _headerEl: null,
+    _initialized: false,
 
     async init() {
+      if (this._initialized) return; // Alpine 会自动调用 init()，避免 x-init 重复触发导致双份请求
+      this._initialized = true;
       await loadConfig();
-      const config = getConfig();
-      this.skeletonCount = config.services?.length || 3;
-      await this.loadAllData();
+      const config = getConfig() || {};
+      this.skeletonCount = Array.isArray(config.services) && config.services.length > 0 ? config.services.length : 3;
+      this.pollSeconds = Number(config.pollIntervalSec) > 0 ? Number(config.pollIntervalSec) : 60;
+      this.staleAfterMin = Number(config.staleAfterMin) > 0 ? Number(config.staleAfterMin) : 45;
+
       this.setupScrollListener();
-      this.setupAutoReload();
+
+      this._controller = createStatusController({
+        onUpdate: (dashboard, info) => this.applyDashboard(dashboard, info),
+        onPhase: (phase) => this.applyPhase(phase)
+      });
+
+      await this._controller.start();
     },
 
-    async loadAllData(forceRefresh = false) {
-      this.loading = true;
-      this.loadError = null;
-      try {
-        const data = await loadAllLogData(forceRefresh);
-        this.services = data.services;
-        this.lastUpdateTime = data.lastUpdateTime;
-        this.calculateOverallStatus();
-        
-        this.$nextTick(() => {
-          this.renderCharts();
-          this.scrollToRight();
-        });
-      } catch (error) {
-        this.loadError = handleError(error, 'loadAllData');
-      } finally {
+    destroy() {
+      this._controller?.stop?.();
+      this._controller = null;
+      if (this._scrollHandler) {
+        window.removeEventListener('scroll', this._scrollHandler);
+        this._scrollHandler = null;
+      }
+    },
+
+    applyPhase(phase) {
+      if (typeof phase.refreshing === 'boolean') this.refreshing = phase.refreshing;
+      if (typeof phase.loading === 'boolean') this.loading = phase.loading;
+      if (phase.error && this.services.length === 0) {
+        this.loadError = phase.message || '数据加载失败，请检查网络后重试';
+      } else if (!phase.error) {
+        this.loadError = null;
+      }
+    },
+
+    applyDashboard(dashboard, info = {}) {
+      if (!dashboard) {
         this.loading = false;
+        this.loadError = info.error ? '数据加载失败，请检查网络后重试' : '暂无检测数据';
+        this.lastUpdateText = '暂无数据';
+        this.warnings = [];
+        this.services = [];
+        this.summary = { ...EMPTY_SUMMARY };
+        return;
       }
-    },
 
-    scrollToRight() {
-      const isMobile = window.innerWidth < 768;
-      if (!isMobile) return;
-      
-      requestAnimationFrame(() => {
-        const containers = document.querySelectorAll('[x-ref="statusContainer"]');
-        containers.forEach(container => {
-          container.scrollLeft = container.scrollWidth;
-        });
+      this.loading = false;
+      this.loadError = null;
+      this.warnings = Array.isArray(dashboard.warnings) ? dashboard.warnings : [];
+      this.sourceLabel = dashboard.sourceLabel || '';
+      this.lastUpdateText = dashboard.lastUpdateText || '暂无数据';
+      this.generatedAtUnix = dashboard.generatedAtUnix ?? null;
+      this.overallStatus = dashboard.overallStatus || 'nodata';
+      this.statusText = dashboard.summary?.statusText || dashboard.statusText || '暂无监控数据';
+      this.statusClass = dashboard.summary?.statusClass || dashboard.statusClass || 'text-nodata';
+
+      // 契约 3.1：只有 generatedAtUnix 变新（或首次渲染）才重渲染服务列表
+      if (!info.changed && this.services.length > 0) return;
+
+      this.summary = dashboard.summary || { ...EMPTY_SUMMARY };
+      this.services = (dashboard.services || []).map((service) => ({
+        ...service,
+        hoveredPoint: null,
+        selectedDay: null,
+        selectedDayLatency: null
+      }));
+
+      this.$nextTick(() => {
+        this.attachCharts();
+        this.scrollToRight();
       });
     },
 
-    calculateOverallStatus() {
-      const statuses = this.services.map(s => s.lastStatus);
-      const total = statuses.length;
-      const successCount = statuses.filter(s => s === 'success').length;
-      const failureCount = statuses.filter(s => s === 'failure').length;
-      const nodataCount = statuses.filter(s => s === 'nodata').length;
-      
-      const failureThreshold = total * 0.2;
-      const nodataThreshold = total * 0.5;
-
-      if (successCount === total) {
-        this.overallStatus = 'success';
-      } else if (nodataCount === total) {
-        this.overallStatus = 'nodata';
-      } else if (failureCount >= failureThreshold || nodataCount >= nodataThreshold) {
-        this.overallStatus = 'failure';
-      } else {
-        this.overallStatus = 'partial';
-      }
-    },
-
-    renderCharts() {
-      this.services.forEach(service => {
+    attachCharts() {
+      for (const service of this.services) {
         const canvas = document.getElementById(`chart-${service.key}`);
-        if (canvas) {
-          updateChart(canvas, service.rawLog, service.selectedDay);
-        }
-      });
+        if (!canvas) continue;
+        observeChart(canvas, () => this.chartPayload(service));
+      }
+    },
+
+    chartPayload(service) {
+      const config = getConfig() || {};
+      const maxHour = Number(config.maxHour) > 0 ? Number(config.maxHour) : 12;
+      return selectHourlyWindow(service, service.selectedDay, { now: Date.now(), maxHour });
     },
 
     selectDay(service, point) {
-      service.selectedDay = point.time;
-      service.selectedDayLatency = calculateAvgLatency(service.rawLog, point.time);
+      if (!point || !point.date) return;
+      service.selectedDay = point.date;
+      service.selectedDayLatency = point.p50 ?? null;
       this.$nextTick(() => {
         const canvas = document.getElementById(`chart-${service.key}`);
-        if (canvas) {
-          updateChart(canvas, service.rawLog, point.time);
-        }
+        if (canvas) updateChartPayload(canvas, this.chartPayload(service));
       });
     },
 
@@ -109,220 +142,75 @@ window.statusApp = function() {
       service.selectedDayLatency = null;
       this.$nextTick(() => {
         const canvas = document.getElementById(`chart-${service.key}`);
-        if (canvas) {
-          updateChart(canvas, service.rawLog, null);
-        }
+        if (canvas) updateChartPayload(canvas, this.chartPayload(service));
       });
     },
 
-    formatSelectedDay(dayStr) {
-      if (!dayStr) return '';
-      const date = new Date(dayStr);
-      return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} 全天数据`;
+    scrollToRight() {
+      if (window.innerWidth >= 768) return;
+      requestAnimationFrame(() => {
+        document.querySelectorAll('[x-ref="statusContainer"]').forEach((container) => {
+          container.scrollLeft = container.scrollWidth;
+        });
+      });
     },
 
-    formatSelectedDayShort(dayStr) {
-      if (!dayStr) return '';
-      const date = new Date(dayStr);
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${date.getFullYear()}-${month}-${day}`;
-    },
-
+    /**
+     * 顶部导航隐藏：passive + rAF 节流的原生监听，直接改 DOM class，
+     * 不放进 Alpine 响应式 state（契约 3.2 交互修复）。
+     */
     setupScrollListener() {
-      window.addEventListener('scroll', () => {
-        const currentScrollY = window.scrollY;
-        this.scrolledDown = currentScrollY > this.lastScrollY && currentScrollY > 64;
-        this.lastScrollY = currentScrollY;
-      });
-    },
+      this._headerEl = document.getElementById('site-header');
+      let lastY = window.scrollY || 0;
+      let ticking = false;
 
-    setupAutoReload() {
-      const config = getConfig();
-      if (!config.reloadReportsdata) return;
-      
-      if (this.countdownInterval) {
-        clearInterval(this.countdownInterval);
-        this.countdownInterval = null;
-      }
-      
-      const intervalSeconds = Math.floor(config.reloadReportstime * 60);
-      let startTime = this.lastUpdateTime;
-      let lastTick = Date.now();
-
-      this.nextReloadCountdown = intervalSeconds;
-      this.updateCountdownDisplay();
-      
-      this.countdownInterval = setInterval(() => {
-        const now = Date.now();
-        const elapsed = now - lastTick;
-        
-        if (elapsed >= 1000) {
-          lastTick = now;
-          this.nextReloadCountdown--;
-          this.updateCountdownDisplay();
-          
-          if (this.nextReloadCountdown <= 0) {
-            this.nextReloadCountdown = intervalSeconds;
-            this.updateCountdownDisplay();
-            
-            this.checkAndReload(startTime).then(newTime => {
-              if (newTime) startTime = newTime;
-            });
+      const handler = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const currentY = window.scrollY || 0;
+          const scrolledDown = currentY > lastY && currentY > 64;
+          if (this._headerEl) {
+            this._headerEl.classList.toggle('-translate-y-16', scrolledDown);
           }
-        }
-      }, 100);
-    },
+          lastY = currentY;
+          ticking = false;
+        });
+      };
 
-    updateCountdownDisplay() {
-      const minutes = Math.floor(this.nextReloadCountdown / 60);
-      const seconds = this.nextReloadCountdown % 60;
-      this.countdownDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    },
-
-    async checkAndReload(startTime) {
-      try {
-        const newTime = await getLatestLogTime();
-        if (startTime !== newTime) {
-          clearCache();
-          await this.loadAllData(true);
-          return newTime;
-        }
-      } catch (error) {
-        handleError(error, 'checkAndReload');
-      }
-      return null;
+      this._scrollHandler = handler;
+      window.addEventListener('scroll', handler, { passive: true });
+      handler();
     },
 
     async manualReload() {
-      if (this.loading) return;
-      
-      clearCache();
-      this.loadError = null;
-      this.loading = true;
-      
+      if (this.refreshing) return;
+      this.refreshing = true;
       try {
-        const data = await loadAllLogData(true);
-        this.services = data.services;
-        this.lastUpdateTime = data.lastUpdateTime;
-        this.calculateOverallStatus();
-        
-        this.$nextTick(() => {
-          this.renderCharts();
-          this.scrollToRight();
-        });
-        
-        const config = getConfig();
-        const intervalSeconds = Math.floor(config.reloadReportstime * 60);
-        this.nextReloadCountdown = intervalSeconds;
-        this.updateCountdownDisplay();
-      } catch (error) {
-        this.loadError = handleError(error, 'manualReload');
+        await this._controller?.manualRefresh?.();
       } finally {
-        this.loading = false;
+        this.refreshing = false;
       }
     },
-    
-    getErrorMessage() {
-      return this.loadError ? getErrorMessage(this.loadError) : '';
+
+    get refreshHint() {
+      return `自动刷新：每 ${this.pollSeconds} 秒`;
     },
 
-    get serviceSummary() {
-      const emptySummary = {
-        total: 0,
-        success: 0,
-        failure: 0,
-        partial: 0,
-        nodata: 0,
-        avgUptime: 0,
-        avgLatency: 0,
-        statusText: '暂无数据',
-        statusClass: 'text-nodata',
-        todayFailures: 0,
-        servicesWithFailures: 0,
-        maxConsecutiveDays: 0,
-        lastFailureTime: null
-      };
-
-      if (this.services.length === 0) {
-        return emptySummary;
-      }
-
-      const total = this.services.length;
-      const success = this.services.filter(s => s.lastStatus === 'success').length;
-      const failure = this.services.filter(s => s.lastStatus === 'failure').length;
-      const partial = this.services.filter(s => s.lastStatus === 'partial').length;
-      const nodata = this.services.filter(s => s.lastStatus === 'nodata').length;
-
-      const avgUptime = this.services.reduce((sum, s) => sum + parseFloat(s.uptime || 0), 0) / total;
-      const latencies = this.services.filter(s => s.avgLatency).map(s => s.avgLatency);
-      const avgLatency = latencies.length > 0 
-        ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) 
-        : 0;
-
-      const globalStats = calculateGlobalStats(this.services);
-
-      let statusText = '';
-      let statusClass = '';
-
-      if (success === total) {
-        statusText = '所有服务运行正常';
-        statusClass = 'text-success';
-      } else if (failure > 0 && failure === total) {
-        statusText = '所有服务均不可用';
-        statusClass = 'text-failure';
-      } else if (failure > 0) {
-        statusText = `${failure} 个服务故障`;
-        statusClass = 'text-failure';
-      } else if (partial > 0) {
-        statusText = `${partial} 个服务异常`;
-        statusClass = 'text-partial';
-      } else if (nodata === total) {
-        statusText = '暂无监控数据';
-        statusClass = 'text-nodata';
-      } else {
-        statusText = '服务运行中';
-        statusClass = 'text-success';
-      }
-
-      return {
-        total,
-        success,
-        failure,
-        partial,
-        nodata,
-        avgUptime: avgUptime.toFixed(2),
-        avgLatency,
-        statusText,
-        statusClass,
-        todayFailures: globalStats.totalTodayFailures,
-        servicesWithFailures: globalStats.servicesWithFailures,
-        maxConsecutiveDays: globalStats.maxConsecutiveDays,
-        lastFailureTime: globalStats.lastFailureTime
-      };
-    },
-
-    get formattedCountdown() {
-      if (this.nextReloadCountdown <= 0) return '';
-      const minutes = Math.floor(this.nextReloadCountdown / 60);
-      const seconds = this.nextReloadCountdown % 60;
-      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    },
-
-    get checkInterval() {
-      return getConfig().reloadReportstime;
-    },
-
-    get statusIconHref() {
-      return `./public/icons.svg#icon-${this.overallStatus}`;
-    },
-
-    get statusColorClass() {
-      return STATUS_COLOR_MAP[this.overallStatus] || 'text-nodata';
+    get dataSourceText() {
+      return this.sourceLabel ? `数据源：${this.sourceLabel}` : '';
     },
 
     getStatusClass(status) {
-      return STATUS_BG_MAP[status] || 'bg-nodata';
+      return STATUS_BG_CLASS[status] || 'bg-nodata';
+    },
+
+    getStatusTextClass(status) {
+      return STATUS_TEXT_CLASS[status] || 'text-nodata';
+    },
+
+    getStatusLabel(status) {
+      return STATUS_LABELS[status] || '无数据';
     },
 
     getServiceStatusIconHref(status) {
@@ -330,98 +218,31 @@ window.statusApp = function() {
     },
 
     getServiceStatusColorClass(status) {
-      return STATUS_COLOR_MAP[status] || 'text-nodata';
-    },
-
-    formatTooltip(point) {
-      return `${point.time} - ${point.status}${point.latency ? ` (${point.latency}ms)` : ''}`;
+      return STATUS_TEXT_CLASS[status] || 'text-nodata';
     },
 
     formatPointInfo(point) {
-      if (!point) return '';
-      const date = new Date(point.time);
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      const dateStr = `${date.getFullYear()}-${month}-${day}`;
-      return `${dateStr} - ${STATUS_MAP[point.status] || point.status}`;
+      return formatStatusPoint(point);
     },
 
     formatAvgLatency(service) {
       if (service.selectedDay) {
-        const latency = service.selectedDayLatency;
-        return latency ? `当日平均延迟 ${latency}ms` : '当日暂无数据';
-      } else {
-        const latency = service.avgLatency;
-        return latency ? `24小时内平均延迟 ${latency}ms` : '暂无数据';
+        return service.selectedDayLatency !== null && service.selectedDayLatency !== undefined
+          ? `当日 P50 延迟 ${service.selectedDayLatency}ms`
+          : '当日暂无延迟数据';
       }
+      return service.avgLatency !== null && service.avgLatency !== undefined
+        ? `24小时内平均延迟 ${service.avgLatency}ms`
+        : '24小时内暂无延迟数据';
     },
 
-    getStatusLayout() {
-      const config = getConfig();
-      const isMobile = window.innerWidth < 768;
-      
-      if (isMobile) {
-        return { width: 12, gap: 2 };
-      }
-      
-      const container = document.querySelector('[x-ref="statusContainer"]');
-      let containerWidth;
-      
-      if (container && container.clientWidth > 0) {
-        containerWidth = container.clientWidth;
-      } else {
-        const maxContainerWidth = 896;
-        const padding = 48;
-        const windowWidth = window.innerWidth;
-        containerWidth = Math.min(windowWidth - padding, maxContainerWidth - 48);
-      }
-      
-      const effectiveMaxDays = Math.min(config.maxDays, 60);
-      
-      if (config.maxDays >= 60) {
-        const defaultGap = 2;
-        const defaultTotalGaps = (60 - 1) * defaultGap;
-        const defaultAvailableWidth = containerWidth - defaultTotalGaps;
-        const defaultBlockWidth = defaultAvailableWidth / 60;
-        return { width: Math.max(defaultBlockWidth, 3), gap: 2 };
-      }
-      
-      const defaultGap = 2;
-      const defaultTotalGaps = (60 - 1) * defaultGap;
-      const defaultAvailableWidth = containerWidth - defaultTotalGaps;
-      const defaultBlockWidth = defaultAvailableWidth / 60;
-      
-      const minBlockWidth = Math.max(defaultBlockWidth, 3);
-      const totalBlockWidth = minBlockWidth * effectiveMaxDays;
-      const remainingWidth = containerWidth - totalBlockWidth;
-      
-      const maxGap = Math.floor(remainingWidth / (effectiveMaxDays - 1 || 1));
-      const newGap = Math.min(maxGap, 8);
-      
-      const newTotalGaps = (effectiveMaxDays - 1) * newGap;
-      const newAvailableWidth = containerWidth - newTotalGaps;
-      const newBlockWidth = newAvailableWidth / effectiveMaxDays;
-      
-      return { width: Math.max(newBlockWidth, 3), gap: newGap };
+    formatUptime(service) {
+      if (service.uptime === null || service.uptime === undefined) return '--';
+      return service.uptime.toFixed(2);
     },
 
-    getStatusBlockWidth() {
-      return this.getStatusLayout().width;
-    },
-
-    getStatusBlockStyle() {
-      const isMobile = window.innerWidth < 768;
-      const { width } = this.getStatusLayout();
-      
-      if (isMobile) {
-        return `width: ${width}px; min-width: ${width}px;`;
-      }
-      return `width: ${width}px;`;
-    },
-
-    getStatusContainerStyle() {
-      const { gap } = this.getStatusLayout();
-      return `gap: ${gap}px;`;
+    formatSelectedDay(dayStr) {
+      return dayStr ? `${dayStr} 全天数据` : '';
     }
   };
 };

@@ -1,0 +1,5 @@
+# 构建/依赖/验收产物
+node_modules/
+dist/
+screenshots/
+tmp/
