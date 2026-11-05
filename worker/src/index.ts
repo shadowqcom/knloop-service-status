@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { runCollection } from './collect';
 import { loadStatus } from './storage';
+import { seedDemoData } from './seed';
 import type { Env } from './types';
 
 const app = new Hono<{ Bindings: Env }>();
@@ -49,6 +50,24 @@ app.get('/api/health', async (c) => {
     return c.json({ ok: true, hasKv: Boolean(c.env.STATUS_KV), hasStatus: document !== null });
   } catch (error) {
     return c.json({ ok: false, error: error instanceof Error ? error.message : String(error) }, 500);
+  }
+});
+
+// 一次性注入 60 天测试数据（需要 ADMIN_TOKEN；已有数据时需 ?force=1）。
+app.post('/api/admin/seed', async (c) => {
+  const token = c.env.ADMIN_TOKEN;
+  const authorization = c.req.header('authorization') ?? '';
+  if (!token || authorization !== `Bearer ${token}`) return c.text('not found', 404);
+  try {
+    const existing = await loadStatus(c.env.STATUS_KV);
+    if (existing && c.req.query('force') !== '1') {
+      return c.json({ error: 'status data already exists', hint: 'retry with ?force=1 to replace it' }, 409);
+    }
+    const result = await seedDemoData(c.env);
+    return c.json({ ok: true, ...result }, 201);
+  } catch (error) {
+    console.error('[seed] failed', error);
+    return c.json({ error: 'seed failed', detail: error instanceof Error ? error.message : String(error) }, 500);
   }
 });
 
