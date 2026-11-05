@@ -70,6 +70,18 @@
             usePointStyle: true,
             caretPadding: 4,
             position: 'nearest',
+            titleFont: { ...FONT, size: 10, weight: '600' },
+            bodyFont: { ...FONT, size: 12, weight: '400' },
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            titleMarginBottom: 5,
+            bodySpacing: 5,
+            boxWidth: 10,
+            boxHeight: 10,
+            boxPadding: 6,
+            padding: 10,
+            caretSize: 5,
+            cornerRadius: 6,
             callbacks: {
               title: (items: any[]) => {
                 const index = items[0]?.dataIndex ?? 0;
