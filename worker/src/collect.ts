@@ -21,6 +21,8 @@ export async function runCollection(env: Env, deps: CollectionDeps = {}): Promis
   const services = config.services;
   for (const service of services) ensureServiceState(state, service, nowMs);
 
+  console.log('[collect] start', new Date(nowMs).toISOString(), 'services=' + services.length);
+
   const outcomes = await Promise.all(
     services.map(async (service): Promise<{ service: ServiceConfig; outcome: ProbeOutcome }> => ({
       service,
