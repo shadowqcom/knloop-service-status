@@ -1,13 +1,27 @@
+# v2 契约：docs/data-contract-v2.md 第 2 节（CI v2）
+#
+# 关键背景（契约第 0 节实测）：
+# service-status-check.yml 用默认 GITHUB_TOKEN push 到 page 分支，而 GitHub 规定
+# GITHUB_TOKEN 触发的 push 不会启动其它 workflow —— 所以本 workflow 的 on.push(page)
+# 对自动化提交永远不生效（线上站点因此从 2026-03-04 起再没部署过）。
+# 因此必须保留 schedule: "*/30 * * * *" 定时兜底 + workflow_dispatch 手动发布。
+# 注意：schedule 执行的是默认分支上的本文件，集成时需同步到默认分支才会生效。
+
 name: Deploy Status Pages
 
 on:
-  # 推送触发
+  # 人工/正常 push 到 page 时触发（GITHUB_TOKEN 的自动化 push 不会触发，靠下面的 schedule 兜底）
   push:
     branches: ["page"]
+    paths:
+      - "index.html"
+      - "src/**"
+      - "public/**"
+      - ".github/workflows/**"
 
-  # 定时任务触发
-  # schedule:
-  # - cron: "5,30,55 * * * *"
+  # 定时兜底：把 page 分支最新快照发布到 GitHub Pages（实际触发约 7 次/天）
+  schedule:
+    - cron: "*/30 * * * *"
 
   # 手动触发
   workflow_dispatch:
@@ -17,6 +31,7 @@ permissions:
   pages: write
   id-token: write
 
+# Pages 发布串行化，避免同一环境的并发部署互相取消
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -27,17 +42,21 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Checkout
+      - name: Checkout page branch
         uses: actions/checkout@v4
         with:
           ref: page
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: "."
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

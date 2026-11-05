@@ -1,0 +1,27 @@
+{
+  "name": "knloop-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "mock": "node mock-server.mjs",
+    "verify": "node scripts/verify.mjs",
+    "shots": "node scripts/capture.mjs"
+  },
+  "dependencies": {
+    "chart.js": "^4.6.1",
+    "svelte": "^5.57.3"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tailwindcss/vite": "^4.3.4",
+    "tailwindcss": "^4.3.4",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  }
+}

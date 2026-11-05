@@ -2,14 +2,42 @@
   "maxDays": 60,
   "maxHour": 12,
   "maxLogLines": 10500,
-  "logspath": "https://raw.github.knloop.com/knloop-service-status/page/logs",
+  "logspath": "https://raw.githubusercontent.com/shadowqcom/knloop-service-status/page/logs",
+  "dataUrl": "https://raw.githubusercontent.com/shadowqcom/knloop-service-status/page/data/status.json",
   "reloadReportsdata": true,
   "reloadReportstime": 2.5,
+  "attempts": 3,
+  "minSuccess": 2,
+  "peerCheck": {
+    "enabled": true,
+    "timeoutMs": 5000
+  },
+  "retentionDays": 60,
+  "userAgent": "Mozilla/5.0 (compatible; knloop-status/2.0; +https://status.knloop.com)",
+  "pollIntervalSec": 60,
+  "staleAfterMin": 45,
+  "probe": {
+    "mode": "local",
+    "globalping": {
+      "type": "http",
+      "method": "HEAD",
+      "locations": [
+        { "country": "CN", "limit": 1 },
+        { "country": "HK", "limit": 1 },
+        { "country": "JP", "limit": 1 },
+        { "country": "US", "limit": 1 }
+      ],
+      "timeoutMs": 20000,
+      "pollIntervalMs": 1000,
+      "fallbackToLocal": true,
+      "tokenEnv": "GLOBALPING_TOKEN"
+    }
+  },
   "webhook": {
     "enabled": false
   },
   "maxRetries": 3,
-  "retryDelayMs": 5000,
+  "retryDelayMs": 250,
   "requestTimeoutMs": 7000,
   "services": [
     {

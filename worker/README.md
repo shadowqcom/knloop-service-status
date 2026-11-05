@@ -1,0 +1,87 @@
+# knloop-status Worker（TypeScript）
+
+Cloudflare Worker 同时承担：
+- 每 10 分钟 Cron 检测（Globalping 主 + xxapi 并行 + uapis 预算内兜底 + 直连降级）；
+- KV 存储 60 天状态（`state:v1` / `status:v2`）；
+- Hono API：`GET /api/status`、`GET /data/status.json`、`GET /healthz`；
+- 托管 `web/` 构建出的 Svelte 页面（Static Assets）。
+
+## 本地开发/测试
+
+```powershell
+cd worker
+npm install
+npm test          # vitest：provider 解析、合并规则、聚合、采集
+npm run typecheck
+npx wrangler dev --test-scheduled   # 本地 Worker（KV 本地模拟）
+```
+
+触发一次 Cron（需要前端已构建到 `worker/public`）：
+
+```powershell
+# 另开一个终端
+Invoke-WebRequest 'http://127.0.0.1:8787/__scheduled?cron=*/10+*+*+*+*'
+Invoke-RestMethod 'http://127.0.0.1:8787/api/status'
+```
+
+## 部署
+
+1. 安装 wrangler 并登录：`npx wrangler login`；
+2. 创建 KV：
+   ```powershell
+   npx wrangler kv namespace create STATUS_KV
+   ```
+   把返回的 id 填到 `wrangler.jsonc` 的 `kv_namespaces[0].id`；
+3. 设置 Globalping token（可选，注册后额度更高）：
+   ```powershell
+   npx wrangler secret put GLOBALPING_TOKEN
+   ```
+4. 构建前端：`cd ../web && npm install && npm run build`（产物输出到 `worker/public`）；
+5. 部署（会先构建 web 再 deploy）：`cd ../worker && npm run deploy`；
+6. 在 Cloudflare 控制台给 Worker 绑定自定义域（例如 `status.example.com`），页面和 `/api/status` 同源；
+7. 确认 Cron Trigger 为 `*/10 * * * *`（免费 5 个 trigger 之内）。
+
+## 手动触发一次采集（可选）
+
+设置 secret `ADMIN_TOKEN` 后，可以手动触发一次采集（用于首次部署/排查，不影响 Cron）：
+
+```powershell
+npx wrangler secret put ADMIN_TOKEN
+Invoke-RestMethod -Method Post -Uri 'https://<你的域名>/api/admin/run' -Headers @{ Authorization = 'Bearer <ADMIN_TOKEN>' }
+```
+
+未设置 `ADMIN_TOKEN` 时该路由返回 404。
+
+## 配置
+
+服务列表与 provider 开关在 `src/config.ts`：
+- `globalping.locations`：默认 CN + US 各 1 个 probe，3 服务 × 2 × 6 次/小时 = 36 probes/小时（匿名额度 250/小时）；
+- `xxapi.enabled`：与 Globalping 并行，作为 ping 可达性佐证；
+- `uapis.dailyCap`：默认 30 次/天（uapis 免费额度 1500/月），只在 Globalping 异常/失败时调用；
+- `direct`：Worker 直连降级；
+- `retentionDays`：默认 60 天。
+
+## 数据/额度
+
+- KV 写入：每轮 `state` + `status` 两个 key，10 分钟一轮 = 288 写/天（免费 1000/天）；
+- 读取：页面每 60 秒读 `/api/status`，低流量下远低于 100,000 读/天；流量大时再上 R2/CDN；
+- CPU：每轮只有少量 JSON 解析/聚合，远低于免费版 10ms；
+- Globalping 失败/限流只降级，不会把服务判成 failure；uapis 只做兜底。
+
+## Cloudflare Workers Builds（Git 自动部署）
+
+在 Cloudflare 控制台 **Workers & Pages → 你的 Worker → Settings → Builds** 连接 GitHub 仓库后，按下面配置：
+
+| 设置 | 值 |
+| --- | --- |
+| Git branch | `dev`（或你合并后的 `main`） |
+| Root directory | `worker` |
+| Build command | `npm ci && npm --prefix ../web ci && npm --prefix ../web run build` |
+| Deploy command | `npx wrangler deploy` |
+| Worker 名称 | 必须与 `wrangler.jsonc` 的 `name`（`knloop-status`）一致，否则构建会失败 |
+
+说明：
+- Root directory 设为 `worker` 后，Workers Builds 会自动在 `worker/` 执行 `npm ci`；上面的 build command 再安装 `../web` 依赖并构建到 `worker/public`；
+- `wrangler.jsonc` 的 KV id 必须是真实命名空间 id（控制台 Workers & Pages → KV 创建后复制），否则部署失败；
+- Runtime secrets（`GLOBALPING_TOKEN`、`ADMIN_TOKEN`）在 **Settings → Variables & Secrets** 添加，不要加在 Build variables；
+- 推送 `dev` 分支会自动触发构建；如果要部署到正式域名，先绑定自定义域，再把 Worker 的 production branch 设为对应分支。

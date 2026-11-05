@@ -1,0 +1,90 @@
+/* Tailwind v4 预构建入口（前端 v2，提交到仓库）。
+   修改本文件或 index.html / src/js 的 class 后执行：
+     npm install --no-save tailwindcss@4 @tailwindcss/cli@4   # 仅首次（node_modules 已在 .gitignore 中）
+     npx @tailwindcss/cli -i src/css/tailwind.css -o public/app.css --minify
+   产物 public/app.css 提交到仓库，页面无需构建步骤、不再加载 Tailwind browser JIT。 */
+@import "tailwindcss" source(none);
+
+@source "../../index.html";
+@source "../js/app.js";
+@source "../js/statusModel.js";
+@source "../js/statusData.js";
+@source "../js/timelapsechart.js";
+
+@theme {
+  --color-success: #00dfa2;
+  --color-failure: #ff0060;
+  --color-partial: #ffb84c;
+  --color-nodata: #dddddd;
+  --color-text-primary: #202B36;
+  --color-text-secondary: #7c7c7c;
+  --color-bg-primary: #f6f8fa;
+  --color-bg-secondary: #ffffff;
+  --font-sans: "Maple Mono", system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(0.6); opacity: 0.4; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+.loading-dot { animation: pulse-dot 1.2s ease-in-out infinite; }
+.loading-dot-delay-1 { animation-delay: 0.15s; }
+.loading-dot-delay-2 { animation-delay: 0.3s; }
+.loading-dot-delay-3 { animation-delay: 0.45s; }
+.loading-dot-delay-4 { animation-delay: 0.6s; }
+.loading-dot-delay-5 { animation-delay: 0.75s; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-text { border-radius: 0.25rem; }
+
+/* 60 天状态块：CSS Grid（契约 3.2），删除逐块 JS 宽度计算 */
+.status-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(60, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.status-block {
+  height: 2.5rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.status-block:hover { transform: scaleY(1.25); }
+
+@media (max-width: 767.98px) {
+  .status-grid {
+    grid-template-columns: repeat(60, 10px);
+    min-width: max-content;
+  }
+
+  .status-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .status-scroll::-webkit-scrollbar { display: none; }
+}
+
+::-webkit-scrollbar { width: 0.4rem; height: 0.5rem; }
+::-webkit-scrollbar-thumb { background-color: #a2a2a2; border-radius: 0.5rem; }
+::-webkit-scrollbar-thumb:hover { background-color: #7a7a7a; }

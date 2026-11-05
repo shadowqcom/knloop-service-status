@@ -1,0 +1,160 @@
+{
+  "schema": 2,
+  "generatedAt": "2026-11-05T02:43:28+08:00",
+  "generatedAtUnix": 1793817808,
+  "retentionDays": 60,
+  "services": [
+    {
+      "key": "Google",
+      "url": "https://www.google.com",
+      "status": "success",
+      "latency": 72,
+      "lastCheckAt": "2026-11-05T02:43:28+08:00",
+      "uptime": 76.92,
+      "checks": {
+        "success": 10,
+        "partial": 1,
+        "failure": 2,
+        "total": 13,
+        "todayTotal": 4,
+        "todayFailures": 0,
+        "lastFailureAt": "2026-11-01T08:15:00+08:00"
+      },
+      "daily": [
+        [
+          "2026-11-01",
+          "success",
+          100,
+          70,
+          95,
+          8,
+          0
+        ],
+        [
+          "2026-11-02",
+          "partial",
+          75,
+          80,
+          150,
+          8,
+          2
+        ],
+        [
+          "2026-11-03",
+          "nodata",
+          0,
+          null,
+          null,
+          0,
+          0
+        ],
+        [
+          "2026-11-04",
+          "failure",
+          0,
+          null,
+          null,
+          8,
+          8
+        ],
+        [
+          "2026-11-05",
+          "success",
+          100,
+          72,
+          101,
+          4,
+          0
+        ]
+      ],
+      "hourly": [
+        [
+          1793732400,
+          65,
+          88
+        ],
+        [
+          1793800800,
+          68,
+          90
+        ],
+        [
+          1793808000,
+          70,
+          95
+        ],
+        [
+          1793815200,
+          72,
+          101
+        ]
+      ]
+    },
+    {
+      "key": "ShadowQ",
+      "url": "https://www.shadowq.com",
+      "status": "success",
+      "latency": 66,
+      "lastCheckAt": "2026-11-05T02:43:28+08:00",
+      "uptime": 100,
+      "checks": {
+        "success": 24,
+        "partial": 0,
+        "failure": 0,
+        "total": 24,
+        "todayTotal": 4,
+        "todayFailures": 0,
+        "lastFailureAt": null
+      },
+      "daily": [
+        [
+          "2026-11-03",
+          "success",
+          100,
+          66,
+          88,
+          8,
+          0
+        ],
+        [
+          "2026-11-04",
+          "success",
+          100,
+          64,
+          86,
+          8,
+          0
+        ],
+        [
+          "2026-11-05",
+          "success",
+          100,
+          68,
+          90,
+          8,
+          0
+        ]
+      ],
+      "hourly": []
+    },
+    {
+      "key": "Mojoo",
+      "url": "https://mojoo.org",
+      "status": "nodata",
+      "latency": null,
+      "lastCheckAt": null,
+      "uptime": 0,
+      "checks": {
+        "success": 0,
+        "partial": 0,
+        "failure": 0,
+        "total": 0,
+        "todayTotal": 0,
+        "todayFailures": 0,
+        "lastFailureAt": null
+      },
+      "daily": [],
+      "hourly": []
+    }
+  ]
+}

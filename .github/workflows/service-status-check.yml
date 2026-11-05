@@ -1,48 +1,222 @@
+# v2 契约：docs/data-contract-v2.md 第 2 节（CI v2）
+#
+# 关键背景（契约第 0 节实测）：
+# 1) 本 workflow 用默认 GITHUB_TOKEN push 到 page 分支；GitHub 规定 GITHUB_TOKEN 触发的
+#    push 不会启动其它 workflow，所以 deploy-status-pages.yml 的 on.push 从 2026-03-04 起
+#    再没被触发过。线上部署必须靠 deploy workflow 自己的 schedule（*/30）兜底。
+# 2) GitHub 定时调度实测只有约 7 次/天（cron 名义 72 次/天），因此每次触发后在 job 内
+#    循环多轮（默认 25 分钟 / 每 240 秒一轮），把有效采样密度补上来。
+# 3) 并发 push 会 non-fast-forward 失败：每轮 commit 后先 pull --rebase 再 push，
+#    失败重试 3 次、指数退避。
+# 4) Go 二进制只在 build 步骤编译一次，循环内直接执行 ./bin/statuscheck，
+#    避免每轮 go run 重新编译导致超时。
+
 name: Service Status Check
 
 on:
   schedule:
-    - cron: "1,25,55 * * * *"
+    # 名义每 30 分钟一次；实测触发率低，靠 job 内循环兜底（默认 25 分钟 / 240 秒一轮）
+    - cron: "*/30 * * * *"
 
   workflow_dispatch:
+    inputs:
+      loop_minutes:
+        description: "job 内累计运行分钟数（默认 25，上限 30）"
+        required: false
+        default: "25"
+        type: string
+      interval_seconds:
+        description: "两轮检测之间的间隔秒数（默认 240，最小 60）"
+        required: false
+        default: "240"
+        type: string
+
+# 需要把 logs/ 与 data/ push 回 page 分支
+permissions:
+  contents: write
+
+# 同一时间只跑一个检查任务，避免并发 push 互相打架；
+# cancel-in-progress: false —— 已开始的循环必须把数据跑完、推完再退出。
+concurrency:
+  group: status-check
+  cancel-in-progress: false
 
 jobs:
   service-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
     name: Check knloop service status
+    runs-on: ubuntu-latest
+    # 默认循环 25 分钟 + build/checkout，35 分钟足够；循环上限 30 分钟保证不会先被 timeout 杀掉
+    timeout-minutes: 35
     env:
       WEBHOOK_KEY: ${{ secrets.WECHAT_WEBHOOK_KEY }}
-      PUSH_ENABLED: ${{ secrets.PUSH_ENABLED }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: false
+      # 仅当 src/config.json 的 probe.mode 为 globalping/hybrid 时需要；未配置 secret 时匿名额度即可
+      GLOBALPING_TOKEN: ${{ secrets.GLOBALPING_TOKEN }}
+      LOOP_MINUTES: ${{ github.event.inputs.loop_minutes || '25' }}
+      INTERVAL_SECONDS: ${{ github.event.inputs.interval_seconds || '240' }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout page branch
         uses: actions/checkout@v4
         with:
           ref: page
+          # 必须完整历史（depth: 0）：循环内每轮都要 pull --rebase，浅克隆在远端出现他人新提交时
+          # 可能因 shallow 边界拿不到 merge base 而 rebase 失败（连续多轮失败后尤其明显）；
+          # page 完整历史 pack 约 95MB，每次下载可接受，正确性优先。
+          fetch-depth: 0
+          # 默认 true：GITHUB_TOKEN 写入 .git/config，后续 push 复用，无需再传 token
+          persist-credentials: true
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
-          cache-dependency-path: checkshell/go.sum
+          # Go 代码零第三方依赖（checkshell/go.sum 已删除），缓存 key 退化为 go.mod 的哈希；
+          # 仍用 cache: true 缓存 GOCACHE 加速重复构建。
+          cache: true
+          cache-dependency-path: checkshell/go.mod
+          # 代码只用标准库 + Go 1.21 兼容语法；Go 1.21 已 EOL，固定 1.22 以获得安全补丁。
+          # 若后续 go.mod 的 go directive 提升到更高版本，这里需同步上调。
+          go-version: "1.22"
 
-      - name: Run Service Check
-        id: service_check_run
+      - name: Build checker once
         working-directory: ./checkshell
+        # 只编译一次；循环里直接执行 ./bin/statuscheck。
+        # 二进制默认读 ../src/config.json、../logs、../data（相对 checkshell/ 工作目录）。
         run: |
-          go mod download
-          go run .
+          set -euo pipefail
+          # 零第三方依赖：go.mod 无 require，go.sum 已删除，无需 go mod download（保持步骤最小化）
+          mkdir -p bin
+          go build -o bin/statuscheck .
 
-      - name: Commit and push changes
+      - name: Run check loop and push data
+        shell: bash
         run: |
-          git config --local user.name 'Github Actions'
-          git config --local user.email 'Actions@knloop.com'
-          git add -A --force ./logs/
-          git commit -m '🆙 [Automated] Update service status logs'
-          git push origin page
+          # 注意：Actions 的默认 bash 带 -e（bash -e {0}），本轮任何命令失败会直接终止 step；
+          # 这里显式 set +e，让单轮失败不中断循环，最终用 flag 汇总成 job 状态。
+          set +e
+          set -uo pipefail
+
+          INTERVAL="${INTERVAL_SECONDS:-240}"
+          LOOP_MINUTES="${LOOP_MINUTES:-25}"
+
+          # 输入清洗：非法/越界值回落到安全默认，保证循环总时长 < timeout-minutes
+          if ! [[ "$INTERVAL" =~ ^[0-9]+$ ]] || [ "$INTERVAL" -lt 60 ]; then
+            echo "::warning::interval_seconds='${INTERVAL}' 非法或小于 60，回落到 240"
+            INTERVAL=240
+          fi
+          # 单轮间隔不设超过 900s，避免一轮就睡过 deadline
+          if [ "$INTERVAL" -gt 900 ]; then
+            echo "::warning::interval_seconds=${INTERVAL} 超过 900，截断为 900"
+            INTERVAL=900
+          fi
+          if ! [[ "$LOOP_MINUTES" =~ ^[0-9]+$ ]] || [ "$LOOP_MINUTES" -lt 1 ]; then
+            echo "::warning::loop_minutes='${LOOP_MINUTES}' 非法，回落到 25"
+            LOOP_MINUTES=25
+          fi
+          if [ "$LOOP_MINUTES" -gt 30 ]; then
+            echo "::warning::loop_minutes=${LOOP_MINUTES} 超过上限 30，截断为 30"
+            LOOP_MINUTES=30
+          fi
+
+          start_epoch=$(date +%s)
+          end_epoch=$((start_epoch + LOOP_MINUTES * 60))
+          echo "loop: ${LOOP_MINUTES} 分钟 / 每 ${INTERVAL} 秒一轮（截止 epoch ${end_epoch}）"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # ref: page 通常 checkout 成名为 page 的本地分支；这里打印确认，防止 detached HEAD 时
+          # 远端 refspec 不匹配（push 统一用 HEAD:page，两种情况下都安全）
+          echo "current branch: $(git branch --show-current 2>/dev/null) | HEAD=$(git rev-parse --short HEAD)"
+          mkdir -p logs data
+
+          round=0
+          any_failure=0
+          first_failure=""
+
+          # pull --rebase + push，最多 3 次，指数退避（10s / 20s）。
+          # 失败 3 次返回 1；本地提交保留，下一轮会继续尝试推送。
+          push_with_retry() {
+            local attempt=1 max=3 delay=10
+            while [ "$attempt" -le "$max" ]; do
+              # 用 HEAD:page 而不是 page：即使 checkout 成 detached HEAD 也能正确推送到 page 分支
+              if git pull --rebase origin page && git push origin HEAD:page; then
+                echo "push 成功（第 ${attempt} 次尝试）"
+                return 0
+              fi
+              echo "::warning::round ${round}: pull --rebase/push 第 ${attempt}/${max} 次失败"
+              git rebase --abort 2>/dev/null || true
+              if [ "$attempt" -lt "$max" ]; then
+                echo "退避 ${delay}s 后重试"
+                sleep "$delay"
+                delay=$((delay * 2))
+              fi
+              attempt=$((attempt + 1))
+            done
+            return 1
+          }
+
+          while :; do
+            now=$(date +%s)
+            [ "$now" -ge "$end_epoch" ] && break
+
+            round=$((round + 1))
+            round_ok=1
+            echo "::group::Round ${round} at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+            # 1) 运行检测（必须在 checkshell/ 目录下，二进制默认读 ../src/config.json、../logs、../data）
+            if ( cd checkshell && ./bin/statuscheck ); then
+              echo "round ${round}: checker ok"
+            else
+              round_ok=0
+              echo "::error::round ${round}: checker 失败；继续下一轮（已产出的数据仍会提交）"
+            fi
+
+            # 2) 只暂存 logs/ 与 data/（page 分支 .gitignore 可能忽略 logs/，故用 --force，
+            #    与旧 workflow 的 git add -A --force 行为一致；不 add 其它任何路径）。
+            #    logs/data 两个目录前面已 mkdir -p，合并成一次 add；失败不静默，记 warning 并计入本轮失败。
+            if ! git add -A --force -- logs data; then
+              round_ok=0
+              echo "::warning::round ${round}: git add logs data 失败（pathspec/索引异常），本轮数据可能未提交"
+            fi
+
+            if git diff --cached --quiet; then
+              echo "round ${round}: 数据没有变化，跳过 commit/push"
+            else
+              if git commit -m "chore(status): automated check round ${round} $(date -u +%FT%TZ)"; then
+                echo "round ${round}: committed"
+              else
+                round_ok=0
+                echo "::error::round ${round}: commit 失败"
+              fi
+            fi
+
+            # 3) 存在未推送提交（包括上一轮 push 失败留下的）就 pull --rebase + push
+            if [ "$(git rev-list --count origin/page..HEAD 2>/dev/null || echo 0)" -gt 0 ]; then
+              if ! push_with_retry; then
+                round_ok=0
+                echo "::error::round ${round}: push 重试 3 次仍失败；本地提交保留，下一轮继续重试"
+              fi
+            fi
+
+            # 记录首次失败轮次（最终 job 状态据此决定）
+            if [ "$round_ok" -eq 0 ] && [ "$any_failure" -eq 0 ]; then
+              any_failure=1
+              first_failure="round ${round}"
+            fi
+            echo "::endgroup::"
+
+            # 4) 按间隔等待；不睡过截止时间，保证至少跑完当前轮
+            now=$(date +%s)
+            remaining=$((end_epoch - now))
+            [ "$remaining" -le 0 ] && break
+            sleep_for=$INTERVAL
+            [ "$sleep_for" -gt "$remaining" ] && sleep_for=$remaining
+            echo "sleeping ${sleep_for}s ..."
+            sleep "$sleep_for"
+          done
+
+          echo "共运行 ${round} 轮；首次失败=${first_failure:-无}"
+          if [ "$any_failure" -ne 0 ]; then
+            echo "::error::存在失败轮次（首个：${first_failure}）；已提交并推送的数据保留，job 标记失败"
+            exit 1
+          fi
+          echo "所有轮次成功"
