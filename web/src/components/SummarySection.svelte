@@ -19,12 +19,23 @@
   }: Props = $props();
 
   const iconClass = $derived(STATUS_TEXT_CLASS[overallStatus]);
+  const windowChecksText = $derived(formatCompactCount(summary.windowChecks));
+
   const circleClass = $derived({
     success: 'bg-success/15',
     failure: 'bg-failure/15',
     partial: 'bg-partial/15',
     nodata: 'bg-nodata/20'
   }[overallStatus]);
+
+  function formatCompactCount(value: number): string {
+    if (value >= 10000) {
+      const tenThousands = value / 10000;
+      const digits = tenThousands >= 10 ? 0 : 1;
+      return tenThousands.toFixed(digits).replace(/\.0$/, '') + '万';
+    }
+    return value.toLocaleString('zh-CN');
+  }
 </script>
 
 <section class="mt-8 overflow-hidden rounded-lg bg-bg-secondary shadow-lg" data-testid="summary">
@@ -83,7 +94,7 @@
       <p class="mt-1 text-xs text-text-secondary">总故障次数</p>
     </div>
     <div class="bg-bg-secondary p-4 text-center">
-      <p class="text-2xl font-medium text-text-primary" data-testid="window-checks">{summary.windowChecks}</p>
+      <p class="text-2xl font-medium text-text-primary" data-testid="window-checks" title={"60 天窗口内总检查次数：" + summary.windowChecks.toLocaleString('zh-CN')}>{windowChecksText}</p>
       <p class="mt-1 text-xs text-text-secondary">窗口检查次数</p>
     </div>
     <div class="bg-bg-secondary p-4 text-center">
