@@ -110,6 +110,9 @@ export interface Summary {
   avgUptime: string;
   avgSuccessRate: string;
   avgErrorRate: string;
+  totalSuccessRate: string;
+  totalFailures: number;
+  longestOutageDays: number;
   avgLatency: number;
   todayFailures: number;
   servicesWithFailures: number;
@@ -496,6 +499,20 @@ export function computeOverallStatus(statuses: Array<StatusKind | string | null 
 }
 
 /** 汇总所有服务（顶部/底部统计区） */
+function longestFailureDayStreak(daily: DailyPoint[]): number {
+  let best = 0;
+  let current = 0;
+  for (const point of daily) {
+    if (point.status === 'failure') {
+      current += 1;
+      if (current > best) best = current;
+    } else {
+      current = 0;
+    }
+  }
+  return best;
+}
+
 export function summarize(services: ServiceViewModel[]): { summary: Summary; overallStatus: StatusKind } {
   const list = Array.isArray(services) ? services : [];
   const total = list.length;
@@ -511,6 +528,10 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
   let todayFailures = 0;
   let servicesWithFailures = 0;
   let maxConsecutiveDays = 0;
+  let totalChecks = 0;
+  let totalSuccessChecks = 0;
+  let totalFailureChecks = 0;
+  let longestOutageDays = 0;
   let lastFailureAtMs: number | null = null;
 
   for (const service of list) {
@@ -533,6 +554,11 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
     }
     todayFailures += service.todayFailures || 0;
     if ((service.todayFailures || 0) > 0) servicesWithFailures += 1;
+    totalChecks += service.checks.total;
+    totalSuccessChecks += service.checks.success;
+    // “总故障次数”按非成功检查计数（含异常 + 故障），与总成功率互补。
+    totalFailureChecks += service.checks.partial + service.checks.failure;
+    longestOutageDays = Math.max(longestOutageDays, longestFailureDayStreak(service.daily));
     if (service.consecutiveOkDays > maxConsecutiveDays) maxConsecutiveDays = service.consecutiveOkDays;
     if (service.lastFailureAtMs !== null && (lastFailureAtMs === null || service.lastFailureAtMs > lastFailureAtMs)) {
       lastFailureAtMs = service.lastFailureAtMs;
@@ -555,6 +581,9 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
       failure: counts.failure,
       nodata: counts.nodata,
       avgUptime: uptimeCount > 0 ? round2(uptimeSum / uptimeCount).toFixed(2) : '0.00',
+      totalSuccessRate: totalChecks > 0 ? (Math.round((totalSuccessChecks / totalChecks) * 10000) / 100).toFixed(2) : '0.00',
+      totalFailures: totalFailureChecks,
+      longestOutageDays,
       avgSuccessRate: successRateCount > 0 ? (successRateSum / successRateCount).toFixed(2) : '0.00',
       avgErrorRate: errorRateCount > 0 ? (errorRateSum / errorRateCount).toFixed(2) : '0.00',
       avgLatency: latencyCount > 0 ? Math.round(latencySum / latencyCount) : 0,
