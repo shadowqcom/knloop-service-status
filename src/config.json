@@ -58,7 +58,7 @@
     },
     {
       "key": "api.knloop.com",
-      "url": "https://api.knloop.com"
+      "url": "https://api.knloop.com/health"
     },
     {
       "key": "mojoo.org",
