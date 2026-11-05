@@ -112,6 +112,7 @@ export interface Summary {
   avgErrorRate: string;
   totalSuccessRate: string;
   totalFailures: number;
+  windowChecks: number;
   longestOutageDays: number;
   avgLatency: number;
   todayFailures: number;
@@ -583,6 +584,7 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
       avgUptime: uptimeCount > 0 ? round2(uptimeSum / uptimeCount).toFixed(2) : '0.00',
       totalSuccessRate: totalChecks > 0 ? (Math.round((totalSuccessChecks / totalChecks) * 10000) / 100).toFixed(2) : '0.00',
       totalFailures: totalFailureChecks,
+      windowChecks: totalChecks,
       longestOutageDays,
       avgSuccessRate: successRateCount > 0 ? (successRateSum / successRateCount).toFixed(2) : '0.00',
       avgErrorRate: errorRateCount > 0 ? (errorRateSum / errorRateCount).toFixed(2) : '0.00',
