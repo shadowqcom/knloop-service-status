@@ -27,11 +27,7 @@ Invoke-RestMethod 'http://127.0.0.1:8787/api/status'
 ## 部署
 
 1. 安装 wrangler 并登录：`npx wrangler login`；
-2. 创建 KV：
-   ```powershell
-   npx wrangler kv namespace create STATUS_KV
-   ```
-   把返回的 id 填到 `wrangler.jsonc` 的 `kv_namespaces[0].id`；
+2. KV：`wrangler.jsonc` 的 KV binding **不写 id**，Wrangler ≥ 4.45 会在首次 deploy 时自动创建并绑定（Automatic Resource Provisioning，open beta）；如果自动创建失败，再手动 `npx wrangler kv namespace create STATUS_KV` 并把 id 填进配置；
 3. 设置 Globalping token（可选，注册后额度更高）：
    ```powershell
    npx wrangler secret put GLOBALPING_TOKEN
@@ -82,6 +78,6 @@ Invoke-RestMethod -Method Post -Uri 'https://<你的域名>/api/admin/run' -Head
 
 说明：
 - Root directory 设为 `worker` 后，Workers Builds 会自动在 `worker/` 执行 `npm ci`；上面的 build command 再安装 `../web` 依赖并构建到 `worker/public`；
-- `wrangler.jsonc` 的 KV id 必须是真实命名空间 id（控制台 Workers & Pages → KV 创建后复制），否则部署失败；
+- `wrangler.jsonc` 默认不写 KV id，首次 deploy 自动创建/绑定；若团队关闭了自动 provisioning，手动创建 KV 并把 id 写进配置；
 - Runtime secrets（`GLOBALPING_TOKEN`、`ADMIN_TOKEN`）在 **Settings → Variables & Secrets** 添加，不要加在 Build variables；
 - 推送 `dev` 分支会自动触发构建；如果要部署到正式域名，先绑定自定义域，再把 Worker 的 production branch 设为对应分支。

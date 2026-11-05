@@ -2,7 +2,7 @@
 
 新架构的代码在 `worker/`（后端）与 `web/`（前端），旧的 `checkshell/`、`src/`、`index.html`、`.github/workflows/` 暂时保留作参考。切换步骤：
 
-1. **Cloudflare 准备**：注册账号；`npx wrangler login`；创建 KV 并把 id 填到 `worker/wrangler.jsonc`；
+1. **Cloudflare 准备**：注册账号；`npx wrangler login`；KV binding 默认不写 id，首次 `wrangler deploy` 会自动创建/绑定（Wrangler ≥4.45 的 Automatic Resource Provisioning）；如自动创建失败再手动创建 KV 并填 id；
 2. **Globalping**：注册免费账号，`npx wrangler secret put GLOBALPING_TOKEN`（不配也能跑匿名额度）；
 3. **构建/部署**：`cd web && npm install && npm run build` → `cd ../worker && npx wrangler deploy`；
 4. **绑定自定义域**：Cloudflare 控制台 → Workers → 该 Worker → 自定义域（例如 `status.example.com`）；确认 `/` 与 `/api/status` 同域可访问；
@@ -25,4 +25,4 @@
 
 Cloudflare 控制台连接仓库后：Root directory `worker`；Build command `npm ci && npm --prefix ../web ci && npm --prefix ../web run build`；Deploy command `npx wrangler deploy`；分支选 `dev`（或合并后的 `main`）。
 
-前提：先在 Cloudflare 创建 KV 命名空间，把 id 写入 `worker/wrangler.jsonc` 并提交；否则 Build 会因 KV binding 无效失败。
+前提：`wrangler.jsonc` 的 KV binding 不写 id，首次 Build 会由 Wrangler 自动创建/绑定；若账户关闭了自动 provisioning，则需要先创建 KV 并把 id 写进配置后提交。
