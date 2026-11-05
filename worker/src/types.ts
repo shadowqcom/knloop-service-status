@@ -4,6 +4,8 @@ export type DisplayStatus = CheckStatus | 'nodata';
 export interface ServiceConfig {
   key: string;
   url: string;
+  /** HTTP status codes treated as reachable (default 200-399). */
+  acceptedStatusCodes?: number[];
 }
 
 export interface RegionResult {
@@ -114,6 +116,8 @@ export interface ServiceOutput {
   latency: number | null;
   lastCheckAt: string;
   uptime: number;
+  successRate: number;
+  errorRate: number;
   checks: ChecksOutput;
   daily: DailyRow[];
   hourly: HourlyRow[];

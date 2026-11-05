@@ -22,6 +22,8 @@
       "latency": 216,                    // 最近一次延迟 ms，可为 null
       "lastCheckAt": "2026-11-05T20:50:00+08:00",
       "uptime": 99.72,                   // 窗口内按检查次数
+      "successRate": 99.72,              // success / total * 100
+      "errorRate": 0.28,                 // (partial + failure) / total * 100
       "checks": {
         "success": 1200, "partial": 3, "failure": 2, "total": 1205,
         "todayTotal": 24, "todayFailures": 0,

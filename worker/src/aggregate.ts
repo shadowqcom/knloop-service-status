@@ -180,13 +180,16 @@ function buildService(
     lastFailureAt: state.lastFailureAt,
   };
 
+  const total = checks.total;
   return {
     key: state.key,
     url: state.url,
     status: state.lastStatus,
     latency: state.lastLatency,
     lastCheckAt: state.lastCheckAt,
-    uptime: uptimePct(success, checks.total),
+    uptime: uptimePct(success, total),
+    successRate: total > 0 ? Math.round((success / total) * 10000) / 100 : 0,
+    errorRate: total > 0 ? Math.round(((partial + failure) / total) * 10000) / 100 : 0,
     checks,
     daily,
     hourly,

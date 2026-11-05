@@ -79,10 +79,14 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-4">
+  <div class="grid grid-cols-2 md:grid-cols-5">
     <div class="bg-bg-secondary p-4 text-center">
       <p class="text-2xl font-medium text-text-primary" data-testid="avg-uptime">{summary.avgUptime}%</p>
-      <p class="mt-1 text-xs text-text-secondary">60天可用率</p>
+      <p class="mt-1 text-xs text-text-secondary">平均成功率</p>
+    </div>
+    <div class="bg-bg-secondary p-4 text-center">
+      <p class="text-2xl font-medium text-failure" data-testid="avg-error-rate">{summary.avgErrorRate}%</p>
+      <p class="mt-1 text-xs text-text-secondary">平均错误率</p>
     </div>
     <div class="bg-bg-secondary p-4 text-center">
       <p class="text-2xl font-medium {summary.avgLatency > 0 ? 'text-text-primary' : 'text-text-secondary'}">

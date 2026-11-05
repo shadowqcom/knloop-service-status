@@ -52,7 +52,7 @@ describe('runCollection', () => {
     const now = Date.parse('2026-11-05T20:50:00+08:00');
     const document = await runCollection(env, { fetchImpl: fakeFetch(), nowMs: now });
 
-    expect(document.services).toHaveLength(3);
+    expect(document.services).toHaveLength(4);
     expect(document.services[0].status).toBe('success');
     expect(document.services[0].daily.at(-1)?.[0]).toBe('2026-11-05');
     expect(kv.raw(STATUS_KEY)).toContain('"schema":2');

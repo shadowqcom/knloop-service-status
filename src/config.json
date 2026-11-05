@@ -22,10 +22,22 @@
       "type": "http",
       "method": "HEAD",
       "locations": [
-        { "country": "CN", "limit": 1 },
-        { "country": "HK", "limit": 1 },
-        { "country": "JP", "limit": 1 },
-        { "country": "US", "limit": 1 }
+        {
+          "country": "CN",
+          "limit": 1
+        },
+        {
+          "country": "HK",
+          "limit": 1
+        },
+        {
+          "country": "JP",
+          "limit": 1
+        },
+        {
+          "country": "US",
+          "limit": 1
+        }
       ],
       "timeoutMs": 20000,
       "pollIntervalMs": 1000,
@@ -41,16 +53,20 @@
   "requestTimeoutMs": 7000,
   "services": [
     {
-      "key": "ShadowQ",
-      "url": "https://www.shadowq.com"
+      "key": "app.knloop.com",
+      "url": "https://app.knloop.com"
     },
     {
-      "key": "Mojoo",
+      "key": "api.knloop.com",
+      "url": "https://api.knloop.com"
+    },
+    {
+      "key": "mojoo.org",
       "url": "https://mojoo.org"
     },
     {
-      "key": "Google",
-      "url": "https://www.google.com"
+      "key": "shadowq.com",
+      "url": "https://shadowq.com"
     }
   ]
 }

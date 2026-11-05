@@ -37,15 +37,17 @@ export interface Config {
 export const config: Config = {
   retentionDays: 60,
   services: [
-    { key: 'ShadowQ', url: 'https://www.shadowq.com' },
-    { key: 'Mojoo', url: 'https://mojoo.org' },
-    { key: 'Google', url: 'https://www.google.com' },
+    { key: 'app.knloop.com', url: 'https://app.knloop.com' },
+    // API 根路径返回 404，但服务本身可达；把 404/401/403 也视为“可达”。
+    { key: 'api.knloop.com', url: 'https://api.knloop.com', acceptedStatusCodes: [200, 204, 301, 302, 307, 401, 403, 404] },
+    { key: 'mojoo.org', url: 'https://mojoo.org' },
+    { key: 'shadowq.com', url: 'https://shadowq.com' },
   ],
   globalping: {
     enabled: true,
     type: 'http',
     method: 'HEAD',
-    // 3 服务 × 2 地区 × 每 10 分钟 = 36 probes/小时（匿名额度 250/小时）
+    // 4 服务 × 2 地区 × 每 5 分钟 = 96 probes/小时（匿名额度 250/小时）
     locations: [
       { country: 'CN', limit: 1 },
       { country: 'US', limit: 1 },

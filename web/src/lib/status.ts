@@ -87,6 +87,8 @@ export interface ServiceViewModel {
   lastCheckAtMs: number | null;
   lastCheckAt: string | null;
   uptime: number | null;
+  successRate: number | null;
+  errorRate: number | null;
   checks: StatusChecks;
   daily: DailyPoint[];
   statusPoints: DailyPoint[];
@@ -106,6 +108,8 @@ export interface Summary {
   failure: number;
   nodata: number;
   avgUptime: string;
+  avgSuccessRate: string;
+  avgErrorRate: string;
   avgLatency: number;
   todayFailures: number;
   servicesWithFailures: number;
@@ -442,6 +446,10 @@ export function buildService(raw: unknown, options: { now?: number; maxDays?: nu
   const hourly = normalizeHourly(source.hourly);
   const checks = normalizeChecks(source.checks, statusPoints, today);
   const uptime = computeUptime(source.uptime, checks);
+  const successRate = finite(source.successRate)
+    ?? (checks.total > 0 ? Math.round((checks.success / checks.total) * 10000) / 100 : null);
+  const errorRate = finite(source.errorRate)
+    ?? (checks.total > 0 ? Math.round(((checks.partial + checks.failure) / checks.total) * 10000) / 100 : null);
   const lastCheckAtMs = parseTimestamp(source.lastCheckAt) ?? finite(source.lastCheckAtMs);
   const lastFailureAtMs = parseTimestamp(checks.lastFailureAt);
   const lastStatus = source.status !== undefined && source.status !== null
@@ -457,6 +465,8 @@ export function buildService(raw: unknown, options: { now?: number; maxDays?: nu
     lastCheckAtMs,
     lastCheckAt: lastCheckAtMs === null ? null : formatBeijingDateTime(lastCheckAtMs),
     uptime,
+    successRate,
+    errorRate,
     checks,
     daily: statusPoints,
     statusPoints,
@@ -490,6 +500,10 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
   const counts = { success: 0, failure: 0, partial: 0, nodata: 0 };
   let uptimeSum = 0;
   let uptimeCount = 0;
+  let successRateSum = 0;
+  let successRateCount = 0;
+  let errorRateSum = 0;
+  let errorRateCount = 0;
   let latencySum = 0;
   let latencyCount = 0;
   let todayFailures = 0;
@@ -502,6 +516,14 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
     if (service.uptime !== null) {
       uptimeSum += service.uptime;
       uptimeCount += 1;
+    }
+    if (service.successRate !== null) {
+      successRateSum += service.successRate;
+      successRateCount += 1;
+    }
+    if (service.errorRate !== null) {
+      errorRateSum += service.errorRate;
+      errorRateCount += 1;
     }
     if (service.avgLatency !== null) {
       latencySum += service.avgLatency;
@@ -531,6 +553,8 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
       failure: counts.failure,
       nodata: counts.nodata,
       avgUptime: uptimeCount > 0 ? round2(uptimeSum / uptimeCount).toFixed(2) : '0.00',
+      avgSuccessRate: successRateCount > 0 ? (successRateSum / successRateCount).toFixed(2) : '0.00',
+      avgErrorRate: errorRateCount > 0 ? (errorRateSum / errorRateCount).toFixed(2) : '0.00',
       avgLatency: latencyCount > 0 ? Math.round(latencySum / latencyCount) : 0,
       todayFailures,
       servicesWithFailures,
