@@ -38,8 +38,8 @@ export const config: Config = {
   retentionDays: 60,
   services: [
     { key: 'app.knloop.com', url: 'https://app.knloop.com' },
-    // API 根路径返回 404，但服务本身可达；把 404/401/403 也视为“可达”。
-    { key: 'api.knloop.com', url: 'https://api.knloop.com', acceptedStatusCodes: [200, 204, 301, 302, 307, 401, 403, 404] },
+    // 专用健康检查端点（GET /health 返回 {"db":"ok","status":"ok"}）。
+    { key: 'api.knloop.com', url: 'https://api.knloop.com/health' },
     { key: 'mojoo.org', url: 'https://mojoo.org' },
     { key: 'shadowq.com', url: 'https://shadowq.com' },
   ],
