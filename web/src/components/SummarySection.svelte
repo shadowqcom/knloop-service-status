@@ -6,10 +6,7 @@
     summary: Summary;
     overallStatus: StatusKind;
     lastUpdateText: string;
-    dataSourceText: string;
-    refreshHint: string;
     refreshing: boolean;
-    lastFailureTime: string | null;
     onRefresh: () => void;
   }
 
@@ -17,10 +14,7 @@
     summary,
     overallStatus,
     lastUpdateText,
-    dataSourceText,
-    refreshHint,
     refreshing,
-    lastFailureTime,
     onRefresh
   }: Props = $props();
 
@@ -104,31 +98,4 @@
     </div>
   </div>
 
-  <div class="border-t border-gray-100 bg-gray-50 p-4 pl-7 md:pl-10 md:pr-10">
-    <div class="flex flex-col gap-3 text-sm md:flex-row md:items-center md:justify-between">
-      <div class="flex min-h-5 items-center gap-2">
-        <div class="flex h-4 w-4 flex-shrink-0 items-center justify-center">
-          {#if lastFailureTime}
-            <svg class="h-4 w-4 text-failure" aria-hidden="true"><use href="/icons.svg#icon-failure"></use></svg>
-          {:else}
-            <svg class="h-4 w-4 text-success" aria-hidden="true"><use href="/icons.svg#icon-success"></use></svg>
-          {/if}
-        </div>
-        <span class="text-text-secondary">
-          {#if lastFailureTime}
-            <span>最近故障: <span class="text-text-primary">{lastFailureTime}</span></span>
-          {:else}
-            <span class="text-success">近期无故障记录</span>
-          {/if}
-        </span>
-      </div>
-
-      <div class="flex min-h-5 flex-wrap items-center gap-4">
-        <span class="text-text-secondary">{refreshHint}</span>
-        {#if dataSourceText}
-          <span class="text-text-secondary" data-testid="data-source">{dataSourceText}</span>
-        {/if}
-      </div>
-    </div>
-  </div>
 </section>
