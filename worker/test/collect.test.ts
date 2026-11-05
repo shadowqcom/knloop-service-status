@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { runCollection } from '../src/collect';
+import { createEmptyState, ensureServiceState } from '../src/aggregate';
+import { STATE_KEY } from '../src/storage';
 import { STATUS_KEY } from '../src/storage';
 import type { Env } from '../src/types';
 
@@ -42,6 +44,23 @@ function fakeFetch(): typeof fetch {
 }
 
 describe('runCollection', () => {
+  it('removes services that are no longer configured', async () => {
+    const kv = new MemoryKV();
+    const env = {
+      STATUS_KV: kv as unknown as KVNamespace,
+      ASSETS: {} as Fetcher,
+      STATUS_RETENTION_DAYS: '60',
+    } satisfies Env;
+    const now = Date.parse('2026-11-05T20:50:00+08:00');
+    const oldState = createEmptyState(60, now);
+    ensureServiceState(oldState, { key: 'OldService', url: 'https://old.example.com' }, now);
+    await kv.put(STATE_KEY, JSON.stringify(oldState));
+
+    const document = await runCollection(env, { fetchImpl: fakeFetch(), nowMs: now });
+    expect(document.services).toHaveLength(4);
+    expect(document.services.some((service) => service.key === 'OldService')).toBe(false);
+  });
+
   it('writes state and status into KV and can be read by the API layer', async () => {
     const kv = new MemoryKV();
     const env = {

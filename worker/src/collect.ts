@@ -19,6 +19,11 @@ export async function runCollection(env: Env, deps: CollectionDeps = {}): Promis
   resetUsageIfNeeded(state, nowMs);
 
   const services = config.services;
+  // 配置中删除的服务不再保留历史 key，避免页面继续显示旧服务。
+  const keepKeys = new Set(services.map((service) => service.key));
+  for (const key of Object.keys(state.services)) {
+    if (!keepKeys.has(key)) delete state.services[key];
+  }
   for (const service of services) ensureServiceState(state, service, nowMs);
 
   console.log('[collect] start', new Date(nowMs).toISOString(), 'services=' + services.length);
