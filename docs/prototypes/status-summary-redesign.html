@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>底部汇总区重设计原型</title>
+<style>
+  :root{--success:#00dfa2;--failure:#ff0060;--partial:#ffb84c;--nodata:#ddd;--text:#202b36;--muted:#7c7c7c;--bg:#f6f8fa;--card:#fff;--line:#edf0f2;--blue:#3b82f6;--amber:#f59e0b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Maple Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Microsoft YaHei",sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:36px 20px 80px}
+  h1{font-size:21px;font-weight:500;text-align:center;margin:0 0 6px}
+  .lead{font-size:12px;color:var(--muted);text-align:center;margin:0 0 30px}
+  .caption{display:flex;align-items:center;gap:9px;margin:0 0 10px;font-size:12px;color:var(--muted)}
+  .tag{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:#e8edf1;font-size:11px;font-weight:600;color:var(--text)}
+  .card{background:var(--card);border-radius:14px;box-shadow:0 10px 30px rgba(32,43,54,.07);border:1px solid rgba(32,43,54,.04);margin-bottom:32px;overflow:hidden}
+  .muted{color:var(--muted)}
+  .icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;background:rgba(0,223,162,.14);color:var(--success)}
+  .icon svg{width:21px;height:21px}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .head .left{display:flex;align-items:center;gap:12px}
+  .head h2{font-size:16px;font-weight:500;margin:0 0 3px}
+  .head .sub{font-size:12px;color:var(--muted)}
+  .pills{display:flex;gap:7px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 9px;font-size:11px;background:#f4f6f8;color:var(--muted)}
+  .dot{width:6px;height:6px;border-radius:50%}
+  .g{background:var(--success)}.y{background:var(--partial)}.r{background:var(--failure)}
+  .body{padding:20px 22px 22px;display:grid;grid-template-columns:minmax(230px,1fr) 1.2fr;gap:24px}
+  .eyebrow{font-size:11px;color:var(--muted);letter-spacing:.02em}
+  .big{font-size:38px;line-height:1.1;font-weight:600;color:var(--success);letter-spacing:-.04em;margin:6px 0 4px}
+  .meta{font-size:11px;color:var(--muted);line-height:1.7}
+  .bar{height:8px;border-radius:999px;background:#edf1f3;overflow:hidden;margin-top:12px;display:flex}
+  .bar span{display:block;height:100%}
+  .bar .ok{background:var(--success)} .bar .bad{background:var(--failure)}
+  .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-content:start}
+  .stat{background:#fafbfc;border-radius:10px;padding:11px 12px}
+  .stat .n{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+  .stat .l{font-size:10.5px;color:var(--muted);margin-top:3px}
+  .stat.red .n{color:var(--failure)}
+  .incidents{grid-column:1/-1;border-top:1px solid var(--line);padding-top:14px;margin-top:2px}
+  .incidents h3{font-size:12px;font-weight:500;margin:0 0 8px}
+  .incidents ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+  .incidents li{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted)}
+  .incidents .name{color:var(--text)}
+  .incidents .when{font-variant-numeric:tabular-nums}
+  .empty{font-size:12px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{font-weight:400;color:var(--muted);text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-size:11px}
+  td{padding:11px 10px;border-bottom:1px solid #f3f5f6}
+  tr:last-child td{border-bottom:0}
+  .svc{display:flex;align-items:center;gap:8px;color:var(--text)}
+  .num{font-variant-numeric:tabular-nums}
+  .up{color:var(--success)} .down{color:var(--failure)} .warn{color:var(--partial)}
+  .table-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:11px 22px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .note{font-size:12px;color:var(--muted);line-height:1.8;margin-top:4px}
+  @media(max-width:680px){
+    .body{grid-template-columns:1fr;gap:18px}
+    .head{padding:16px}
+    .body{padding:16px}
+    .big{font-size:32px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>底部汇总区 · 重设计原型</h1>
+  <p class="lead">参考 GitHub / Cloudflare / OpenStatus / DevHelm 的状态页模式：总状态优先、可用率优先、事件历史可见</p>
+
+  <section>
+    <div class="caption"><span class="tag">A</span> 可用性优先 + 最近事件（推荐）</div>
+    <div class="card">
+      <div class="head">
+        <div class="left">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m20 6-11 11-5-5"/></svg></span>
+          <div><h2>所有服务运行正常</h2><div class="sub">监控 4 个服务 · 过去 60 天 · 最后更新 07:30</div></div>
+        </div>
+        <div class="pills">
+          <span class="pill"><i class="dot g"></i>4 正常</span>
+          <span class="pill"><i class="dot y"></i>0 异常</span>
+          <span class="pill"><i class="dot r"></i>0 故障</span>
+        </div>
+      </div>
+      <div class="body">
+        <div>
+          <div class="eyebrow">过去 60 天总体可用率</div>
+          <div class="big">98.06%</div>
+          <div class="meta">按 68,328 次检查加权<br>非成功检查 1,326 次</div>
+          <div class="bar"><span class="ok" style="width:98.06%"></span><span class="bad" style="width:1.94%"></span></div>
+        </div>
+        <div class="stats">
+          <div class="stat red"><div class="n">1,326</div><div class="l">非成功检查</div></div>
+          <div class="stat"><div class="n">68.3k</div><div class="l">窗口检查次数</div></div>
+          <div class="stat"><div class="n">1天</div><div class="l">最长连续中断</div></div>
+          <div class="stat"><div class="n">12天</div><div class="l">最长连续正常</div></div>
+        </div>
+        <div class="incidents">
+          <h3>最近事件</h3>
+          <ul>
+            <li><i class="dot y"></i><span class="when">11-04</span><span class="name">api.knloop.com</span><span>· 异常 · 1 天</span></li>
+            <li><i class="dot r"></i><span class="when">11-02</span><span class="name">mojoo.org</span><span>· 故障 · 1 天</span></li>
+            <li><i class="dot y"></i><span class="when">11-01</span><span class="name">api.knloop.com</span><span>· 异常 · 1 天</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="caption"><span class="tag">B</span> 服务可用性表（信息更细，适合桌面）</div>
+    <div class="card">
+      <div class="head">
+        <div class="left">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m20 6-11 11-5-5"/></svg></span>
+          <div><h2>所有服务运行正常</h2><div class="sub">监控 4 个服务 · 过去 60 天 · 最后更新 07:30</div></div>
+        </div>
+        <div class="pills">
+          <span class="pill"><i class="dot g"></i>4 正常</span>
+          <span class="pill"><i class="dot y"></i>0 异常</span>
+          <span class="pill"><i class="dot r"></i>0 故障</span>
+        </div>
+      </div>
+      <div style="padding:8px 12px 0">
+        <table>
+          <thead><tr><th>服务</th><th>状态</th><th>60 天可用率</th><th>P50 / P95</th><th>最近检查</th></tr></thead>
+          <tbody>
+            <tr><td><span class="svc"><i class="dot g"></i>app.knloop.com</span></td><td class="up">正常</td><td class="num">98.83%</td><td class="num">612 / 718ms</td><td class="num muted">刚刚</td></tr>
+            <tr><td><span class="svc"><i class="dot g"></i>api.knloop.com</span></td><td class="up">正常</td><td class="num">97.96%</td><td class="num">880 / 1,022ms</td><td class="num muted">刚刚</td></tr>
+            <tr><td><span class="svc"><i class="dot g"></i>mojoo.org</span></td><td class="up">正常</td><td class="num">98.14%</td><td class="num">925 / 1,065ms</td><td class="num muted">刚刚</td></tr>
+            <tr><td><span class="svc"><i class="dot g"></i>shadowq.com</span></td><td class="up">正常</td><td class="num">98.18%</td><td class="num">437 / 510ms</td><td class="num muted">刚刚</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-foot"><span>窗口检查次数 68.3k · 最长连续中断 1 天 · 最长连续正常 12 天</span><span>数据窗口 60 天</span></div>
+    </div>
+  </section>
+
+  <p class="note">说明：A 把“可用率”作为主视觉，事件列表放在同一张卡里；B 进一步把每个服务的可用率和 P50/P95 列出来，但和上方服务卡有一定重复。两者都保留“正常 / 异常 / 故障”胶囊，不再把“窗口检查次数”当主指标。</p>
+</div>
+</body>
+</html>
