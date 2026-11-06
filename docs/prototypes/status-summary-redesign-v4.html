@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>底部汇总区 · 设计稿 v4</title>
+<style>
+  :root{--success:#00c896;--success-soft:#e8faf4;--failure:#f43f5e;--partial:#f59e0b;--text:#1f2933;--muted:#7b8794;--bg:#f4f7f9;--card:#fff;--line:#e8edf0}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Maple Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Microsoft YaHei",sans-serif}
+  .page{max-width:1180px;margin:0 auto;padding:34px 22px 70px}
+  h1{font-size:20px;font-weight:500;text-align:center;margin:0 0 5px}
+  .lead{font-size:12px;color:var(--muted);text-align:center;margin:0 0 28px}
+  .labels{font-size:11px;color:var(--muted);margin:0 0 9px}
+  .desktop{max-width:940px;margin:0 0 30px}
+  .phone-shell{width:390px;margin:0 auto;padding:10px;border-radius:38px;background:#1f2933;box-shadow:0 24px 60px rgba(31,41,51,.18)}
+  .phone{max-height:none;overflow:hidden;border-radius:29px;background:var(--bg);padding:14px 12px 20px}
+  .phone-top{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);padding:2px 8px 12px}
+  .mobile-note{text-align:center;font-size:11px;color:var(--muted);margin:0 0 25px}
+
+  .summary{container-type:inline-size;background:var(--card);border:1px solid rgba(31,41,51,.05);border-radius:16px;box-shadow:0 12px 34px rgba(31,41,51,.06);overflow:hidden}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .head-left{display:flex;align-items:center;gap:11px;min-width:0}
+  .icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;background:var(--success-soft);color:var(--success)}
+  .icon svg{width:20px;height:20px}
+  h2{font-size:15px;font-weight:500;margin:0 0 3px;line-height:1.3}
+  .sub{font-size:11px;color:var(--muted);white-space:nowrap}
+  .pills{display:flex;gap:6px;flex-wrap:wrap;flex:none}
+  .pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:10.5px;background:#f5f7f8;color:var(--muted);white-space:nowrap}
+  .dot{width:6px;height:6px;border-radius:50%;flex:none}
+  .dot.g{background:var(--success)} .dot.y{background:var(--partial)} .dot.r{background:var(--failure)}
+  .body{display:grid;grid-template-columns:1.03fr 1.2fr}
+  .availability{padding:18px 22px 20px;border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column}
+  .eyebrow{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .window-tabs{display:flex;gap:3px;margin-top:9px;overflow-x:auto;scrollbar-width:none}
+  .window-tabs::-webkit-scrollbar{display:none}
+  .tab{border:0;background:transparent;color:var(--muted);font:inherit;font-size:10.5px;padding:5px 8px;min-height:28px;border-radius:6px;white-space:nowrap;cursor:pointer}
+  .tab.active{background:var(--success-soft);color:#067a5a;font-weight:600}
+  .ring-row{display:flex;align-items:center;gap:22px;margin-top:15px;flex:1}
+  .ring{width:158px;height:158px;flex:none;border-radius:50%;background:conic-gradient(var(--success) 0 98.06%, var(--failure) 98.06% 100%);position:relative}
+  .ring::after{content:"";position:absolute;inset:14px;border-radius:50%;background:var(--card)}
+  .ring-center{position:absolute;inset:14px;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%}
+  .ring-center strong{font-size:30px;line-height:1;font-weight:600;color:var(--success);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+  .ring-center strong small{font-size:14px;letter-spacing:0;font-weight:500}
+  .ring-center span{font-size:10.5px;color:var(--muted);margin-top:6px;white-space:nowrap}
+  .ring-legend{min-width:0}
+  .l-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);white-space:nowrap;margin-bottom:10px}
+  .l-row b{color:var(--text);font-weight:600;font-size:13px;font-variant-numeric:tabular-nums}
+  .l-row:last-of-type{margin-bottom:0}
+  .checks-note{font-size:11px;color:var(--muted);line-height:1.7;margin-top:13px;border-top:1px solid #f0f3f5;padding-top:10px}
+  .windows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:14px;border-top:1px solid #f0f3f5;padding-top:11px;margin-top:auto}
+  .window .w{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+  .window .l{font-size:9.5px;color:var(--muted);margin-top:2px}
+
+  .right{padding:15px 18px 17px;min-width:0}
+  .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .stat{border:1px solid #eef2f4;border-radius:10px;padding:11px 12px;background:#fcfdfd;min-width:0}
+  .stat .n{font-size:20px;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.02em;white-space:nowrap}
+  .stat .n.red{color:var(--failure)}
+  .stat .n.blue{color:#3b82f6}
+  .stat .n.amber{color:#f59e0b}
+  .stat .l{font-size:9.5px;color:var(--muted);margin-top:3px;line-height:1.4}
+  .incidents{margin-top:13px;border-top:1px solid var(--line);padding-top:11px}
+  .inc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+  .inc-head h3{font-size:11.5px;font-weight:500;margin:0}
+  .inc-head span{font-size:9.5px;color:var(--muted);white-space:nowrap}
+  .inc-list{list-style:none;margin:0;padding:0}
+  .inc{display:grid;grid-template-columns:48px 1fr auto;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid #f3f6f7;font-size:10.5px}
+  .inc:last-child{border-bottom:0;padding-bottom:0}
+  .inc .date{color:var(--muted);font-variant-numeric:tabular-nums;font-size:10px}
+  .inc .svc{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .inc .type{font-size:9.5px;border-radius:5px;padding:2px 5px;white-space:nowrap}
+  .type.y{background:#fff5e5;color:#a45c00} .type.r{background:#fff0f2;color:#c92443}
+  .inc .dur{grid-column:2/4;font-size:9.5px;color:var(--muted);margin-top:-2px}
+  .empty{font-size:10.5px;color:var(--muted);padding:6px 0 0}
+
+  @container (max-width: 680px){
+    .head{padding:14px 15px;gap:12px;align-items:flex-start}
+    .head-left{align-items:flex-start}
+    .sub{white-space:normal;line-height:1.5}
+    .pills{width:100%;order:3;padding-top:1px}
+    .pill{font-size:10px}
+    .body{grid-template-columns:1fr}
+    .availability{border-right:0;border-bottom:1px solid var(--line);padding:15px 15px 16px}
+    .ring-row{gap:18px;margin-top:13px;flex:none}
+    .windows{margin-top:12px}
+    .ring{width:136px;height:136px}
+    .ring::after,.ring-center{inset:12px}
+    .ring-center strong{font-size:25px}
+    .windows{margin-top:12px}
+    .right{padding:13px 15px 15px}
+    .stats{gap:7px}
+    .stat{padding:9px 10px}
+    .stat .n{font-size:17px}
+    .incidents{margin-top:12px;padding-top:10px}
+    .inc{grid-template-columns:44px 1fr auto;padding:7px 0}
+    .inc .dur{font-size:9.5px}
+  }
+  @container (max-width: 350px){
+    .ring-row{gap:13px}
+    .ring{width:120px;height:120px}
+    .ring::after,.ring-center{inset:11px}
+    .ring-center strong{font-size:22px}
+    .ring-legend{font-size:10px}
+    .stat .n{font-size:16px}
+  }
+  .page-footer{font-size:11px;color:var(--muted);line-height:1.9;max-width:940px;margin:18px auto 0}
+  @media(max-width:500px){.page{padding:24px 12px 50px}.phone-shell{width:100%;padding:0;border-radius:0;background:none;box-shadow:none}.phone{max-height:none;border-radius:16px;padding:10px}.desktop{display:none}.mobile-note{display:none}}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>底部汇总区 · 设计稿 v4</h1>
+  <p class="lead">环形可用率 / 指标与事件双栏 / 移动端适配</p>
+
+  <div class="desktop">
+    <div class="labels">桌面端 · 940px</div>
+    <section class="summary">
+      <header class="head">
+        <div class="head-left">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m20 6-11 11-5-5"/></svg></span>
+          <div><h2>所有服务运行正常</h2><div class="sub">监控 4 个服务 · 最后更新 07:30</div></div>
+        </div>
+        <div class="pills"><span class="pill"><i class="dot g"></i>4 正常</span><span class="pill"><i class="dot y"></i>0 异常</span><span class="pill"><i class="dot r"></i>0 故障</span></div>
+      </header>
+      <div class="body">
+        <div class="availability">
+          <div class="eyebrow">总体可用率 <span>· 按检查次数加权</span></div>
+          <div class="window-tabs"><button class="tab">24h</button><button class="tab">7天</button><button class="tab">30天</button><button class="tab active">60天</button></div>
+          <div class="ring-row">
+            <div class="ring"><div class="ring-center"><strong>98.06<small>%</small></strong><span>60 天可用率</span></div></div>
+            <div class="ring-legend">
+              <div class="l-row"><i class="dot g"></i>成功 <b>98.06%</b></div>
+              <div class="l-row"><i class="dot r"></i>非成功 <b>1.94%</b></div>
+              <div class="checks-note"><strong>68,328</strong> 次检查<br>其中 <strong>1,326</strong> 次非成功</div>
+            </div>
+          </div>
+          <div class="windows"><div class="window"><div class="w">100%</div><div class="l">24 小时</div></div><div class="window"><div class="w">99.12%</div><div class="l">7 天</div></div><div class="window"><div class="w">98.42%</div><div class="l">30 天</div></div></div>
+        </div>
+        <div class="right">
+          <div class="stats">
+            <div class="stat"><div class="n blue">713ms</div><div class="l">平均 P50<br>按服务加权</div></div>
+            <div class="stat"><div class="n amber">829ms</div><div class="l">平均 P95<br>按服务加权</div></div>
+            <div class="stat"><div class="n">1天</div><div class="l">最长连续中断</div></div>
+            <div class="stat"><div class="n">12天</div><div class="l">最长连续正常</div></div>
+          </div>
+          <div class="incidents">
+            <div class="inc-head"><h3>最近事件</h3><span>过去 60 天 · 18 个异常日</span></div>
+            <ul class="inc-list">
+              <li class="inc"><span class="date">11-04</span><span class="svc"><i class="dot y"></i>api.knloop.com</span><span class="type y">异常</span><span class="dur">1 天</span></li>
+              <li class="inc"><span class="date">11-02</span><span class="svc"><i class="dot r"></i>mojoo.org</span><span class="type r">故障</span><span class="dur">1 天</span></li>
+              <li class="inc"><span class="date">11-01</span><span class="svc"><i class="dot y"></i>api.knloop.com</span><span class="type y">异常</span><span class="dur">1 天</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <p class="mobile-note">移动端预览 · 390px</p>
+  <div class="phone-shell"><div class="phone">
+    <div class="phone-top"><span>09:41</span><span>knloop</span><span>100%</span></div>
+    <section class="summary">
+      <header class="head">
+        <div class="head-left">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m20 6-11 11-5-5"/></svg></span>
+          <div><h2>所有服务运行正常</h2><div class="sub">监控 4 个服务 · 最后更新 07:30</div></div>
+        </div>
+        <div class="pills"><span class="pill"><i class="dot g"></i>4 正常</span><span class="pill"><i class="dot y"></i>0 异常</span><span class="pill"><i class="dot r"></i>0 故障</span></div>
+      </header>
+      <div class="body">
+        <div class="availability">
+          <div class="eyebrow">总体可用率 <span>· 按检查次数加权</span></div>
+          <div class="window-tabs"><button class="tab">24h</button><button class="tab">7天</button><button class="tab">30天</button><button class="tab active">60天</button></div>
+          <div class="ring-row">
+            <div class="ring"><div class="ring-center"><strong>98.06<small>%</small></strong><span>60 天可用率</span></div></div>
+            <div class="ring-legend">
+              <div class="l-row"><i class="dot g"></i>成功 <b>98.06%</b></div>
+              <div class="l-row"><i class="dot r"></i>非成功 <b>1.94%</b></div>
+              <div class="checks-note"><strong>68,328</strong> 次检查<br>其中 <strong>1,326</strong> 次非成功</div>
+            </div>
+          </div>
+          <div class="windows"><div class="window"><div class="w">100%</div><div class="l">24 小时</div></div><div class="window"><div class="w">99.12%</div><div class="l">7 天</div></div><div class="window"><div class="w">98.42%</div><div class="l">30 天</div></div></div>
+        </div>
+        <div class="right">
+          <div class="stats">
+            <div class="stat"><div class="n blue">713ms</div><div class="l">平均 P50<br>按服务加权</div></div>
+            <div class="stat"><div class="n amber">829ms</div><div class="l">平均 P95<br>按服务加权</div></div>
+            <div class="stat"><div class="n">1天</div><div class="l">最长连续中断</div></div>
+            <div class="stat"><div class="n">12天</div><div class="l">最长连续正常</div></div>
+          </div>
+          <div class="incidents">
+            <div class="inc-head"><h3>最近事件</h3><span>过去 60 天 · 18 个异常日</span></div>
+            <ul class="inc-list">
+              <li class="inc"><span class="date">11-04</span><span class="svc"><i class="dot y"></i>api.knloop.com</span><span class="type y">异常</span><span class="dur">1 天</span></li>
+              <li class="inc"><span class="date">11-02</span><span class="svc"><i class="dot r"></i>mojoo.org</span><span class="type r">故障</span><span class="dur">1 天</span></li>
+              <li class="inc"><span class="date">11-01</span><span class="svc"><i class="dot y"></i>api.knloop.com</span><span class="type y">异常</span><span class="dur">1 天</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div></div>
+
+  <p class="page-footer">设计依据：GitHub Status / Cloudflare Status / OpenStatus / DevHelm。v4 在 v3 基础上放大左侧图例和检查信息，并把右侧四个指标换成 P50/P95 与连续中断/正常，避免和左侧检查计数重复。</p>
+</div>
+</body>
+</html>
