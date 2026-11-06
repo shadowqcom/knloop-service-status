@@ -53,7 +53,7 @@
 </script>
 
 <section class="mt-8 overflow-hidden rounded-lg bg-bg-secondary shadow-lg" data-testid="summary">
-  <div class="flex flex-col gap-4 border-b border-gray-100 p-5 md:flex-row md:items-center md:justify-between md:p-6">
+  <div class="flex flex-col gap-4 border-b border-gray-100 p-4 md:flex-row md:items-center md:justify-between md:p-5">
     <div class="flex items-start gap-3 md:items-center md:gap-4">
       <button
         type="button"
