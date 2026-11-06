@@ -95,7 +95,7 @@
   </div>
 
   <div class="grid md:grid-cols-[1.03fr_1.2fr]">
-    <div class="flex flex-col border-b border-gray-100 p-4 md:border-b-0 md:border-r md:p-5">
+    <div class="flex flex-col border-b border-gray-100 py-4 pl-[68px] pr-4 md:border-b-0 md:border-r md:py-5 md:pl-[76px] md:pr-5">
       <div class="text-[11px] text-text-secondary">总体可用率 <span class="opacity-75">· 按检查次数加权</span></div>
 
       <div class="mt-2 flex gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
