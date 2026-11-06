@@ -114,6 +114,11 @@ export interface Summary {
   totalFailures: number;
   windowChecks: number;
   longestOutageDays: number;
+  availabilityWindows: AvailabilityWindow[];
+  recentIncidents: RecentIncident[];
+  abnormalDays: number;
+  avgP50: number | null;
+  avgP95: number | null;
   avgLatency: number;
   todayFailures: number;
   servicesWithFailures: number;
@@ -121,6 +126,26 @@ export interface Summary {
   lastFailureTime: string | null;
   statusText: string;
   statusClass: string;
+}
+
+export type AvailabilityWindowKey = '24h' | '7d' | '30d' | '60d';
+
+export interface AvailabilityWindow {
+  key: AvailabilityWindowKey;
+  label: string;
+  days: number;
+  availability: number;
+  checks: number;
+  nonSuccess: number;
+}
+
+export interface RecentIncident {
+  serviceKey: string;
+  serviceTitle: string;
+  startDate: string;
+  endDate: string;
+  days: number;
+  type: 'partial' | 'failure';
 }
 
 export type WarningType = 'stale' | 'refresh-failed' | 'fallback';
@@ -514,6 +539,82 @@ function longestFailureDayStreak(daily: DailyPoint[]): number {
   return best;
 }
 
+function weightedLatency(services: ServiceViewModel[], key: 'p50' | 'p95'): number | null {
+  let sum = 0;
+  let weight = 0;
+  for (const service of services) {
+    for (const day of service.daily) {
+      const value = day[key];
+      if (value === null || !Number.isFinite(value)) continue;
+      const w = day.checks > 0 ? day.checks : 1;
+      sum += value * w;
+      weight += w;
+    }
+  }
+  return weight > 0 ? Math.round(sum / weight) : null;
+}
+
+function buildAvailabilityWindows(services: ServiceViewModel[]): AvailabilityWindow[] {
+  const defs: Array<{ key: AvailabilityWindowKey; label: string; days: number }> = [
+    { key: '24h', label: '24 小时', days: 1 },
+    { key: '7d', label: '7 天', days: 7 },
+    { key: '30d', label: '30 天', days: 30 },
+    { key: '60d', label: '60 天', days: 60 },
+  ];
+  return defs.map((def) => {
+    let checks = 0;
+    let successChecks = 0;
+    for (const service of services) {
+      for (const day of service.daily.slice(-def.days)) {
+        if (day.checks <= 0) continue;
+        checks += day.checks;
+        successChecks += (day.uptimePct ?? 0) / 100 * day.checks;
+      }
+    }
+    const nonSuccess = Math.max(0, checks - successChecks);
+    return {
+      ...def,
+      availability: checks > 0 ? Math.round((successChecks / checks) * 10000) / 100 : 0,
+      checks,
+      nonSuccess: Math.round(nonSuccess),
+    };
+  });
+}
+
+function buildRecentIncidents(services: ServiceViewModel[]): { incidents: RecentIncident[]; abnormalDays: number } {
+  const incidents: RecentIncident[] = [];
+  let abnormalDays = 0;
+  for (const service of services) {
+    let current: RecentIncident | null = null;
+    for (const day of service.daily) {
+      const bad = day.status === 'partial' || day.status === 'failure';
+      if (bad) {
+        abnormalDays += 1;
+        if (!current) {
+          current = {
+            serviceKey: service.key,
+            serviceTitle: service.title,
+            startDate: day.date,
+            endDate: day.date,
+            days: 1,
+            type: day.status === 'failure' ? 'failure' : 'partial',
+          };
+        } else {
+          current.endDate = day.date;
+          current.days += 1;
+          if (day.status === 'failure') current.type = 'failure';
+        }
+      } else if (current) {
+        incidents.push(current);
+        current = null;
+      }
+    }
+    if (current) incidents.push(current);
+  }
+  incidents.sort((a, b) => (a.endDate < b.endDate ? 1 : a.endDate > b.endDate ? -1 : 0));
+  return { incidents: incidents.slice(0, 3), abnormalDays };
+}
+
 export function summarize(services: ServiceViewModel[]): { summary: Summary; overallStatus: StatusKind } {
   const list = Array.isArray(services) ? services : [];
   const total = list.length;
@@ -566,6 +667,11 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
     }
   }
 
+  const availabilityWindows = buildAvailabilityWindows(list);
+  const incidentData = buildRecentIncidents(list);
+  const avgP50 = weightedLatency(list, 'p50');
+  const avgP95 = weightedLatency(list, 'p95');
+
   const overallStatus = computeOverallStatus(list.map((service) => service.status));
   let statusText: string;
   if (overallStatus === 'success') statusText = '所有服务运行正常';
@@ -586,6 +692,11 @@ export function summarize(services: ServiceViewModel[]): { summary: Summary; ove
       totalFailures: totalFailureChecks,
       windowChecks: totalChecks,
       longestOutageDays,
+      availabilityWindows,
+      recentIncidents: incidentData.incidents,
+      abnormalDays: incidentData.abnormalDays,
+      avgP50,
+      avgP95,
       avgSuccessRate: successRateCount > 0 ? (successRateSum / successRateCount).toFixed(2) : '0.00',
       avgErrorRate: errorRateCount > 0 ? (errorRateSum / errorRateCount).toFixed(2) : '0.00',
       avgLatency: latencyCount > 0 ? Math.round(latencySum / latencyCount) : 0,
