@@ -1,6 +1,7 @@
 import { buildStatusDocument } from './aggregate';
 import { config } from './config';
-import { saveState, saveStatus } from './storage';
+import { createStorage } from './storage';
+import type { StatusStorage } from './storage';
 import { cstDate, cstHourStart, cstIso, startOfCstDay } from './util';
 import type {
   AppState,
@@ -67,10 +68,14 @@ export interface SeedResult {
 }
 
 /**
- * 一次性填充 60 天演示数据；写入 state:v1 和 status:v2，之后正常 Cron 会继续在今天的 currentDay 上累积。
+ * 一次性填充 60 天演示数据；一次 batch 写入 state 与 status 两行，之后正常 Cron 会继续在今天的 currentDay 上累积。
  * 仅供手动测试使用，不应在正常采集流程中调用。
  */
-export async function seedDemoData(env: Env, nowMs: number = Date.now()): Promise<SeedResult> {
+export async function seedDemoData(
+  env: Env,
+  nowMs: number = Date.now(),
+  storage: StatusStorage = createStorage(env),
+): Promise<SeedResult> {
   const retentionDays = Number.parseInt(env.STATUS_RETENTION_DAYS ?? '', 10) || config.retentionDays;
   const todayStart = startOfCstDay(nowMs);
   const today = cstDate(nowMs);
@@ -150,8 +155,7 @@ export async function seedDemoData(env: Env, nowMs: number = Date.now()): Promis
   });
 
   const document = buildStatusDocument(state, nowMs);
-  await saveState(env.STATUS_KV, state);
-  await saveStatus(env.STATUS_KV, document);
+  await storage.saveAll(state, document);
 
   return {
     services: document.services.length,

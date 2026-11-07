@@ -21,6 +21,8 @@
   const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
   const FETCH_TIMEOUT_MS = 8000;
   const POLL_MS = DEFAULT_POLL_SECONDS * 1000;
+  // 回前台时最多每 60 秒补一次请求，避免频繁切换标签页造成请求风暴。
+  const VISIBILITY_REFRESH_MIN_MS = 60 * 1000;
 
   let dashboard = $state<Dashboard | null>(null);
   let loading = $state(true);
@@ -31,6 +33,7 @@
   let hideHeader = $state(false);
 
   let inFlight: Promise<void> | null = null;
+  let lastRequestAt = 0;
   let lastScrollY = 0;
   let scrollTicking = false;
 
@@ -72,12 +75,14 @@
     }
   }
 
-  async function fetchSnapshot(): Promise<StatusSnapshot> {
+  async function fetchSnapshot(force = false): Promise<StatusSnapshot> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
+      // 常规轮询走浏览器缓存 + ETag/304 协商；手动刷新用 no-cache 强制向 Worker 校验一次，
+      // 避免 60 秒浏览器缓存让用户点“刷新”看不到变化（Worker 侧仍优先命中边缘缓存，不额外查 D1）。
       const response = await fetch('/api/status', {
-        cache: 'no-store',
+        cache: force ? 'no-cache' : 'default',
         signal: controller.signal,
         headers: { Accept: 'application/json' }
       });
@@ -88,13 +93,14 @@
     }
   }
 
-  function refresh(): Promise<void> {
+  function refresh(force = false): Promise<void> {
     if (inFlight) return inFlight;
+    lastRequestAt = Date.now();
     refreshing = true;
     if (!dashboard) loading = true;
     inFlight = (async () => {
       try {
-        const snapshot = await fetchSnapshot();
+        const snapshot = await fetchSnapshot(force);
         dashboard = buildDashboard(snapshot, { now: Date.now(), staleAfterMinutes: DEFAULT_STALE_AFTER_MIN });
         errorMessage = null;
         sourceLabel = 'Worker API';
@@ -146,7 +152,9 @@
     }, POLL_MS);
 
     const onVisibilityChange = (): void => {
-      if (document.visibilityState === 'visible') void refresh();
+      if (document.visibilityState !== 'visible') return;
+      if (Date.now() - lastRequestAt < VISIBILITY_REFRESH_MIN_MS) return;
+      void refresh();
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
 
@@ -170,7 +178,7 @@
 
   <section class="overflow-hidden rounded-lg bg-bg-secondary shadow-lg" data-testid="main-card">
     {#if errorMessage && !dashboard}
-      <ErrorState variant="error" message={errorMessage} onRetry={() => void refresh()} />
+      <ErrorState variant="error" message={errorMessage} onRetry={() => void refresh(true)} />
     {:else if loading && !dashboard}
       <LoadingSkeleton />
     {:else if dashboard && services.length === 0}
@@ -178,7 +186,7 @@
         variant="empty"
         message="暂无监控数据"
         detail="等待采集或稍后重试"
-        onRetry={() => void refresh()}
+        onRetry={() => void refresh(true)}
       />
     {:else if dashboard}
       <div class="divide-y divide-gray-100">
@@ -212,7 +220,7 @@
       overallStatus={dashboard.overallStatus}
       lastUpdateText={dashboard.lastUpdateText}
       {refreshing}
-      onRefresh={() => void refresh()}
+      onRefresh={() => void refresh(true)}
     />
   {/if}
 </main>

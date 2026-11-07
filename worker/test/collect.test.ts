@@ -1,24 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { runCollection } from '../src/collect';
 import { createEmptyState, ensureServiceState } from '../src/aggregate';
-import { STATE_KEY } from '../src/storage';
-import { STATUS_KEY } from '../src/storage';
+import { MemoryStorage } from './helpers';
 import type { Env } from '../src/types';
-
-class MemoryKV {
-  private readonly store = new Map<string, string>();
-  async get(key: string, type?: string): Promise<unknown> {
-    const value = this.store.get(key);
-    if (value === undefined) return null;
-    return type === 'json' ? JSON.parse(value) : value;
-  }
-  async put(key: string, value: string): Promise<void> {
-    this.store.set(key, value);
-  }
-  raw(key: string): string | undefined {
-    return this.store.get(key);
-  }
-}
 
 function fakeFetch(): typeof fetch {
   return (async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -43,38 +27,49 @@ function fakeFetch(): typeof fetch {
   }) as typeof fetch;
 }
 
+function envWith(): Env {
+  return {
+    STATUS_DB: {} as D1Database,
+    ASSETS: {} as Fetcher,
+    STATUS_RETENTION_DAYS: '60',
+  } as Env;
+}
+
 describe('runCollection', () => {
   it('removes services that are no longer configured', async () => {
-    const kv = new MemoryKV();
-    const env = {
-      STATUS_KV: kv as unknown as KVNamespace,
-      ASSETS: {} as Fetcher,
-      STATUS_RETENTION_DAYS: '60',
-    } satisfies Env;
     const now = Date.parse('2026-11-05T20:50:00+08:00');
     const oldState = createEmptyState(60, now);
     ensureServiceState(oldState, { key: 'OldService', url: 'https://old.example.com' }, now);
-    await kv.put(STATE_KEY, JSON.stringify(oldState));
+    const storage = new MemoryStorage({ state: oldState });
 
-    const document = await runCollection(env, { fetchImpl: fakeFetch(), nowMs: now });
+    const document = await runCollection(envWith(), { fetchImpl: fakeFetch(), nowMs: now, storage });
     expect(document.services).toHaveLength(4);
     expect(document.services.some((service) => service.key === 'OldService')).toBe(false);
+    expect(Object.keys(storage.state!.services)).not.toContain('OldService');
   });
 
-  it('writes state and status into KV and can be read by the API layer', async () => {
-    const kv = new MemoryKV();
-    const env = {
-      STATUS_KV: kv as unknown as KVNamespace,
-      ASSETS: {} as Fetcher,
-      STATUS_RETENTION_DAYS: '60',
-    } satisfies Env;
+  it('saves state and status through the storage layer and returns the API document', async () => {
+    const storage = new MemoryStorage();
     const now = Date.parse('2026-11-05T20:50:00+08:00');
-    const document = await runCollection(env, { fetchImpl: fakeFetch(), nowMs: now });
+    const document = await runCollection(envWith(), { fetchImpl: fakeFetch(), nowMs: now, storage });
 
     expect(document.services).toHaveLength(4);
     expect(document.services[0].status).toBe('success');
     expect(document.services[0].daily.at(-1)?.[0]).toBe('2026-11-05');
-    expect(kv.raw(STATUS_KEY)).toContain('"schema":2');
+    expect(document.generatedAtUnix).toBe(Math.floor(now / 1000));
+    expect(storage.saveAllCalls).toBe(1);
+    expect(storage.document).toBe(document);
+    expect(JSON.stringify(storage.state)).toContain('"schema":1');
+    expect(JSON.stringify(storage.document)).toContain('"schema":2');
+  });
+
+  it('still returns the new document when storage writes fail (for example write quota exhausted)', async () => {
+    const storage = new MemoryStorage();
+    storage.saveAllError = new Error('D1_ERROR: daily write limit exceeded');
+    const now = Date.parse('2026-11-05T20:50:00+08:00');
+
+    const document = await runCollection(envWith(), { fetchImpl: fakeFetch(), nowMs: now, storage });
+    expect(document.services).toHaveLength(4);
     expect(document.generatedAtUnix).toBe(Math.floor(now / 1000));
   });
 });

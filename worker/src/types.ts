@@ -133,7 +133,8 @@ export interface StatusDocument {
 }
 
 export interface Env {
-  STATUS_KV: KVNamespace;
+  /** 主存储（D1）。 */
+  STATUS_DB: D1Database;
   ASSETS: Fetcher;
   GLOBALPING_TOKEN?: string;
   WEBHOOK_KEY?: string;

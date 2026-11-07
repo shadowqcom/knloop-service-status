@@ -2,9 +2,18 @@
 
 ## 接口
 
-- `GET /api/status` → 与仓库现有 `data/status.json` **完全相同的 schema 2**；HTTP 200，`Cache-Control: public, max-age=60`；
-- `GET /healthz` → `{ ok: true, generatedAt }`；
+- `GET /api/status`（别名 `GET /data/status.json`）→ 与仓库现有 `data/status.json` **完全相同的 schema 2**；
+  - HTTP 200，`Cache-Control: public, max-age=60`，`ETag: "status-<generatedAtUnix>"`；
+  - 请求头带匹配的 `If-None-Match` 时返回 **304**（无响应体）；
+  - `X-Knloop-Cache: memory | edge | db | stale` 说明本次数据来源（便于排查是否真的查了 D1）；
+  - D1 查询失败时若有缓存，返回旧数据并带 `X-Knloop-Stale: 1`、`Cache-Control: public, max-age=30`；
+  - 完全无数据：503；D1 不可用且无缓存：500 + `Retry-After`（额度类错误指向 UTC 零点重置）。
+- `GET /healthz`（别名 `/api/health`）→ `{ ok: true, now, hasDb }`，`Cache-Control: no-store`；
+  **不查数据库**，外部监控高频探测不会消耗 D1 的行读额度；
 - 开发环境：Vite dev server 把 `/api` 代理到 `http://127.0.0.1:8787`（`wrangler dev`）。
+
+> 存储：D1 `status_store` 表（`key` / `value` / `updated_at` 两行：`state:v1`、`status:v2`）。
+> KV 已从配置、代码与测试中完全移除；新部署的 D1 从空库开始，首次 Cron 后才有数据。
 
 ## 数据形状
 
@@ -50,7 +59,8 @@
 - 图表：最近 12 小时（`maxHour`）的每小时 P50/P95；点击某天显示该天 00:00~当前/23:00；缺失小时留 null；
 - 过期判定：`now - generatedAtUnix > 45 分钟` 显示“数据可能延迟”告警，数据照常展示；
 - 请求失败：显示缓存/错误提示与重试按钮，不白屏；
-- 60 秒轮询 `/api/status`；页面隐藏时暂停，回前台立即刷新；
+- 5 分钟轮询 `/api/status`（与 Cron 采集同频）；页面隐藏时暂停，回前台且距上次请求 ≥60 秒才刷新；
+- 前端不再使用 `cache: 'no-store'`：允许浏览器缓存，配合 `ETag`/`304` 协商，减少无效请求和 D1 读；
 - 文案保持中文，视觉延续现有页面（Maple Mono、绿#00dfa2、红#ff0060、黄#ffb84c、灰#dddddd）。
 
 ## 现有参考

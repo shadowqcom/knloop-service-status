@@ -45,11 +45,11 @@ curl -X POST \
 
 ## 三、方案 B：Cloudflare Workers Cron（免费、可只调度也可直接检测）
 
-免费额度（官方 Limits 页）：100,000 请求/天、CPU 10ms/次、单请求 50 个子请求、**每账号 5 个 Cron Trigger**、支持 `* * * * *`（每分钟）。存储可用 Workers KV（免费 100,000 读/天、**1,000 写/天**、同 key 1 写/秒、1GB）或 R2（免费 10GB-month、100 万 Class A/月、1000 万 Class B/月）。
+免费额度（官方 Limits 页）：100,000 请求/天、CPU 10ms/次、单请求 50 个子请求、**每账号 5 个 Cron Trigger**、支持 `* * * * *`（每分钟）。存储可用 D1（免费 500 万行读/天、**10 万行写/天**、5GB；本项目当前方案）、Workers KV（免费 100,000 读/天、**1,000 写/天**、同 key 1 写/秒、1GB）或 R2（免费 10GB-month、100 万 Class A/月、1000 万 Class B/月）。
 
 两种用法：
 1. **只做调度**（最简单）：Worker cron `*/30 * * * *` → `fetch` GitHub dispatch API，把 PAT 放 Worker secret。比 cron-job.org 更可控（可加日志/告警）。
-2. **直接跑检测**（脱离 GitHub Actions）：Worker 里并行探测 3 个目标（每目标 2~3 次，9 个子请求 < 50），计算状态 → 写 KV/R2/GitHub Contents API；页面读同一个 `data/status.json`。注意 Worker 免费版 CPU 只有 10ms，日志聚合/60 天统计建议放在读取侧或 KV 里做增量。
+2. **直接跑检测**（脱离 GitHub Actions）：Worker 里并行探测 3 个目标（每目标 2~3 次，9 个子请求 < 50），计算状态 → 写 D1/R2/GitHub Contents API；页面读同一个 `data/status.json`。注意 Worker 免费版 CPU 只有 10ms，日志聚合/60 天统计建议放在读取侧或存储里做增量。本项目已采用 D1（参见 `docs/kv-quota.md`）。
 
 注意：`*.workers.dev` 在中国大陆访问不稳定；如果页面也托管在 Cloudflare 自定义域（knloop.com 若托管在 CF）则不存在这个问题。Cloudflare 边缘没有大陆节点，所以它测的仍是“海外视角”。
 

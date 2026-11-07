@@ -1,8 +1,8 @@
 # 🆙 knloop service status
 
-> **2026-11 新架构**：项目已重写为 **Cloudflare Workers（TypeScript）+ Hono + Svelte 5 + Tailwind CSS 4 + Chart.js + KV + Globalping/xxapi/uapis**。
-> 页面与 API 都由同一个 Worker 提供；检测由 Worker Cron（默认每 10 分钟）完成，不再依赖 GitHub Actions 调度。
-> 新架构说明与部署：[worker/README.md](worker/README.md) ｜ [web/README.md](web/README.md) ｜ [docs/worker-api-contract.md](docs/worker-api-contract.md)
+> **2026-11 新架构**：项目已重写为 **Cloudflare Workers（TypeScript）+ Hono + Svelte 5 + Tailwind CSS 4 + Chart.js + D1 + Globalping/xxapi/uapis**。
+> 页面与 API 都由同一个 Worker 提供；检测由 Worker Cron（每 5 分钟）完成，不再依赖 GitHub Actions 调度。
+> 新架构说明与部署：[worker/README.md](worker/README.md) ｜ [web/README.md](web/README.md) ｜ [docs/worker-api-contract.md](docs/worker-api-contract.md) ｜ [docs/kv-quota.md](docs/kv-quota.md)（存储选型/额度复盘，KV → D1）
 > 下面保留的 GitHub Actions + Go 内容属于**旧版**（仍可使用），新部署请以 Worker 文档为准。
 **轻量、开源、零依赖的服务状态监控。**
 - 纯静态页面，无需构建工具，数据由 GitHub Actions 定时采集并提交到 `page` 分支

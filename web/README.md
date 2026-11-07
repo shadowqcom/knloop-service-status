@@ -20,7 +20,7 @@
 
 - src/lib/status.ts：纯数据层（解析、60 天块、daily/hourly、汇总、总状态、过期判定、选中日图表、相对时间）
 - src/components/：Header / WarningList / LoadingSkeleton / ErrorState / ServiceCard / StatusGrid / LatencyChart / SummarySection / Footer
-- src/App.svelte：数据获取、60s 轮询（hidden 暂停、回前台立即刷新）、localStorage 缓存、手动刷新、页头滚动隐藏
+- src/App.svelte：数据获取、5 分钟轮询（与 Cron 采集同频；hidden 暂停、回前台且距上次请求 ≥60s 才刷新）、localStorage 缓存、手动刷新、页头滚动隐藏
 - mock-server.mjs：MOCK_ERROR=1 / MOCK_EMPTY=1 / MOCK_STALE_MINUTES=120 环境变量；运行时也可用
   GET /__mock?stale=120|error=1|empty=1|delay=5000|reset=1 切换模式（供截图脚本使用）
 - scripts/verify.mjs / scripts/capture.mjs：验收与截图脚本
