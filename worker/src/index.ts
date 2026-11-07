@@ -113,10 +113,12 @@ app.get('/api/health', (c) =>
 );
 
 // 一次性注入 60 天测试数据（需要 ADMIN_TOKEN；已有数据时需 ?force=1）。
+// DEMO_SEED=1 是临时开关，仅用于空库时注入演示数据；注完会移除。
 app.post('/api/admin/seed', async (c) => {
   const token = c.env.ADMIN_TOKEN;
   const authorization = c.req.header('authorization') ?? '';
-  if (!token || authorization !== `Bearer ${token}`) return c.text('not found', 404);
+  const demoSeed = c.env.DEMO_SEED === '1';
+  if (!demoSeed && (!token || authorization !== `Bearer ${token}`)) return c.text('not found', 404);
   try {
     const storage = createStorage(c.env);
     const existing = await storage.loadStatus();
