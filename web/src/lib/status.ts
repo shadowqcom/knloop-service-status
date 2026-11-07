@@ -6,7 +6,8 @@ export type StatusKind = 'success' | 'partial' | 'failure' | 'nodata';
 export const STATUS_DAY_COUNT = 60;
 export const DEFAULT_STALE_AFTER_MIN = 45;
 export const DEFAULT_MAX_HOUR = 12;
-export const DEFAULT_POLL_SECONDS = 60;
+// 数据由 Worker Cron 每 5 分钟采集一次；页面跟着 5 分钟轮询即可，避免白白消耗 Workers 请求与 D1 行读额度。
+export const DEFAULT_POLL_SECONDS = 300;
 
 const DAY_MS = 86400000;
 const HOUR_MS = 3600000;
