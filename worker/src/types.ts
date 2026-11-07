@@ -141,4 +141,6 @@ export interface Env {
   STATUS_RETENTION_DAYS?: string;
   /** 可选：启用 POST /api/admin/run 手动触发一次采集（空/未设置时该路由返回 404）。 */
   ADMIN_TOKEN?: string;
+  /** 临时开关：为 "1" 时允许无 token 注入演示数据（仅一次性使用）。 */
+  DEMO_SEED?: string;
 }

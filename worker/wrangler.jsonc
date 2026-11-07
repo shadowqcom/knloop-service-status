@@ -18,6 +18,7 @@
     "crons": ["*/5 * * * *"]
   },
   "vars": {
-    "STATUS_RETENTION_DAYS": "60"
+    "STATUS_RETENTION_DAYS": "60",
+    "DEMO_SEED": "1"
   }
 }
